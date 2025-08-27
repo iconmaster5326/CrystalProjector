@@ -3,6 +3,7 @@ import json
 import io
 
 from gen.database import Database as RawDatabase
+from gen.loading import Loading as RawLoading
 from gen.ability import Ability
 from gen.actor import Actor
 from gen.biome import Biome
@@ -53,6 +54,10 @@ def load_biomes(infile: typing.BinaryIO) -> typing.Dict[int, Biome]:
     return {json["ID"]: Biome.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_loading(infile: typing.BinaryIO) -> typing.List[str]:
+    return [s.value for s in RawLoading.from_io(infile).strings]
+
+
 def load_voxels(infile: typing.BinaryIO) -> typing.Dict[int, Voxel]:
     return {json["ID"]: Voxel.from_dict(json) for json in Database.load(infile).database if json}
 
@@ -98,7 +103,13 @@ if __name__ == "__main__":
     # copy_over_db("gender")
     # copy_over_db("item")
     # copy_over_db("job")
-    # # copy_over_db("loading") # TODO: this has its own format!
+
+    print(f"=== LOADING ===")
+    with open(f"{root}/loading.dat", "rb") as stream:
+        loading = load_loading(stream)
+        for message in loading:
+            print(f"\t{message}")
+
     # copy_over_db("monster")
     # copy_over_db("passive")
     # copy_over_db("patch")
