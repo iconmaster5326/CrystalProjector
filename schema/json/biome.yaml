@@ -1,0 +1,347 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: biome
+title: Biome
+description: A Crystal Project biome, which is a region of the map.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - SortOrder
+  - BaseID
+  - IsMapOnly
+  - IsMapAlt
+  - IndColor
+  - IsInDemo
+  - WeatherType
+  - WorldR
+  - WorldG
+  - WorldB
+  - FogR
+  - FogG
+  - FogB
+  - FogNear
+  - FogFar
+  - WorldHdrMultiplier
+  - WorldBloomThreshold
+  - WorldBloomIntensity
+  - CameraZoomOffset
+  - CameraAngleOffset
+  - CameraIndoorZoomOffset
+  - CameraIndoorFarClipOverride
+  - CameraIndoorFarClipIsBlack
+  - EnableCameraPeeking
+  - UnderwaterCamera
+  - DisableSunlight
+  - ForceIsIndoor
+  - IndoorHeight
+  - MapLayer
+  - MapCenterXOverride
+  - MapCenterYOverride
+  - MusicCue
+  - BattleMusicCue
+  - BossMusicCue
+  - InherentStatusID
+  - InherentStatusMessage
+  - Arena
+  - ArenaIndoor
+properties:
+  ID:
+    description: |
+      The ID of the biome.
+      Has to fit within a single byte, or else maps won't load.
+    type: integer
+    minimum: 0
+    maximum: 255
+  Name:
+    description: The localizable name of the biome, as displayed to users.
+    type: string
+  SortOrder:
+    description: The order in which this biome appears in the biome selector in the map screen.
+    type: integer
+  BaseID:
+    description: |
+      The ID of a map that this map is contained as a part of, or 0 if not applicable.
+      (Yes, this does imply that N/A can't ever be a base of any maps.)
+    type: integer
+  IsMapOnly:
+    description: Is this biome only for showing a single gestalt map to the player?
+    type: boolean
+  IsMapAlt:
+    description: Is this map an alternate version of another map?
+    type: boolean
+  IndColor:
+    description: A representative color of this map.
+    type: object
+    additionalProperties: false
+    required: [R, G, B]
+    properties:
+      R:
+        description: The red channel.
+        type: number
+        minimum: 0
+        maximum: 1
+      G:
+        description: The green channel.
+        type: number
+        minimum: 0
+        maximum: 1
+      B:
+        description: The blue channel.
+        type: number
+        minimum: 0
+        maximum: 1
+  IsInDemo:
+    description: Is this map part of the demo?
+    type: boolean
+  WeatherType:
+    description: The weather effect playing in this biome, if any.
+    oneOf:
+      - type: "null"
+      - type: integer
+        oneOf:
+        - const: 0
+          title: None
+        - const: 1
+          title: Leaves
+        - const: 2
+          title: Underwater Deep
+        - const: 3
+          title: Rain
+        - const: 4
+          title: Sandstorm
+        - const: 5
+          title: Scorching Sun
+        - const: 6
+          title: Wind
+        - const: 7
+          title: Volcanic Haze
+        - const: 8
+          title: Snow
+        - const: 9
+          title: Snowstorm L1
+        - const: 10
+          title: Snowstorm L2
+        - const: 11
+          title: Snowstorm L3
+        - const: 12
+          title: Waves
+        - const: 13
+          title: Blossoms
+        - const: 14
+          title: Meadow
+        - const: 15
+          title: Shimmer Rays
+        - const: 16
+          title: Underwater Depths
+        - const: 17
+          title: Field
+        - const: 18
+          title: Autumn
+        - const: 19
+          title: Beach
+        - const: 20
+          title: Prisma Rays
+        - const: 21
+          title: Cloudy Wind
+        - const: 22
+          title: Jungle
+        - const: 23
+          title: Red Haze
+  WorldR:
+    description: The background color. Red channel.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 15
+  WorldG:
+    description: The background color. Green channel.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 15
+  WorldB:
+    description: The background color. Blue channel.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 15
+  FogR:
+    description: The fog color. Red channel.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 15
+  FogG:
+    description: The fog color. Green channel.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 15
+  FogB:
+    description: The fog color. Blue channel.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 15
+  FogNear:
+    description: The distance the fog starts.
+    oneOf:
+      - type: "null"
+      - type: number
+  FogFar:
+    description: The distance the fog reaches full inensity.
+    oneOf:
+      - type: "null"
+      - type: number
+  WorldHdrMultiplier:
+    description: The multiplier to HDR while in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  WorldBloomThreshold:
+    description: The threshold for the bloom effect in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  WorldBloomIntensity:
+    description: The intensity of the bloom effect in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  CameraZoomOffset:
+    description: The offset to the camera's zoom level in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  CameraAngleOffset:
+    description: The offset to the camera's angle in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  CameraIndoorZoomOffset:
+    description: The offset to the camera's zoom level while indoors in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  CameraIndoorFarClipOverride:
+    description: The far clip value for the camera while in this biome.
+    oneOf:
+      - type: "null"
+      - type: number
+  CameraIndoorFarClipIsBlack:
+    description: Should the camera clip color be black?
+    oneOf:
+      - type: "null"
+      - type: boolean
+  EnableCameraPeeking:
+    description: Can you press the bumpers to tilt the camera here?
+    oneOf:
+      - type: "null"
+      - type: boolean
+  UnderwaterCamera:
+    description: Do we use the underwater camera effects here?
+    oneOf:
+      - type: "null"
+      - type: boolean
+  DisableSunlight:
+    description: Do we disable sunlight effects here?
+    oneOf:
+      - type: "null"
+      - type: boolean
+  ForceIsIndoor:
+    description: Is this area entirely indoors?
+    oneOf:
+      - type: "null"
+      - type: boolean
+  IndoorHeight:
+    description: How tall the ceiling is to be considered indoors here.
+    oneOf:
+      - type: "null"
+      - type: integer
+  MapLayer:
+    description: The Z index for maps to draw with.
+    type: integer
+  MapCenterXOverride:
+    description: Is the center of this map different from the center of its bounding box? X coordinate.
+    oneOf:
+      - type: "null"
+      - type: integer
+  MapCenterYOverride:
+    description: Is the center of this map different from the center of its bounding box? Z coordinate.
+    oneOf:
+      - type: "null"
+      - type: integer
+  MusicCue:
+    description: The music ID played in this biome.
+    oneOf:
+      - type: "null"
+      - type: integer
+  BattleMusicCue:
+    description: The battle music ID played in this biome.
+    oneOf:
+      - type: "null"
+      - type: integer
+  BossMusicCue:
+    description: The boss music ID played in this biome.
+    oneOf:
+      - type: "null"
+      - type: integer
+  InherentStatusID:
+    description: The ID of the status effect applied to everyone in this biome during battles.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  InherentStatusMessage:
+    description: A message that appears when a battle starts in this biome.
+    oneOf:
+      - type: "null"
+      - type: string
+  Arena:
+    description: Information about the outdoor arena.
+    oneOf:
+      - type: "null"
+      - $ref: "#/$defs/arena"
+  ArenaIndoor:
+    description: Information about the indoor arena.
+    oneOf:
+      - type: "null"
+      - $ref: "#/$defs/arena"
+$defs:
+  arena:
+    type: object
+    additionalProperties: false
+    required:
+      - GlobalIndexOrigin
+      - IsIndoor
+      - IsUnderwater
+    properties:
+      GlobalIndexOrigin:
+        description: The position in the world `arena.dat` where the battle takes place.
+        type: object
+        additionalProperties: false
+        required: ["X", "Y", "Z"]
+        properties:
+          "X":
+            description: The X coordinate.
+            type: integer
+          "Y":
+            description: The Y coordinate.
+            type: integer
+          "Z":
+            description: The Z coordinate.
+            type: integer
+      IsIndoor:
+        description: Should indoor effects apply while fighting in this arena?
+        type: boolean
+      IsUnderwater:
+        description: Should underwater effects apply while fighting in this arena?
+        type: boolean

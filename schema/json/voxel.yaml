@@ -1,0 +1,247 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: voxel
+title: Voxel
+description: A Crystal Project voxel type classification. Has rendering and physics information for each voxel type.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - SortOrder
+  - Visible
+  - PrimitiveBuilder
+  - TexTopU
+  - TexTopV
+  - TexSideU
+  - TexSideV
+  - TexBotU
+  - TexBotV
+  - HasAlphaPixels
+  - OccludesGeometry
+  - OccludesLight
+  - PartialLightReduction
+  - GrowsOn
+  - MaxVariant
+  - Collides
+  - CollidesSubUnit
+  - BoundingBoxes
+  - TriggersIndoor
+  - NpcFloor
+  - Friction
+  - Material
+  - WalkParticle
+  - IsInvalid
+  - IsLiquid
+  - IsWater
+  - IsBurning
+  - IsSpikes
+  - IsWindow
+  - HasFacing
+  - ExtendsAction
+  - IsBouncy
+  - BounceVelocity
+  - IsPrickly
+  - PricklyVelocity
+  - IsSlide
+  - LightSource
+  - LightR
+  - LightG
+  - LightB
+properties:
+  ID:
+    description: The voxel ID. This is a 1-byte unsigned integer in world files.
+    type: integer
+    minimum: 0
+    maximum: 255
+  Name:
+    description: A human-readable name for this voxel. Not localized.
+    type: string
+  SortOrder:
+    description: The order this is displayed in in the world editor (not that we have access to the world editor).
+    type: integer
+  Visible:
+    description: Does this voxel render anything?
+    type: boolean
+  PrimitiveBuilder:
+    description: The ID of the renderer used to render this voxel. TODO - this is an enum, what are its values?
+    type: integer
+    minimum: 0
+  TexTopU:
+    description: |
+      The U of the UV of the start point of the top face texture.
+      The other UVs are determined by the primitive builder.
+    type: number
+  TexTopV:
+    description: |
+      The V of the UV of the start point of the top face texture.
+      The other UVs are determined by the primitive builder.
+    type: number
+  TexSideU:
+    description: |
+      The U of the UV of the start point of the side face texture.
+      The other UVs are determined by the primitive builder.
+    type: number
+  TexSideV:
+    description: |
+      The V of the UV of the start point of the side face texture.
+      The other UVs are determined by the primitive builder.
+    type: number
+  TexBotU:
+    description: |
+      The U of the UV of the start point of the bottom face texture.
+      The other UVs are determined by the primitive builder.
+    type: number
+  TexBotV:
+    description: |
+      The V of the UV of the start point of the bottom face texture.
+      The other UVs are determined by the primitive builder.
+    type: number
+  HasAlphaPixels:
+    description: Does this voxel render with opacity? Can you see through some pixels?
+    type: boolean
+  OccludesGeometry:
+    description: Does this voxel fully occlude geometry behind it?
+    type: boolean
+  OccludesLight:
+    description: Does this voxel fully block light behind it?
+    type: boolean
+  PartialLightReduction:
+    description: Does this voxel partially block light behind it? If so, how much?
+    type: integer
+    minimum: 0
+  GrowsOn:
+    description: |
+      The block this block 'grows on', or 0 if no such block.
+      (this does imply that no blocks can grow on air.)
+    type: integer
+    minimum: 0
+  MaxVariant:
+    description: How many variants exist for this voxel.
+    type: integer
+    minimum: 0
+    maximum: 255
+  Collides:
+    description: Does this block collide with entities?
+    type: boolean
+  CollidesSubUnit:
+    description: If this block collides, does it have a precise hitbox?
+    type: boolean
+  BoundingBoxes:
+    description: If `CollidesSubUnit` is `true`, list the bounding boxes here.
+    type: array
+    items:
+      description: A bounding box.
+      type: object
+      additionalProperties: false
+      required:
+        - XNeg
+        - YNeg
+        - ZNeg
+        - XPos
+        - YPos
+        - ZPos
+      properties:
+        XNeg:
+          description: The lower X bound.
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        YNeg:
+          description: The lower Y bound.
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        ZNeg:
+          description: The lower Z bound.
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        XPos:
+          description: The upper X bound.
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        YPos:
+          description: The upper Y bound.
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        ZPos:
+          description: The upper Z bound.
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+  TriggersIndoor:
+    description: Can this block count as "ceiling" for indoor camera calculation?
+    type: boolean
+  NpcFloor:
+    description: Is this considered floor when this voxel is an NPC?
+    type: boolean
+  Friction:
+    description: The friction you experience walking on this block.
+    type: number
+  Material:
+    description: The material of this voxel. Determines things like noises. TODO - this is an enum, what are its values?
+    type: integer
+    minimum: 0
+  WalkParticle:
+    description: The particles that appear when you walk on this voxel. 0 for no particles. TODO - this is an enum, what are its values?
+    type: integer
+    minimum: 0
+  IsInvalid:
+    description: Should this voxel never be used in play?
+    type: boolean
+  IsLiquid:
+    description: Is this a liquid?
+    type: boolean
+  IsWater:
+    description: Is this water?
+    type: boolean
+  IsBurning:
+    description: Does this reset the player's position? `true` means the reset uses the fire animation.
+    type: boolean
+  IsSpikes:
+    description: Does this reset the player's position? `true` means the reset uses the spikes animation.
+    type: boolean
+  IsWindow:
+    description: Is this considered a window?
+    type: boolean
+  HasFacing:
+    description: Is the facing of this voxel important?
+    type: boolean
+  ExtendsAction:
+    description: Does this extend actions?
+    type: boolean
+  IsBouncy:
+    description: Do you bounce when you step on this?
+    type: boolean
+  BounceVelocity:
+    description: If `IsBouncy`, how far do you bounce?
+    type: number
+  IsPrickly:
+    description: Do you get pushed off when you step on this?
+    type: boolean
+  PricklyVelocity:
+    description: If `IsPrickly`, how far do you get pushed off?
+    type: number
+  IsSlide:
+    description: Do you slide off of this block when you step on it?
+    type: boolean
+  LightSource:
+    description: Does this voxel emit light?
+    type: boolean
+  LightR:
+    description: If `LightSource`, the color of the light. Red channel.
+    type: integer
+    minimum: 0
+    maximum: 255
+  LightG:
+    description: If `LightSource`, the color of the light. Green channel.
+    type: integer
+    minimum: 0
+    maximum: 255
+  LightB:
+    description: If `LightSource`, the color of the light. Blue channel.
+    type: integer
+    minimum: 0
+    maximum: 255

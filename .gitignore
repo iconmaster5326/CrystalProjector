@@ -1,0 +1,5 @@
+/*.dat.json
+__pycache__/
+/entities/
+# /gen/
+/map.png

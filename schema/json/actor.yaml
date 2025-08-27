@@ -1,0 +1,56 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: actor
+title: actor
+description: |
+  A Crystal Project actor definition. This is... Probably unused?
+  This isn't about fake PCs you fight, because Dr. Cool Aids and friends aren't here.
+  This isn't about reusable NPCs; that's in `System.dat`.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - HPRating
+  - MPRating
+  - StrRating
+  - VitRating
+  - DexRating
+  - AgiRating
+  - MndRating
+  - SpiRating
+  - SpdRating
+  - LckRating
+properties:
+  ID:
+    type: integer
+  Name:
+    type: string
+  Comments:
+    type: string
+  Flavor:
+    type: "null"
+  Description:
+    type: "null"
+  HPRating:
+    type: integer
+  MPRating:
+    type: integer
+  StrRating:
+    type: integer
+  VitRating:
+    type: integer
+  DexRating:
+    type: integer
+  AgiRating:
+    type: integer
+  MndRating:
+    type: integer
+  SpiRating:
+    type: integer
+  SpdRating:
+    type: integer
+  LckRating:
+    type: integer

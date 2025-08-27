@@ -1,0 +1,405 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: ability
+title: ability
+description: |
+  A Crystal Project ability definition.
+  Abilities are both attacks and skills in battle,
+  and the result of using items in the field.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - TexturePath
+  - TextureIndex
+  - HideDamageFromDescription
+  - HideScopeFromDescription
+  - HideStatusesFromDescription
+  - HideModsFromDescription
+  - UsageAnimationID
+  - AnimationID
+  - JP
+  - HPCost
+  - MPCost
+  - APCost
+  - CTCost
+  - CDCost
+  - IsDefaultLocked
+  - IsSightLearned
+  - BattleDisabled
+  - FieldEnabled
+  - ScopeLocked
+  - Scope
+  - Target
+  - EnabledWeaponTypes
+  - EnabledUnarmed
+  - InvertEnabledTypesDisplay
+  - Attribute
+  - IsPAbil
+  - IsMAbil
+  - IsBasic
+  - PDefAsPAtk
+  - StrRate
+  - VitRate
+  - DexRate
+  - AgiRate
+  - MndRate
+  - SpiRate
+  - SpdRate
+  - LckRate
+  - ScalingPAtkRate
+  - ScalingPower
+  - BasePAtkRate
+  - BasePower
+  - BaseAcc
+  - BaseCritChance
+  - BaseCritDmg
+  - BaseVar
+  - PDefRate
+  - MDefRate
+  - Element
+  - TargetStatuses
+  - UserStatuses
+  - AbilityMods
+properties:
+  ID:
+    description: The unique ID of this ability.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this ability. Displayed to users. May be localized.
+    type: string
+  Comments:
+    description: Any comments for developers. Does not appear in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Seemingly unused anywhere... Except for with Milk, where it is an empty string.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Seemingly unused in-game, despite many entries being filled in with localizable text.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: The order this is displayed in in the developer's database editor (not that we have access to it).
+    type: integer
+  TexturePath:
+    description: The name of the texture in `Icon.dat` to use.
+    oneOf:
+      - type: "null"
+      - type: string
+  TextureIndex:
+    description: The index of the texture in `Icon.dat` to use. Textures are TODOxTODO pixels, and there are TODOxTODO per sheet.
+    oneOf:
+      - type: "null"
+      - type: integer
+  HideDamageFromDescription:
+    description: Do we hide the damage calculation from the players when previewing?
+    type: boolean
+  HideScopeFromDescription:
+    description: Do we hide the targets from the players when previewing?
+    type: boolean
+  HideStatusesFromDescription:
+    description: Do we hide the statuses inflicted from the players when previewing?
+    type: boolean
+  HideModsFromDescription:
+    description: Do we hide the modifiers from the players when previewing?
+    type: boolean
+  UsageAnimationID:
+    description: |
+      The ID of an animation.
+      Only used with Doublecast, and it leads to a no-op animation.
+      TODO - What does this do?
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  AnimationID:
+    description: The ID of an animation to use when activating the ability.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  JP:
+    description: TODO - what are JPs?
+    type: integer
+    minimum: 0
+  HPCost:
+    description: How much HP this ability costs, in % of maximum HP.
+    type: integer
+    minimum: 0
+    maximum: 100
+  MPCost:
+    description: How much MP this ability costs.
+    type: integer
+    minimum: 0
+  APCost:
+    description: How much AP this ability costs.
+    type: integer
+    minimum: 0
+  CTCost:
+    description: How much this ability delays you by.
+    type: integer
+    minimum: 0
+  CDCost:
+    description: How long before you can use this ability again.
+    type: integer
+    minimum: 0
+  IsDefaultLocked:
+    description: Is this ability unavailable at the start of battles?
+    type: boolean
+  IsSightLearned:
+    description: Is this ability learnable via the Scholar job?
+    type: boolean
+  BattleDisabled:
+    description: Is this ability always disabled in battle?
+    type: boolean
+  FieldEnabled:
+    description: Is this ability always enabled in the field?
+    type: boolean
+  ScopeLocked:
+    description: Are the targets of the ability unselectable by the user?
+    type: boolean
+  Scope:
+    description: The number of targets of the ability.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Single
+      - const: 1
+        title: Multiple
+      - const: 2
+        title: Everything
+  Target:
+    description: The allowable targets of the ability.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Enemy
+      - const: 1
+        title: Ally
+      - const: 2
+        title: Self Only
+      - const: 3
+        title: Other Only
+      - const: 4
+        title: Dead Ally
+      - const: 5
+        title: Dead Or Alive
+      - const: 6
+        title: Dead Self Only
+  EnabledWeaponTypes:
+    description: |
+      What weapon types do you have to have to activate this ability?
+      An empty array means this can be used with any weapon.
+    type: array
+    items:
+      description: A weapon type.
+      type: integer
+      oneOf:
+        - const: 0
+          title: Sword
+        - const: 1
+          title: Axe
+        - const: 2
+          title: Dagger
+        - const: 3
+          title: Rapier
+        - const: 4
+          title: Katana
+        - const: 5
+          title: Spear
+        - const: 6
+          title: Scythe
+        - const: 7
+          title: Bow
+        - const: 8
+          title: Staff
+        - const: 9
+          title: Wand
+        - const: 10
+          title: Book
+        - const: 11
+          title: Shield
+        - const: 12
+          title: Heavy Head
+        - const: 13
+          title: Medium Head
+        - const: 14
+          title: Light Head
+        - const: 15
+          title: Heavy Body
+        - const: 16
+          title: Medium Body
+        - const: 17
+          title: Light Body
+        - const: 18
+          title: Accessory
+  EnabledUnarmed:
+    description: Can you only use this while unarmed (or have the weapon types above?)
+    type: boolean
+  InvertEnabledTypesDisplay:
+    description: If true, display what you CAN'T use this ability with, rather than what you must use it with.
+    type: boolean
+  Attribute:
+    description: What type of damage this ability deals/heals.
+    type: integer
+    oneOf:
+      - const: 0
+        title: HP
+      - const: 1
+        title: MP
+      - const: 2
+        title: AP
+  IsPAbil:
+    description: Is this ability physical in nature?
+    type: boolean
+  IsMAbil:
+    description: Is this ability magical in nature?
+    type: boolean
+  IsBasic:
+    description: Is this ability a basic action?
+    type: boolean
+  PDefAsPAtk:
+    description: TODO - seemingly unused.
+    type: boolean
+  StrRate:
+    description: The Strength % to use for the damage/healing calculation.
+    type: integer
+  VitRate:
+    description: The Vitality % to use for the damage/healing calculation.
+    type: integer
+  DexRate:
+    description: The Dexterity % to use for the damage/healing calculation.
+    type: integer
+  AgiRate:
+    description: The Agility % to use for the damage/healing calculation.
+    type: integer
+  MndRate:
+    description: The Mind % to use for the damage/healing calculation.
+    type: integer
+  SpiRate:
+    description: The Spirit % to use for the damage/healing calculation.
+    type: integer
+  SpdRate:
+    description: The Speed % to use for the damage/healing calculation.
+    type: integer
+  LckRate:
+    description: The Luck % to use for the damage/healing calculation.
+    type: integer
+  ScalingPAtkRate:
+    description: The % your hit rate is affected by your level.
+    oneOf:
+      - type: "null"
+      - type: integer
+  ScalingPower:
+    description: The % your power is affected by your level.
+    oneOf:
+      - type: "null"
+      - type: integer
+  BasePAtkRate:
+    description: The ability's hit rate.
+    type: integer
+  BasePower:
+    description: The ability's base strength of its healing/damaging effect.
+    type: integer
+  BaseAcc:
+    description: The ability's flat increase to hit.
+    type: integer
+  BaseCritChance:
+    description: The ability's flat increase to crit.
+    type: integer
+  BaseCritDmg:
+    description: The ability's percentage increase to crit damage.
+    type: integer
+  BaseVar:
+    description: The ability's percent variance for the damage roll.
+    type: integer
+  PDefRate:
+    description: The amount of physical defence penetration.
+    type: integer
+  MDefRate:
+    description: The amount of magical defence penetration.
+    type: integer
+  Element:
+    description: The element of this ability, if any.
+    oneOf:
+      - type: "null"
+      - type: integer
+        oneOf:
+          - const: 0
+            title: Fire
+          - const: 1
+            title: Ice
+          - const: 2
+            title: Wind
+          - const: 3
+            title: Earth
+          - const: 4
+            title: Thunder
+          - const: 5
+            title: Water
+  TargetStatuses:
+    description: What status effects to apply/remove to/from the targets.
+    type: array
+    items:
+      $ref: "#/$defs/status_proc"
+  UserStatuses:
+    description: What status effects to apply/remove to/from the user.
+    type: array
+    items:
+      $ref: "#/$defs/status_proc"
+  AbilityMods:
+    description: Any ability modifiers and other effects this might have.
+    type: array
+    items:
+      description: An ability modifier.
+      type: object
+      additionalProperties: false
+      required:
+        - Tag
+        - Value1
+        - Value2
+      properties:
+        Tag:
+          description: The type of ability modifier this is. TODO - there's a lot in this enum
+          type: integer
+        Value1:
+          description: The first parameter to the ability mod, if the type of ability mod accepts such a parameter, and 0 otherwise.
+          type: integer
+        Value2:
+          description: The secpnd parameter to the ability mod, if the type of ability mod accepts such a parameter, and 0 otherwise.
+          type: integer
+$defs:
+  status_proc:
+    description: A status effect applied/removed to/from someone.
+    type: object
+    additionalProperties: false
+    required:
+      - StatusID
+      - Chance
+      - Count
+    properties:
+      StatusID:
+        description: The ID of the status effect.
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      Chance:
+        description: The percent chance to apply/remove the status effect.
+        minimum: 0
+        maximum: 100
+      Count:
+        description: The number of stacks of the effect to apply, or if negative, remove.
+        type: integer
