@@ -38,7 +38,7 @@ class Database(typing.NamedTuple):
         result = io.BytesIO()
         for b in db.database:
             result.write((255 - b).to_bytes(1, 'little'))
-        return Database(db.version, json.loads(result.getvalue()))
+        return Database(db.version, json.loads(str(result.getvalue(), encoding="UTF-8")))
 
 
 def load_abilities(infile: typing.BinaryIO) -> typing.Dict[int, Ability]:
@@ -86,13 +86,25 @@ if __name__ == "__main__":
     def copy_over_db(filename: str):
         dbfile = open(f"{root}/{filename}.dat", "rb")
         raw_json = Database.load(dbfile).database
-        with open(f"{filename}.dat.json", "w", encoding="UTF-8") as outfile:
-            json.dump(raw_json, outfile)
+        with open(f"temp/{filename}.dat.json", "w", encoding="UTF-8") as outfile:
+            json.dump(raw_json, outfile, indent=2)
     
     test_db("ability", load_abilities)
     test_db("actor", load_actors)
-    copy_over_db("animation")
+    # copy_over_db("animation")
     test_db("biome", load_biomes)
-    copy_over_db("difficulty")
+    # copy_over_db("difficulty")
+    # copy_over_db("equipment")
+    # copy_over_db("gender")
+    # copy_over_db("item")
+    # copy_over_db("job")
+    # # copy_over_db("loading") # TODO: this has its own format!
+    # copy_over_db("monster")
+    # copy_over_db("passive")
+    # copy_over_db("patch")
+    # copy_over_db("recipe")
+    # copy_over_db("spark")
+    # copy_over_db("status")
+    # copy_over_db("system")
+    # copy_over_db("troop")
     test_db("voxel", load_voxels)
-    
