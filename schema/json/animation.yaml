@@ -1,0 +1,245 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: animation
+title: animation
+description: |
+  A Crystal Project animation definition.
+  These play in combat when you execute actions.
+  Consists of a series of frames that play in sequence,
+  along with flash and sound information.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Images
+  - Frames
+  - Position
+  - FPS
+  - MirrorForMonsterUse
+  - Flashes
+  - Sounds
+properties:
+  ID:
+    description: The ID of this animation.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The name of this animation. Does not appear in-game, so does not need localized.
+    type: string
+  Images:
+    description: The images that are used in this animation.
+    type: array
+    items:
+      description: |
+        A image used in the animation. Textures are split up into one or more _cells_.
+        Animation cells are packed back to back horizontally, and then vertically.
+        
+        For example, an image with `CellCountX` of 5, a `CellWidth` of 100,
+        and a `CellHeight` of 100, and is a 500x300 file,
+        will have 15 animation cells.
+      type: object
+      additionalProperties: false
+      required:
+        - Path
+        - Hue
+        - CellWidth
+        - CellHeight
+        - CellCountX
+      properties:
+        Path:
+          description: The texture's pack, followed by a slash, followed by the texture's name.
+          oneOf:
+            - type: "null"
+            - type: string
+        Hue:
+          description: Any hue shifting that occurs with this texture.
+          type: integer
+        CellWidth:
+          description: The width of each cell in the texture, in pixels.
+          type: integer
+          minimum: 0
+        CellHeight:
+          description: The height of each cell in the texture, in pixels.
+          type: integer
+          minimum: 0
+        CellCountX:
+          description: |
+            The number of animation cells in one row of this texture.
+            The image's total height determines how many total cells there are.
+          type: integer
+          minimum: 0
+  Frames:
+    description: The frames of this animation.
+    type: array
+    items:
+      title: Frame
+      description: A frame of the animation.
+      type: array
+      items:
+        title: Frame Image
+        description: An image displayed during this frame of the animation.
+        type: object
+        additionalProperties: false
+        required:
+          - TextureIndex
+          - Pattern
+          - "X"
+          - "Y"
+          - Scale
+          - Mirror
+          - Rotation
+          - Opacity
+          - Blend
+          - Interpolate
+        properties:
+          TextureIndex:
+            description: The index into `Images` to use. A texture.
+            type: integer
+            minimum: 0
+          Pattern:
+            description: The animation cell to use.
+            type: integer
+            minimum: 0
+          "X":
+            description: The X offset from the anchor to display this animation cell.
+            type: integer
+          "Y":
+            description: The Y offset from the anchor to display this animation cell.
+            type: integer
+          Scale:
+            description: The scaling factor to apply to the animation cell. 100 is default.
+            type: integer
+          Mirror:
+            description: Mirror the animation cell along the X axis?
+            type: boolean
+          Rotation:
+            description: The rotation to apply to the animation cell, in degrees.
+            type: integer
+          Opacity:
+            description: The opacity of the animation cell. 0 (default) to 255 (invisible).
+            type: integer
+            minimum: 0
+            maximum: 255
+          Blend:
+            description: The opacity blending mode for this animation cell.
+            type: integer
+            oneOf:
+              - const: 0
+                title: Normal
+              - const: 1
+                title: Additive
+              - const: 2
+                title: Multiply
+              - const: 3
+                title: Screen
+          Interpolate:
+            description: Interpolate these values between this frame and the next?
+            type: boolean
+  Position:
+    description: The alignment of this animation relative to the target.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Head
+      - const: 1
+        title: Center
+      - const: 2
+        title: Feet
+      - const: 3
+        title: Screen
+  FPS:
+    description: The frames per second the animation plays at.
+    type: integer
+  MirrorForMonsterUse:
+    description: Should this animation play flipped along the X axis if used on an enemy as opposed to a player?
+    type: boolean
+  Flashes:
+    description: Sometimes the target flashes a color. These control how and when.
+    type: array
+    items:
+      description: A target flash effect.
+      type: object
+      additionalProperties: false
+      required:
+        - Frame
+        - Duration
+        - Color
+        - Scope
+      properties:
+        Frame:
+          description: The frame at which this flash occurs.
+          type: integer
+          minimum: 0
+        Duration:
+          description: How long this flash lasts.
+          type: integer
+          minimum: 0
+        Color:
+          description: The color of this flash.
+          type: object
+          additionalProperties: false
+          required: [R, G, B, A]
+          properties:
+            R:
+              description: The red channel.
+              type: number
+              minimum: 0
+              maximum: 1
+            G:
+              description: The green channel.
+              type: number
+              minimum: 0
+              maximum: 1
+            B:
+              description: The blue channel.
+              type: number
+              minimum: 0
+              maximum: 1
+            A:
+              description: The alpha channel.
+              type: number
+              minimum: 0
+              maximum: 1
+        Scope:
+          description: Who the flash applies to.
+          type: integer
+          oneOf:
+            - const: 0
+              title: None
+            - const: 1
+              title: Target
+            - const: 2
+              title: Screen
+            - const: 3
+              title: Hide Target
+  Sounds:
+    description: Sometimes sounds play during an animation. These control how and when.
+    type: array
+    items:
+      description: A sound effect.
+      type: object
+      additionalProperties: false
+      required:
+        - Frame
+        - Name
+        - Volume
+        - Pitch
+        - Pan
+      properties:
+        Frame:
+          description: The frame at which this sound starts playing.
+          type: integer
+          minimum: 0
+        Name:
+          description: The name of this sound effect, as appearing in `se.dat`.
+          type: string
+        Volume:
+          description: The volume of the sound effect. A percentage, default 100.
+          type: integer
+        Pitch:
+          description: The pitch shifting of the sound effect.
+          type: integer
+        Pan:
+          description: The pan shifting of the sound effect.
+          type: integer

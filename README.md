@@ -3,7 +3,7 @@
 This is a library for manipulating data structures in the video game [Crystal Project](https://store.steampowered.com/app/1637730/Crystal_Project/). This currently can read:
 
 - World files (support for reading entities is WIP)
-- Some database files (abilities, actors, biomes, loading, voxels)
+- Some database files (abilities to biomes, loading, voxels)
 - Texture packs
 
 This will hopefully soon be able to modify and write out the above, as well as read additional things, like save files and mods.
