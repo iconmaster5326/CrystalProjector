@@ -12,6 +12,7 @@ from gen.difficulty import Difficulty
 from gen.equipment import Equipment
 from gen.gender import Gender
 from gen.item import Item
+from gen.job import Job
 from gen.voxel import Voxel
 
 
@@ -79,6 +80,10 @@ def load_items(infile: typing.BinaryIO) -> typing.Dict[int, Item]:
     return {json["ID"]: Item.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_jobs(infile: typing.BinaryIO) -> typing.Dict[int, Job]:
+    return {json["ID"]: Job.from_dict(json) for json in Database.load(infile).database if json}
+
+
 def load_loading(infile: typing.BinaryIO) -> typing.List[str]:
     return [s.value for s in RawLoading.from_io(infile).strings]
 
@@ -127,7 +132,7 @@ if __name__ == "__main__":
     test_db("equipment", load_equipment)
     test_db("gender", load_genders)
     test_db("item", load_items)
-    # copy_over_db("job")
+    test_db("job", load_jobs)
 
     print(f"=== LOADING ===")
     with open(f"{root}/loading.dat", "rb") as stream:

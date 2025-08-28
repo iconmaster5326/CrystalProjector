@@ -1,0 +1,362 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: job
+title: job
+description: |
+  A Crystal Project job definition.
+type: object
+additionalProperties: false
+required:
+- ID
+- Name
+- Comments
+- Flavor
+- Description
+- SortOrder
+- LocationBiomeID
+- ActorTexturePathM
+- ActorTexturePathF
+- MemberTexturePathM
+- MemberTexturePathF
+- MemberTexturePathMAlt
+- MemberTexturePathFAlt
+- IconTexturePath
+- IconTextureIndex
+- IsStartingJob
+- IsUnselectableJob
+- IsUnselectableSubJob
+- AbilitiesName
+- Color
+- CrystalName
+- WeaponHoldTypeM
+- WeaponHoldTypeF
+- PreferredHandAType
+- PreferredHeadType
+- PreferredBodyType
+- HPRating
+- MPRating
+- StrRating
+- VitRating
+- DexRating
+- AgiRating
+- MndRating
+- SpiRating
+- SpdRating
+- LckRating
+- EquipmentTypes
+- AbilityIDs
+- PassiveIDs
+- LearnTree
+properties:
+  ID:
+    description: The ID of this job.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this job. Localizable.
+    type: string
+  Comments:
+    description: A comment for game and mod developers. Not shown in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Seemingly unused.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Text to help the user select an initial job at the start of the game. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: The order to sort this in, in places like the job select screen.
+    type: integer
+  LocationBiomeID:
+    description: |
+      The ID of the biome this job's crystal appears in.
+      You can lie about this if you'd like.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 255
+  ActorTexturePathM:
+    description: |
+      The texture to use for the masculine-presenting player with this job, when outside of battle.
+      The format is as follows: The pack's name, a slash, then the texture's name.
+    type: string
+  ActorTexturePathF:
+    description: |
+      The texture to use for the feminine-presenting player with this job, when outside of battle.
+      The format is as follows: The pack's name, a slash, then the texture's name.
+    type: string
+  MemberTexturePathM:
+    description: |
+      The texture to use for the masculine-presenting player with this job, when in battle.
+      The format is as follows: The pack's name, a slash, then the texture's name.
+    type: string
+  MemberTexturePathF:
+    description: |
+      The texture to use for the feminine-presenting player with this job, when in battle.
+      The format is as follows: The pack's name, a slash, then the texture's name.
+    type: string
+  MemberTexturePathMAlt:
+    description: |
+      Like `MemberTexturePathM`, but sometimes different.
+      Used for "fake PC" fights (Astley, etc).
+    type: string
+  MemberTexturePathFAlt:
+    description: |
+      Like `MemberTexturePathF`, but sometimes different.
+      Used for "fake PC" fights (Astley, etc).
+    type: string
+  IconTexturePath:
+    description: |
+      The texture to use for the job's ability menu icon.
+      The format is as follows: The pack's name, a slash, then the texture's name.
+    type: string
+  IconTextureIndex:
+    description: |
+      The index into the texture for the icon.
+      Item icons are 18x18 pixels,
+      and go from left to right and then top to bottom.
+    type: integer
+    minimum: 0
+  IsStartingJob:
+    description: Is this job one you unlock at the start of the game, without a crystal?
+    type: boolean
+  IsUnselectableJob:
+    description: Can you not select this job in the job menu?
+    type: boolean
+  IsUnselectableSubJob:
+    description: Can you not select this job in the subjob menu?
+    type: boolean
+  AbilitiesName:
+    description: The name of the abilities menu for this job. Localizable.
+    type: string
+  Color:
+    description: The color associated with this job. Used for recoloring crystals.
+    type: object
+    additionalProperties: false
+    required: [R, G, B]
+    properties:
+      R:
+        description: The red channel.
+        type: number
+        minimum: 0.0
+        maximum: 1.0
+      G:
+        description: The green channel.
+        type: number
+        minimum: 0.0
+        maximum: 1.0
+      B:
+        description: The blue channel.
+        type: number
+        minimum: 0.0
+        maximum: 1.0
+  CrystalName:
+    description: The name of the color of this job's crystal. Localizable.
+    type: string
+  WeaponHoldTypeM:
+    description: The hold type for masculine-presenting players.
+    $ref: "#/$defs/HoldType"
+  WeaponHoldTypeF:
+    description: The hold type for feminine-presenting players.
+    $ref: "#/$defs/HoldType"
+  PreferredHandAType:
+    description: The prefered category of weapons, among the types it can equip.
+    $ref: "#/$defs/EquipmentType"
+  PreferredHeadType:
+    description: The prefered category of head armor, among the types it can equip.
+    $ref: "#/$defs/EquipmentType"
+  PreferredBodyType:
+    description: The prefered category of body armor, among the types it can equip.
+    $ref: "#/$defs/EquipmentType"
+  HPRating:
+    description: This job's HP growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  MPRating:
+    description: This job's MP growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  StrRating:
+    description: This job's Strength growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  VitRating:
+    description: This job's Vitality growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  DexRating:
+    description: This job's Dexterity growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  AgiRating:
+    description: This job's Agility growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  MndRating:
+    description: This job's Mind growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  SpiRating:
+    description: This job's Spirit growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  SpdRating:
+    description: This job's Speed growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  LckRating:
+    description: This job's Luck growth rate. A percentage from 0 to 100. 10 points is half a star.
+    type: integer
+    minimum: 10
+    maximum: 100
+    multipleOf: 10
+  EquipmentTypes:
+    description: The types of weapons and armor this job can equip.
+    type: array
+    items:
+      $ref: "#/$defs/EquipmentType"
+  AbilityIDs:
+    description: The IDs of the abilities this job can learn.
+    type: array
+    items:
+      description: An ability ID.
+      type: integer
+      minimum: 0
+      maximum: 4294967295
+  PassiveIDs:
+    description: |
+      The IDs of the innate passives and the learned passives of this job.
+      Exactly one passive here should be innate, and it should be the first one.
+    type: array
+    items:
+      description: A passive ID.
+      type: integer
+      minimum: 0
+      maximum: 4294967295
+  LearnTree:
+    description: The job's ability/passive tree. 4x6 in size.
+    type: array
+    items:
+      title: Learn Tree Column
+      description: A column in the learn tree.
+      type: array
+      items:
+        title: Learn Tree Node
+        description: A node in the learn tree.
+        type: object
+        additionalProperties: false
+        required:
+          - NodeType
+          - DataID
+          - PrereqLeft
+          - PrereqMiddle
+          - PrereqRight
+        properties:
+          NodeType:
+            description: The type of this node.
+            type: integer
+            oneOf:
+              - const: 0
+                title: Blank
+                description: Nothing.
+              - const: 1
+                title: Arrow
+                description: An extension of an arrow to span multiple nodes.
+              - const: 2
+                title: Ability
+                description: An ability.
+              - const: 3
+                title: Passive
+                description: A passive.
+          DataID:
+            description: The ID of the ability (if `NodeType` is `Ability`) or passive (if `NodeType` is `Passive`).
+            type: integer
+            minimum: 0
+            maximum: 4294967295
+          PrereqLeft:
+            description: Is the node to the upper-left a prerequisite to this node?
+            type: boolean
+          PrereqMiddle:
+            description: Is the node above a prerequisite to this node?
+            type: boolean
+          PrereqRight:
+            description: Is the node to the upper-right a prerequisite to this node?
+            type: boolean
+$defs:
+  HoldType:
+    description: The category of offset at which the weapon is drawn relative to the battle sprite.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Standard
+      - const: 1
+        title: Low
+      - const: 2
+        title: High
+  EquipmentType:
+    description: A category of equipment.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Sword
+      - const: 1
+        title: Axe
+      - const: 2
+        title: Dagger
+      - const: 3
+        title: Rapier
+      - const: 4
+        title: Katana
+      - const: 5
+        title: Spear
+      - const: 6
+        title: Scythe
+      - const: 7
+        title: Bow
+      - const: 8
+        title: Staff
+      - const: 9
+        title: Wand
+      - const: 10
+        title: Book
+      - const: 11
+        title: Shield
+      - const: 12
+        title: Heavy Head
+      - const: 13
+        title: Medium Head
+      - const: 14
+        title: Light Head
+      - const: 15
+        title: Heavy Body
+      - const: 16
+        title: Medium Body
+      - const: 17
+        title: Light Body
+      - const: 18
+        title: Accessory
