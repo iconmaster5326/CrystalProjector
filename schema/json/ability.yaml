@@ -90,7 +90,7 @@ properties:
       - type: "null"
       - type: string
   SortOrder:
-    description: The order this is displayed in in the developer's database editor (not that we have access to it).
+    description: The order this is displayed in records.
     type: integer
   TexturePath:
     description: The name of the texture in `Icon.dat` to use.
@@ -132,7 +132,7 @@ properties:
         minimum: 0
         maximum: 4294967295
   JP:
-    description: TODO - what are JPs?
+    description: The JP cost to unlock this ability.
     type: integer
     minimum: 0
   HPCost:

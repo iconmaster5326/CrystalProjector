@@ -14,6 +14,7 @@ from gen.gender import Gender
 from gen.item import Item
 from gen.job import Job
 from gen.monster import Monster
+from gen.passive import Passive
 from gen.voxel import Voxel
 
 
@@ -85,12 +86,16 @@ def load_jobs(infile: typing.BinaryIO) -> typing.Dict[int, Job]:
     return {json["ID"]: Job.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_loading(infile: typing.BinaryIO) -> typing.List[str]:
+    return [s.value for s in RawLoading.from_io(infile).strings]
+
+
 def load_monsters(infile: typing.BinaryIO) -> typing.Dict[int, Monster]:
     return {json["ID"]: Monster.from_dict(json) for json in Database.load(infile).database if json}
 
 
-def load_loading(infile: typing.BinaryIO) -> typing.List[str]:
-    return [s.value for s in RawLoading.from_io(infile).strings]
+def load_passives(infile: typing.BinaryIO) -> typing.Dict[int, Passive]:
+    return {json["ID"]: Passive.from_dict(json) for json in Database.load(infile).database if json}
 
 
 def load_voxels(infile: typing.BinaryIO) -> typing.Dict[int, Voxel]:
@@ -146,7 +151,7 @@ if __name__ == "__main__":
             print(f"\t{message}")
 
     test_db("monster", load_monsters)
-    # copy_over_db("passive")
+    test_db("passive", load_passives)
     # copy_over_db("patch")
     # copy_over_db("recipe")
     # copy_over_db("spark")

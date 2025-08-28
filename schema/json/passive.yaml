@@ -1,0 +1,90 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: passive
+title: passive
+description: |
+  A Crystal Project passive ability definition.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - HideStatModsFromDescription
+  - SortOrder
+  - JP
+  - PP
+  - IsInnate
+  - IsLearnable
+  - IsDefaultLocked
+  - StatMods
+properties:
+  ID:
+    description: The unique ID of this ability.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this ability. Displayed to users. Localizable.
+    type: string
+  Comments:
+    description: Any comments for developers. Does not appear in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Appears after the statistical information in the ability text. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Appears after the flavor in the ability text. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  HideStatModsFromDescription:
+    description: Do we hide the mechanical changes of this ability from the player?
+    type: boolean
+  SortOrder:
+    description: The order this is displayed in the records.
+    type: integer
+  JP:
+    description: The JP cost to unlock this ability.
+    type: integer
+    minimum: 0
+  PP:
+    description: The number of passive points you need to equip this passive.
+    type: integer
+    minimum: 0
+  IsInnate:
+    description: Is this ability the innate ability of a job?
+    type: boolean
+  IsLearnable:
+    description: Is this ability learnable by the player?
+    type: boolean
+  IsDefaultLocked:
+    description: Is this ability locked by default, needing unlocked by code?
+    type: boolean
+  StatMods:
+    description: Any stat modifiers this passive ability grants.
+    type: array
+    items:
+      description: A stat modifier.
+      type: object
+      additionalProperties: false
+      required: [Tag, Value1, Value2, Value3]
+      properties:
+        Tag:
+          description: The stat modifier type. TODO - this is an enum with a lot of values!
+          type: integer
+          minimum: 0
+        Value1:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value2:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value3:
+          description: A value whose semantics are determined by the tag.
+          type: integer

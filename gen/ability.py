@@ -163,7 +163,7 @@ class Ability:
     """How much this ability delays you by."""
 
     description: Optional[str]
-    """Seemingly unused in-game, despite many entries being filled in with localizable text."""
+    """Appears after the flavor in the ability text. Localizable."""
 
     dex_rate: int
     """The Dexterity % to use for the damage/healing calculation."""
@@ -182,7 +182,7 @@ class Ability:
     """Is this ability always enabled in the field?"""
 
     flavor: Optional[str]
-    """Seemingly unused anywhere... Except for with Milk, where it is an empty string."""
+    """Appears after the statistical information in the ability text. Localizable."""
 
     hide_damage_from_description: bool
     """Do we hide the damage calculation from the players when previewing?"""
@@ -222,7 +222,7 @@ class Ability:
     """Is this ability learnable via the Scholar job?"""
 
     jp: int
-    """TODO - what are JPs?"""
+    """The JP cost to unlock this ability."""
 
     lck_rate: int
     """The Luck % to use for the damage/healing calculation."""
@@ -237,7 +237,7 @@ class Ability:
     """How much MP this ability costs."""
 
     name: str
-    """The English name of this ability. Displayed to users. May be localized."""
+    """The English name of this ability. Displayed to users.Localizable."""
 
     p_def_as_p_atk: bool
     """TODO - seemingly unused."""
@@ -258,9 +258,8 @@ class Ability:
     """Are the targets of the ability unselectable by the user?"""
 
     sort_order: int
-    """The order this is displayed in in the developer's database editor (not that we have
-    access to it).
-    """
+    """The order this is displayed in records."""
+
     spd_rate: int
     """The Speed % to use for the damage/healing calculation."""
 
