@@ -1,0 +1,141 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: item
+title: item
+description: |
+  A Crystal Project item definition.
+  This does NOT cover equipment items, those are a separate category!
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - ScaledOrder
+  - LocationBiomeID
+  - TexturePath
+  - TextureIndex
+  - Cost
+  - MaxCapacity
+  - IsConsumable
+  - IsCombat
+  - IsSellable
+  - AutoLostAndFound
+  - AbilityID
+  - MapForBiomeID
+  - IncreaseMaxCapacityForItemID
+  - IncreaseMaxCapacityBy
+  - SpecialBonus
+properties:
+  ID:
+    description: The ID of this item.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this item. Localizable.
+    type: string
+  Comments:
+    description: A comment for game and mod developers. Not shown in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Any additional text shown to the player after its effects. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Appears after the flavor in the item text. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: The order to sort this in, in places like the inventory and the records.
+    type: integer
+  ScaledOrder:
+    description: The order to sort this in, when the "Approx. Power" sorting option is selected.
+    type: integer
+  LocationBiomeID:
+    description: |
+      The ID of the biome this item first appears in.
+      You can lie about this if you'd like.
+      Used for the records view.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 255
+  TexturePath:
+    description: The item icon. The texture pack, followed by a slash, followed by the texture name.
+    type: string
+  TextureIndex:
+    description: |
+      The index into the texture for the icon.
+      Item icons are 18x18 pixels,
+      and go from left to right and then top to bottom.
+    type: integer
+    minimum: 0
+  Cost:
+    description: The cost of the item, in copper.
+    type: integer
+    minimum: 0
+  MaxCapacity:
+    description: The maximum amount of this item you can hold (without pouches). 0 means unlimited.
+    type: integer
+    minimum: 0
+  IsConsumable:
+    description: Is this item consumed when used?
+    type: boolean
+  IsCombat:
+    description: Is this item usable in combat?
+    type: boolean
+  IsSellable:
+    description: Can this item be sold?
+    type: boolean
+  AutoLostAndFound:
+    description: Does this item go to the lost and found store automatically?
+    type: boolean
+  AbilityID:
+    description: The ID of the ability that is used when you use this item.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  MapForBiomeID:
+    description: The ID of the biome of the map this item unlocks whil you hold it.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 255
+  IncreaseMaxCapacityForItemID:
+    description: The ID of the the item that this item is a pouch for.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  IncreaseMaxCapacityBy:
+    description: The amount of that this pouch increases the maxmimum count by.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+  SpecialBonus:
+    description: |
+      The special property this item has, if any.
+      Used for Skeleton Key, Babel Quintar, and Treasure Finder.
+    type: integer
+    oneOf:
+      - const: 0
+        title: None
+      - const: 1
+        title: Unlock As Any Key
+      - const: 2
+        title: Understand Quintar
+      - const: 4
+        title: See Treasure Chests

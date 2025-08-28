@@ -72,7 +72,7 @@ properties:
     minimum: 0
     maximum: 4294967295
   Name:
-    description: The English name of this ability. Displayed to users. May be localized.
+    description: The English name of this ability. Displayed to users.Localizable.
     type: string
   Comments:
     description: Any comments for developers. Does not appear in game.
@@ -80,12 +80,12 @@ properties:
       - type: "null"
       - type: string
   Flavor:
-    description: Seemingly unused anywhere... Except for with Milk, where it is an empty string.
+    description: Appears after the statistical information in the ability text. Localizable.
     oneOf:
       - type: "null"
       - type: string
   Description:
-    description: Seemingly unused in-game, despite many entries being filled in with localizable text.
+    description: Appears after the flavor in the ability text. Localizable.
     oneOf:
       - type: "null"
       - type: string

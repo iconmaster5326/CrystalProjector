@@ -9,6 +9,9 @@ from gen.actor import Actor
 from gen.animation import Animation
 from gen.biome import Biome
 from gen.difficulty import Difficulty
+from gen.equipment import Equipment
+from gen.gender import Gender
+from gen.item import Item
 from gen.voxel import Voxel
 
 
@@ -64,6 +67,18 @@ def load_difficulties(infile: typing.BinaryIO) -> typing.Dict[int, Difficulty]:
     return {json["ID"]: Difficulty.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_equipment(infile: typing.BinaryIO) -> typing.Dict[int, Equipment]:
+    return {json["ID"]: Equipment.from_dict(json) for json in Database.load(infile).database if json}
+
+
+def load_genders(infile: typing.BinaryIO) -> typing.Dict[int, Gender]:
+    return {json["ID"]: Gender.from_dict(json) for json in Database.load(infile).database if json}
+
+
+def load_items(infile: typing.BinaryIO) -> typing.Dict[int, Item]:
+    return {json["ID"]: Item.from_dict(json) for json in Database.load(infile).database if json}
+
+
 def load_loading(infile: typing.BinaryIO) -> typing.List[str]:
     return [s.value for s in RawLoading.from_io(infile).strings]
 
@@ -109,9 +124,9 @@ if __name__ == "__main__":
     test_db("animation", load_animations)
     test_db("biome", load_biomes)
     test_db("difficulty", load_difficulties)
-    # copy_over_db("equipment")
-    # copy_over_db("gender")
-    # copy_over_db("item")
+    test_db("equipment", load_equipment)
+    test_db("gender", load_genders)
+    test_db("item", load_items)
     # copy_over_db("job")
 
     print(f"=== LOADING ===")

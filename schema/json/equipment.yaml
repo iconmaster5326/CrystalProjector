@@ -1,0 +1,164 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: equipment
+title: equipment
+description: |
+  A Crystal Project equipment definition.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - HideStatModsFromDescription
+  - SortOrder
+  - ScaledOrder
+  - TexturePath
+  - TextureIndex
+  - Level
+  - NoAutoCost
+  - NoAutoStats
+  - Cost
+  - MaxCapacity
+  - EquipmentType
+  - IsTwoHanded
+  - IsOneOnly
+  - PreventAutoEquip
+  - StatMods
+properties:
+  ID:
+    description: The ID of this equipment.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this equipment. Localizable.
+    type: string
+  Comments:
+    description: A comment for game and mod developers. Not shown in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Any additional text shown to the player after its effects. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Appears after the flavor in the item text. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  HideStatModsFromDescription:
+    description: Do we hide the exact mechanical effects from the players?
+    type: boolean
+  SortOrder:
+    description: The order to sort this in, in places like the inventory and the records.
+    type: integer
+  ScaledOrder:
+    description: The order to sort this in, when the "Approx. Power" sorting option is selected. Also affects auto-equip.
+    type: integer
+  TexturePath:
+    description: The item icon. The texture pack, followed by a slash, followed by the texture name.
+    type: string
+  TextureIndex:
+    description: |
+      The index into the texture for the icon.
+      Item icons are 18x18 pixels,
+      and go from left to right and then top to bottom.
+    type: integer
+    minimum: 0
+  Level:
+    description: |
+      The expected level at which you aquire this item.
+      Used in things like the randomizer, to scale stats.
+    type: integer
+    minimum: 0
+  NoAutoCost:
+    description: Skip scaling the cost when changing the level of the item in the randomizer?
+    type: boolean
+  NoAutoStats:
+    description: Skip scaling the stats when changing the level of the item in the randomizer?
+    type: boolean
+  Cost:
+    description: The cost of the item, in copper.
+    type: integer
+    minimum: 0
+  MaxCapacity:
+    description: The maximum amount of this item you can hold (without pouches). 0 means unlimited.
+    type: integer
+    minimum: 0
+  EquipmentType:
+    description: The equip slot this equipment goes into, the type of weapon, and the category of the armor.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Sword
+      - const: 1
+        title: Axe
+      - const: 2
+        title: Dagger
+      - const: 3
+        title: Rapier
+      - const: 4
+        title: Katana
+      - const: 5
+        title: Spear
+      - const: 6
+        title: Scythe
+      - const: 7
+        title: Bow
+      - const: 8
+        title: Staff
+      - const: 9
+        title: Wand
+      - const: 10
+        title: Book
+      - const: 11
+        title: Shield
+      - const: 12
+        title: Heavy Head
+      - const: 13
+        title: Medium Head
+      - const: 14
+        title: Light Head
+      - const: 15
+        title: Heavy Body
+      - const: 16
+        title: Medium Body
+      - const: 17
+        title: Light Body
+      - const: 18
+        title: Accessory
+  IsTwoHanded:
+    description: Does this weapon take up both hand slots? Has no meaning for non-weapons, probably.
+    type: boolean
+  IsOneOnly:
+    description: Can you only have one of this equipped?
+    type: boolean
+  PreventAutoEquip:
+    description: Is this item unsuitable for auto-equip?
+    type: boolean
+  StatMods:
+    description: What stat modifiers this item grants on equip.
+    type: array
+    items:
+      description: A stat modifier.
+      type: object
+      additionalProperties: false
+      required: [Tag, Value1, Value2, Value3]
+      properties:
+        Tag:
+          description: The stat modifier type. TODO - this is an enum with a lot of values!
+          type: integer
+          minimum: 0
+        Value1:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value2:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value3:
+          description: A value whose semantics are determined by the tag.
+          type: integer

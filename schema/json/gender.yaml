@@ -1,0 +1,69 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: gender
+title: gender
+description: |
+  A Crystal Project gender definition.
+  Your gender affects some stat growths as you level.
+  By default, there is a gender binary, but with modding, you can gender it up as you please.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Appearance
+  - BoostHP
+  - BoostMP
+  - BoostStr
+  - BoostVit
+  - BoostDex
+  - BoostAgi
+  - BoostMnd
+  - BoostSpi
+  - BoostSpd
+  - BoostLck
+properties:
+  ID:
+    description: The ID of this gender.
+    type: integer
+    minimum: 0
+    maximum: 255
+  Name:
+    description: The English name of this gender. Localizable.
+    type: string
+  Appearance:
+    description: |
+      The index into some variant arrays for player appearance.
+      0 for masculine-presenting, 1 for feminine-presenting.
+    type: integer
+    minimum: 0
+    maximum: 1
+  BoostHP:
+    description: Does this gender boost your HP?
+    type: boolean
+  BoostMP:
+    description: Does this gender boost your MP?
+    type: boolean
+  BoostStr:
+    description: Does this gender boost your Strength?
+    type: boolean
+  BoostVit:
+    description: Does this gender boost your Vitality?
+    type: boolean
+  BoostDex:
+    description: Does this gender boost your Dexterity?
+    type: boolean
+  BoostAgi:
+    description: Does this gender boost your Agility?
+    type: boolean
+  BoostMnd:
+    description: Does this gender boost your Mind?
+    type: boolean
+  BoostSpi:
+    description: Does this gender boost your Spirit?
+    type: boolean
+  BoostSpd:
+    description: Does this gender boost your Speed?
+    type: boolean
+  BoostLck:
+    description: Does this gender boost your Luck?
+    type: boolean
