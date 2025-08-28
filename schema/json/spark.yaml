@@ -1,0 +1,217 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: recipe
+title: recipe
+description: |
+  A Crystal Project spark behaviour definition.
+  This ONLY indicates spark movement patterns and physics.
+  This does NOT indicate what sparks are where in the world, or what troops you fight!
+  That information is contained in the world entities files.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - RunsAway
+  - JumpHeight
+  - IsFlying
+  - SwimType
+  - HazardImmune
+  - AreaShape
+  - RequiresLos
+  - RequiresMovement
+  - WanderType
+  - WanderSpeed
+  - WanderAccel
+  - WanderInterval
+  - WanderRadius
+  - WanderRoute
+  - WanderRouteIsLine
+  - AlertSpeed
+  - AlertAccel
+  - AlertDist
+  - UnalertDist
+  - UnalertTime
+  - AlertToAggroTime
+  - AggroSpeed
+  - AggroAccel
+  - AggroDist
+  - UnaggroDist
+  - UnaggroTime
+  - AggroMaxTime
+  - WithdrawSpeed
+  - WithdrawAccel
+  - WithdrawMinTime
+properties:
+  ID:
+    description: The unique ID of this spark.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The name of this spark. Not displayed to users.
+    type: string
+  RunsAway:
+    description: Does this spark flee the player?
+    type: boolean
+  JumpHeight:
+    description: How high can this spark jump?
+    type: integer
+    minimum: 0
+  IsFlying:
+    description: Can this spark fly?
+    type: boolean
+  SwimType:
+    description: How this spark handles water.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Dies
+      - const: 1
+        title: Sinks
+      - const: 2
+        title: Floats
+      - const: 3
+        title: Swims
+  HazardImmune:
+    description: Does this spark not die when it touches fire/spikes?
+    type: boolean
+  AreaShape:
+    description: The shape of this spark's active area.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Sphere
+      - const: 1
+        title: Cylinder
+      - const: 2
+        title: Cylinder Translated Down
+      - const: 3
+        title: Sphere Jump Height
+      - const: 4
+        title: Cylinder One Third Height
+  RequiresLos:
+    description: Does this spark need line of sight to aggro?
+    type: boolean
+  RequiresMovement:
+    description: Does this spark only aggro if the player moves in range?
+    type: boolean
+  WanderType:
+    description: How does this spark wander around, if at all?
+    type: integer
+    oneOf:
+      - const: 0
+        title: None
+      - const: 1
+        title: Circle Area
+      - const: 2
+        title: Route
+      - const: 3
+        title: Circle Perimeter
+      - const: 4
+        title: Square Perimeter
+      - const: 5
+        title: Line X Axis
+      - const: 6
+        title: Line Y Axis
+      - const: 7
+        title: Square Area
+  WanderSpeed:
+    description: How quickly the spark wanders.
+    type: number
+    minimum: 0
+  WanderAccel:
+    description: The acceleration of the wandering.
+    type: number
+    minimum: 0
+  WanderInterval:
+    description: The wait time between wander points.
+    type: integer
+    minimum: 0
+  WanderRadius:
+    description: The radius of the wander area.
+    type: number
+    minimum: 0
+  WanderRoute:
+    description: The fixed route this spark moves on.
+    oneOf:
+      - type: "null"
+      - type: array
+        items:
+          title: Wander Route Point
+          description: A point on the wander route.
+          type: object
+          additionalProperties: false
+          required: ["X", "Y", "Z"]
+          properties:
+            "X":
+              description: The X coordinate.
+              type: integer
+            "Y":
+              description: The Y coordinate.
+              type: integer
+            "Z":
+              description: The Z coordinate.
+              type: integer
+  WanderRouteIsLine:
+    description: Is the route a straight line?
+    type: boolean
+  AlertSpeed:
+    description: The speed of the spark while it's in the alert phase.
+    type: number
+    minimum: 0
+  AlertAccel:
+    description: The acceleration of the spark while it's in the alert phase.
+    type: number
+    minimum: 0
+  AlertDist:
+    description: The distance the spark can become alerted in.
+    type: number
+    minimum: 0
+  UnalertDist:
+    description: The distance the spark loses alert from.
+    type: number
+    minimum: 0
+  UnalertTime:
+    description: The time it takes for the spark to exit the alert phase.
+    type: integer
+    minimum: 0
+  AlertToAggroTime:
+    description: The time it takes for the spark to aggro.
+    type: integer
+    minimum: 0
+  AggroSpeed:
+    description: The speed of the spark while it's in the aggro phase.
+    type: number
+    minimum: 0
+  AggroAccel:
+    description: The acceleration of the spark while it's in the aggro phase.
+    type: number
+    minimum: 0
+  AggroDist:
+    description: The distance the spark can become aggro in.
+    type: number
+    minimum: 0
+  UnaggroDist:
+    description: The distance the spark loses aggro from.
+    type: number
+    minimum: 0
+  UnaggroTime:
+    description: The time it takes for the spark to exit the aggro phase.
+    type: integer
+    minimum: 0
+  AggroMaxTime:
+    description: The time it takes for the spark to go back to the alert phase.
+    type: integer
+    minimum: 0
+  WithdrawSpeed:
+    description: The speed of the spark while it's in the withdraw phase.
+    type: number
+    minimum: 0
+  WithdrawAccel:
+    description: The acceleration of the spark while it's in the withdraw phase.
+    type: number
+    minimum: 0
+  WithdrawMinTime:
+    description: The time it takes for the spark to exit the withdraw phase.
+    type: integer
+    minimum: 0

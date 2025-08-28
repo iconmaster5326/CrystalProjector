@@ -16,6 +16,7 @@ from gen.job import Job
 from gen.monster import Monster
 from gen.passive import Passive
 from gen.recipe import Recipe
+from gen.spark import Spark
 from gen.voxel import Voxel
 
 
@@ -103,6 +104,10 @@ def load_recipes(infile: typing.BinaryIO) -> typing.Dict[int, Recipe]:
     return {json["ID"]: Recipe.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_sparks(infile: typing.BinaryIO) -> typing.Dict[int, Spark]:
+    return {json["ID"]: Spark.from_dict(json) for json in Database.load(infile).database if json}
+
+
 def load_voxels(infile: typing.BinaryIO) -> typing.Dict[int, Voxel]:
     return {json["ID"]: Voxel.from_dict(json) for json in Database.load(infile).database if json}
 
@@ -159,7 +164,7 @@ if __name__ == "__main__":
     test_db("passive", load_passives)
     # copy_over_db("patch")
     test_db("recipe", load_recipes)
-    # copy_over_db("spark")
+    test_db("spark", load_sparks)
     # copy_over_db("status")
     # copy_over_db("system")
     # copy_over_db("troop")
