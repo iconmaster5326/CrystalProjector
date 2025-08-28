@@ -1,0 +1,121 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: difficulty
+title: difficulty
+description: |
+  A Crystal Project difficulty mode definition.
+  This affects enemy stats, mostly.
+  By default, it's just Easy, Medium, and Hard.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - IsDefault
+  - Rating
+  - MonsterHPRate
+  - BossHPRate
+  - MonsterMPRate
+  - BossMPRate
+  - MonsterStrRate
+  - MonsterVitRate
+  - MonsterDexRate
+  - MonsterAgiRate
+  - MonsterMndRate
+  - MonsterSpiRate
+  - MonsterSpdRate
+  - MonsterLckRate
+  - MonsterPAtkRate
+  - MonsterPDefRate
+  - MonsterMDefRate
+  - MemberHitChanceMod
+  - MonsterHitChanceMod
+properties:
+  ID:
+    description: The ID of this difficulty.
+    type: integer
+    minimum: 0
+    maximum: 255
+  Name:
+    description: The English name of this difficulty. Localizable.
+    type: string
+  Comments:
+    description: A comment for game and mod developers. Not shown in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Unknown. Seemingly unused?
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: The English description for this difficulty. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: The order this difficulty shows up in the list.
+    type: integer
+  IsDefault:
+    description: |
+      Is this the default difficulty?
+      Only a single difficulty among all of them should have this be `true`.
+    type: boolean
+  Rating:
+    description: A "rating" to use to compare difficulties. (TODO - does this do anything?)
+    type: integer
+  MonsterHPRate:
+    description: A percentage to multiply all non-bosses' HP by. Default is 100.
+    type: integer
+  BossHPRate:
+    description: A percentage to multiply all bosses' HP by. Default is 100.
+    type: integer
+  MonsterMPRate:
+    description: A percentage to multiply all non-bosses' MP by. Default is 100.
+    type: integer
+  BossMPRate:
+    description: A percentage to multiply all bosses' MP by. Default is 100.
+    type: integer
+  MonsterStrRate:
+    description: A percentage to multiply all monster' Stregth by. Default is 100.
+    type: integer
+  MonsterVitRate:
+    description: A percentage to multiply all monster' Vitality by. Default is 100.
+    type: integer
+  MonsterDexRate:
+    description: A percentage to multiply all monster' Dexterity by. Default is 100.
+    type: integer
+  MonsterAgiRate:
+    description: A percentage to multiply all monster' Agility by. Default is 100.
+    type: integer
+  MonsterMndRate:
+    description: A percentage to multiply all monster' Mind by. Default is 100.
+    type: integer
+  MonsterSpiRate:
+    description: A percentage to multiply all monster' Spirit by. Default is 100.
+    type: integer
+  MonsterSpdRate:
+    description: A percentage to multiply all monster' Speed by. Default is 100.
+    type: integer
+  MonsterLckRate:
+    description: A percentage to multiply all monster' Luck by. Default is 100.
+    type: integer
+  MonsterPAtkRate:
+    description: A percentage to multiply all monster' physical attack rate by. Default is 100.
+    type: integer
+  MonsterPDefRate:
+    description: A percentage to multiply all monster' physical defence rate by. Default is 100.
+    type: integer
+  MonsterMDefRate:
+    description: A percentage to multiply all monster' magic defence rate by. Default is 100.
+    type: integer
+  MemberHitChanceMod:
+    description: A flat number to add to all players' hit chances. Default is 0.
+    type: integer
+  MonsterHitChanceMod:
+    description: A flat number to add to all monsters' hit chances. Default is 0.
+    type: integer

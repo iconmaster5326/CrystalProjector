@@ -8,6 +8,7 @@ from gen.ability import Ability
 from gen.actor import Actor
 from gen.animation import Animation
 from gen.biome import Biome
+from gen.difficulty import Difficulty
 from gen.voxel import Voxel
 
 
@@ -59,6 +60,10 @@ def load_biomes(infile: typing.BinaryIO) -> typing.Dict[int, Biome]:
     return {json["ID"]: Biome.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_difficulties(infile: typing.BinaryIO) -> typing.Dict[int, Difficulty]:
+    return {json["ID"]: Difficulty.from_dict(json) for json in Database.load(infile).database if json}
+
+
 def load_loading(infile: typing.BinaryIO) -> typing.List[str]:
     return [s.value for s in RawLoading.from_io(infile).strings]
 
@@ -103,7 +108,7 @@ if __name__ == "__main__":
     test_db("actor", load_actors)
     test_db("animation", load_animations)
     test_db("biome", load_biomes)
-    # copy_over_db("difficulty")
+    test_db("difficulty", load_difficulties)
     # copy_over_db("equipment")
     # copy_over_db("gender")
     # copy_over_db("item")
