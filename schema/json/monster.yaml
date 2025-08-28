@@ -1,0 +1,545 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: job
+title: job
+description: |
+  A Crystal Project job definition.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - LocationBiomeID
+  - TexturePath
+  - TexturePathAlt
+  - TextureFocusX
+  - TextureFocusY
+  - TextureBubbleX
+  - TextureBubbleY
+  - HasShadow
+  - HasBreathing
+  - AttackAnimationID
+  - IsPvp
+  - PvpJobID
+  - PvpGenderID
+  - PvpWeaponID
+  - PvpTextureType
+  - Level
+  - IsBoss
+  - AvgPop
+  - Category
+  - NoAuto
+  - Exp
+  - JP
+  - Money
+  - ItemDrops
+  - ItemSteals
+  - HP
+  - MP
+  - Str
+  - Vit
+  - Dex
+  - Agi
+  - Mnd
+  - Spi
+  - Spd
+  - Lck
+  - PAtk
+  - PPen
+  - PDef
+  - PCritChance
+  - PCritDmg
+  - PAccRating
+  - PEvaRating
+  - MPen
+  - MDef
+  - PVariance
+  - StatMods
+  - Actions
+properties:
+  ID:
+    description: The ID of this monster.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this monster. Localizable.
+    type: string
+  Comments:
+    description: A comment for game and mod developers. Not shown in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Seemingly unused.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Seemingly unused.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: The order to sort this in, in places like the records.
+    type: integer
+  LocationBiomeID:
+    description: |
+      The ID of the biome this mosnter first appears in.
+      You can lie about this if you'd like.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 255
+  TexturePath:
+    description: |
+      The monster's sprite.
+      The texture pack, followed by a slash, followed by the texture name.
+      Only matters when `IsPVP` is `false`.
+    oneOf:
+      - type: "null"
+      - type: string
+  TexturePathAlt:
+    description: |
+      The monster's sprite if the profanity filter is on.
+      The texture pack, followed by a slash, followed by the texture name.
+      Only matters when `IsPVP` is `false`.
+    oneOf:
+      - type: "null"
+      - type: string
+  TextureFocusX:
+    description: |
+      The X coordinate in the sprite of the zoomed-in portrait of the enemy.
+      Used in the bottom turn tracker in combat.
+      Only matters when `IsPVP` is `false`.
+    type: integer
+    minimum: 0
+  TextureFocusY:
+    description: |
+      The Y coordinate in the sprite of the zoomed-in portrait of the enemy.
+      Used in the bottom turn tracker in combat.
+      Only matters when `IsPVP` is `false`.
+    type: integer
+    minimum: 0
+  TextureBubbleX:
+    description: |
+      The X coordinate in the sprite of where the cursor should point to when selected.
+      Only matters when `IsPVP` is `false`.
+    type: integer
+    minimum: 0
+  TextureBubbleY:
+    description: |
+      The Y coordinate in the sprite of where the cursor should point to when selected.
+      Only matters when `IsPVP` is `false`.
+    type: integer
+    minimum: 0
+  HasShadow:
+    description: |
+      Does this monster cast a shadow?
+      Only matters when `IsPVP` is `false`.
+    type: boolean
+  HasBreathing:
+    description: |
+      Does this monster use the "breathing" animation?
+      Only matters when `IsPVP` is `false`.
+    type: boolean
+  AttackAnimationID:
+    description: |
+      The ID of this monster's basic attack, if it has any.
+      Only matters when `IsPVP` is `false`.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  IsPvp:
+    description: Is this a "fake PC" monster?
+    type: boolean
+  PvpJobID:
+    description: |
+      The ID of this "fake PC's" job.
+      Only matters when `IsPVP` is `true`.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  PvpGenderID:
+    description: |
+      The ID of this "fake PC's" gender.
+      Only matters when `IsPVP` is `true`.
+    type: integer
+    minimum: 0
+    maximum: 255
+  PvpWeaponID:
+    description: |
+      The ID of this "fake PC's" held weapon, if any.
+      Only matters when `IsPVP` is `true`.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  PvpTextureType:
+    description: |
+      Whether or not to use the `Alt` texture of the "fake PC".
+      Only matters when `IsPVP` is `true`.
+    type: integer
+    minimum: 0
+    maximum: 1
+  Level:
+    description: |
+      The level of the monster.
+      Does not affect stats directly, but is shown to players,
+      and is used in the randomizer to scale stats.
+    type: integer
+    minimum: 0
+  IsBoss:
+    description: Is this considered a boss?
+    type: boolean
+  AvgPop:
+    description: Unknown.
+    type: integer
+    minimum: 1
+  Category:
+    description: Unknown.
+    type: integer
+    minimum: 0
+    maximum: 9
+  NoAuto:
+    description: Unknown.
+    type: boolean
+  Exp:
+    description: The XP this monster gives at the end of a battle.
+    type: integer
+    minimum: 0
+  JP:
+    description: The JP this monster gives at the end of a battle.
+    type: integer
+    minimum: 0
+  Money:
+    description: The amount of currency this monster drops, in copper.
+    type: integer
+    minimum: 0
+  ItemDrops:
+    description: The items this monster can drop.
+    type: array
+    items:
+      $ref: "#/$defs/DropTableEntry"
+  ItemSteals:
+    description: The items this monster can have on them to steal.
+    type: array
+    items:
+      $ref: "#/$defs/DropTableEntry"
+  HP:
+    description: The base HP of this monster.
+    type: integer
+    minimum: 0
+  MP:
+    description: The base MP of this monster.
+    type: integer
+    minimum: 0
+  Str:
+    description: The base Strength of this monster.
+    type: integer
+    minimum: 0
+  Vit:
+    description: The base Vitality of this monster.
+    type: integer
+    minimum: 0
+  Dex:
+    description: The base Dexterity of this monster.
+    type: integer
+    minimum: 0
+  Agi:
+    description: The base Agility of this monster.
+    type: integer
+    minimum: 0
+  Mnd:
+    description: The base Mind of this monster.
+    type: integer
+    minimum: 0
+  Spi:
+    description: The base Spirit of this monster.
+    type: integer
+    minimum: 0
+  Spd:
+    description: The base Speed of this monster.
+    type: integer
+    minimum: 0
+  Lck:
+    description: The base Luck of this monster.
+    type: integer
+    minimum: 0
+  PAtk:
+    description: The base physical attack of this monster.
+    type: integer
+    minimum: 0
+  PPen:
+    description: The base physical defence penetration of this monster.
+    type: integer
+    minimum: 0
+  PDef:
+    description: The base physical defence of this monster.
+    type: integer
+    minimum: 0
+  PCritChance:
+    description: The base physical critical hit chance of this monster.
+    type: integer
+  PCritDmg:
+    description: The base pyhsical critical hit damage bonus of this monster.
+    type: integer
+  PAccRating:
+    description: The base physical accuracy rating of this monster.
+    type: integer
+  PEvaRating:
+    description: The base physical evasion rating of this monster.
+    type: integer
+  MPen:
+    description: The base magical defence penetration of this monster.
+    type: integer
+    minimum: 0
+  MDef:
+    description: The base magical defence of this monster.
+    type: integer
+    minimum: 0
+  PVariance:
+    description: The base physical damage variance of this monster.
+    type: integer
+    minimum: 0
+  StatMods:
+    description: The stat modifiers this monster has.
+    type: array
+    items:
+      description: A stat modifier.
+      type: object
+      additionalProperties: false
+      required: [Tag, Value1, Value2, Value3]
+      properties:
+        Tag:
+          description: The stat modifier type. TODO - this is an enum with a lot of values!
+          type: integer
+          minimum: 0
+        Value1:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value2:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value3:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+  Actions:
+    description: The AI of this monster.
+    type: array
+    items:
+      description: An entry in the AI table of this monster.
+      type: object
+      additionalProperties: false
+      required:
+        - AbilityID
+        - Priority
+        - Weight
+        - Conds
+        - HasDialogue
+        - Dialogue
+        - TargetTypeOverride
+        - AllyMonsterIDFilter
+        - ApplyMonsterIDFilterToConds
+        - ApplyMonsterIDFilterToTargets
+      properties:
+        AbilityID:
+          description: The ID of the ability to use if the condition is met.
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        Priority:
+          description: |
+            The priority of this ability.
+            Higher means it will be checked first.
+          type: integer
+          minimum: 0
+        Weight:
+          description: |
+            The chance to use this ability,
+            for randomly selecting between multiple valid table entries.
+          type: integer
+          minimum: 0
+        Conds:
+          description: The conditions under which this ability can be used.
+          type: array
+          items:
+            $ref: "#/$defs/Condition"
+        HasDialogue:
+          description: Does using this ability make a message pop up?
+          type: boolean
+        Dialogue:
+          description: The message that appears when `HasDialogue` is `true`.
+          oneOf:
+            - type: "null"
+            - type: string
+        TargetTypeOverride:
+          description: Override the targets of the ability? If so, to what?
+          oneOf:
+            - type: "null"
+            - type: integer
+              oneOf:
+                - const: 0
+                  title: Enemy
+                - const: 1
+                  title: Ally
+                - const: 2
+                  title: Self Only
+                - const: 3
+                  title: Other Only
+                - const: 4
+                  title: Dead Ally
+                - const: 5
+                  title: Dead Or Alive
+                - const: 6
+                  title: Dead Self Only
+        AllyMonsterIDFilter:
+          description: What allies should we only use this ability on?
+          oneOf:
+            - type: "null"
+            - type: integer
+              minimum: 0
+              maximum: 4294967295
+        ApplyMonsterIDFilterToConds:
+          description: Apply `AllyMonsterIDFilter` while calculating the condition?
+          type: boolean
+        ApplyMonsterIDFilterToTargets:
+          description: Apply `AllyMonsterIDFilter` while calculating the targets?
+          type: boolean
+$defs:
+  DropTableEntry:
+    title: Drop Table Entry
+    description: A possible item drop.
+    type: object
+    additionalProperties: false
+    required:
+      - LootType
+      - ItemID
+      - EquipmentID
+      - LootChance
+      - StealChance
+      - MaxLootCount
+    properties:
+      LootType:
+        description: The category of item in this table.
+        type: integer
+        oneOf:
+          - const: 1
+            title: Item
+          - const: 2
+            title: Equipment
+      ItemID:
+        description: The ID of the item, if `LootType` is `Item`. 0 otherwise.
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      EquipmentID:
+        description: The ID of the item, if `LootType` is `Equipment`. 0 otherwise.
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      LootChance:
+        description: |
+          The chance, between 0 and 100, of this item dropping,
+          or the chance of this item being present to steal.
+        type: integer
+        minimum: 0
+        maximum: 100
+      StealChance:
+        description: The chance, between 0 and 100, that you successfully steal this item.
+        type: integer
+        minimum: 0
+        maximum: 100
+      MaxLootCount:
+        description: |
+          If you have more than this amount of this item, then it won't drop further.
+          0 disables this feature. Only applies with drops, not steals!
+        type: integer
+        minimum: 0
+  Condition:
+    title: Condition
+    description: A condition.
+    type: object
+    additionalProperties: false
+    required:
+      - CondGroup
+      - SubConds
+      - CondVar
+      - CondEval
+      - Not
+      - Value
+      - Data1
+    properties:
+      CondGroup:
+        description: |
+          The boolean operator to combine sub-conditions with.
+        type: integer
+        oneOf:
+          - const: 0
+            title: N/A
+          - const: 1
+            title: And
+          - const: 2
+            title: Or
+      SubConds:
+        description: |
+          Any sub-conditions.
+          `null` if `CondGroup` is `N/A`.
+        oneOf:
+          - type: "null"
+          - type: array
+            items:
+              $ref: "#/$defs/Condition"
+      CondVar:
+        description: |
+          The category of condition.
+          Only matters if `CondGroup` is `N/A`.
+          TODO - this is a big enum!
+        type: integer
+        minimum: 0
+      CondEval:
+        description: |
+          The operator to use.
+          Only used in certain condition categories.
+          Only matters if `CondGroup` is `N/A`.
+        type: integer
+        oneOf:
+          - const: 0
+            title: Less
+          - const: 1
+            title: Less Equal
+          - const: 2
+            title: Equal
+          - const: 3
+            title: Greater Equal
+          - const: 4
+            title: Greater
+          - const: 5
+            title: Multiple Of
+      Not:
+        description: |
+          Invert this condition?
+          Only used in certain condition categories.
+          Only matters if `CondGroup` is `N/A`.
+        type: boolean
+      Value:
+        description: |
+          The constant value to test against.
+          Only used in certain condition categories.
+          Only matters if `CondGroup` is `N/A`.
+        type: integer
+      Data1:
+        description: |
+          The ID to test a property of.
+          Only used in certain condition categories.
+          Only matters if `CondGroup` is `N/A`.
+        type: integer
+        minimum: 0
+        maximum: 4294967295

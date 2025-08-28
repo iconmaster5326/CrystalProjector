@@ -6,46 +6,46 @@ description: |
 type: object
 additionalProperties: false
 required:
-- ID
-- Name
-- Comments
-- Flavor
-- Description
-- SortOrder
-- LocationBiomeID
-- ActorTexturePathM
-- ActorTexturePathF
-- MemberTexturePathM
-- MemberTexturePathF
-- MemberTexturePathMAlt
-- MemberTexturePathFAlt
-- IconTexturePath
-- IconTextureIndex
-- IsStartingJob
-- IsUnselectableJob
-- IsUnselectableSubJob
-- AbilitiesName
-- Color
-- CrystalName
-- WeaponHoldTypeM
-- WeaponHoldTypeF
-- PreferredHandAType
-- PreferredHeadType
-- PreferredBodyType
-- HPRating
-- MPRating
-- StrRating
-- VitRating
-- DexRating
-- AgiRating
-- MndRating
-- SpiRating
-- SpdRating
-- LckRating
-- EquipmentTypes
-- AbilityIDs
-- PassiveIDs
-- LearnTree
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - LocationBiomeID
+  - ActorTexturePathM
+  - ActorTexturePathF
+  - MemberTexturePathM
+  - MemberTexturePathF
+  - MemberTexturePathMAlt
+  - MemberTexturePathFAlt
+  - IconTexturePath
+  - IconTextureIndex
+  - IsStartingJob
+  - IsUnselectableJob
+  - IsUnselectableSubJob
+  - AbilitiesName
+  - Color
+  - CrystalName
+  - WeaponHoldTypeM
+  - WeaponHoldTypeF
+  - PreferredHandAType
+  - PreferredHeadType
+  - PreferredBodyType
+  - HPRating
+  - MPRating
+  - StrRating
+  - VitRating
+  - DexRating
+  - AgiRating
+  - MndRating
+  - SpiRating
+  - SpdRating
+  - LckRating
+  - EquipmentTypes
+  - AbilityIDs
+  - PassiveIDs
+  - LearnTree
 properties:
   ID:
     description: The ID of this job.
