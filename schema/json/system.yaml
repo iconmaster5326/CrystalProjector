@@ -1,0 +1,563 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: system
+title: system
+description: |
+  Crystal Project top-level system information.
+type: object
+additionalProperties: false
+required:
+  - StartingLoot
+  - MemberDefaults
+  - BattleConfig
+  - FieldConfig
+  - TeleportPoints
+  - MainNpcs
+  - NarrationItems
+  - BulletinItems
+  - Achievements
+  - Randomizer
+  - Vocab
+  - Credits
+  - Comments
+properties:
+  StartingLoot:
+    description: The items, equipment, and currency you start with.
+    type: array
+    items:
+      description: An item given at the start of the game.
+      type: object
+      additionalProperties: false
+      required:
+        - LootType
+        - LootID
+        - LootQuantity
+      properties:
+        LootType:
+          $ref: "#/$defs/LootType"
+          description: The type of item given.
+        LootID:
+          description: |
+            The item to give. Depends on `LootType`:
+
+            - `Nothing`: Invalid.
+            - `Item`: The ID of the item.
+            - `Equipment`: The ID of the equipment.
+            - `Currency`: Always 0.
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        LootQuantity:
+          description: The amount of this item/currency to give.
+          type: integer
+          minimum: 1
+  MemberDefaults:
+    description: Default information for the starting party.
+    type: array
+    items:
+      description: A starting party member.
+      type: object
+      additionalProperties: false
+      required:
+        - Name
+        - Level
+        - JobID
+        - GenderID
+        - SubJobID
+      properties:
+        Name:
+          description: The name of the party member.
+          oneOf:
+            - type: "null"
+            - type: string
+        Level:
+          description: The starting level.
+          type: integer
+          minimum: 1
+        JobID:
+          description: The ID of the starting job.
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        GenderID:
+          description: The ID of the starting gender.
+          type: integer
+          minimum: 0
+          maximum: 255
+        SubJobID:
+          description: The ID of the starting sub-job, if any.
+          oneOf:
+            - type: "null"
+            - type: integer
+              minimum: 0
+              maximum: 4294967295
+  BattleConfig:
+    description: Settings to tweak the combat system.
+    type: object
+    additionalProperties: false
+    required:
+      - TwoHandedPAtkFlat
+      - TwoHandedPAtkRate
+      - DualWieldPAtkRate
+      - PDmgIncreasesMaxHPAbsorbRate
+      - PDmgIncreasesMaxHPDecayRate
+      - PerfectHitAtChanceOrHigher
+      - PerfectDodgeAtChanceOrLower
+      - DamageBonusFromAPCostRate
+      - HealMultiWithPenaltyRate
+      - TargetSingleWithBonusRate
+      - StrWhileUnarmedBonusFlat
+      - LearnAllJobZeroJPAbilities
+    properties:
+      TwoHandedPAtkFlat:
+        description: The base physical attack damage when using a two-handed weapon.
+        type: integer
+      TwoHandedPAtkRate:
+        description: The percent extra physical attack when using a two-handed weapon.
+        type: integer
+      DualWieldPAtkRate:
+        description: The percent extra physical attack when dual-wielding.
+        type: integer
+      PDmgIncreasesMaxHPAbsorbRate:
+        description: The rate at which physical damage increases max HP absorb.
+        type: integer
+      PDmgIncreasesMaxHPDecayRate:
+        description: The rate at which physical damage increases max HP decay.
+        type: integer
+      PerfectHitAtChanceOrHigher:
+        description: The cutoff to land a "perfect hit".
+        type: integer
+      PerfectDodgeAtChanceOrLower:
+        description: The cutoff to land a "perfect dodge".
+        type: integer
+      DamageBonusFromAPCostRate:
+        description: The rate at which physical damage increases AP cost.
+        type: integer
+      HealMultiWithPenaltyRate:
+        description: The healing multiplier when there are penalties.
+        type: integer
+      TargetSingleWithBonusRate:
+        description: The rate at which a single-target attack is multipled when it hits multiple targets.
+        type: integer
+      StrWhileUnarmedBonusFlat:
+        description: The default bonus to Strength when unarmed.
+        type: integer
+      LearnAllJobZeroJPAbilities:
+        description: Can we learn all abilities for zero JP?
+        type: boolean
+  FieldConfig:
+    description: Settings to tweak out of combat systems.
+    type: object
+    additionalProperties: false
+    required:
+      - GoldenQuintarJump3
+    properties:
+      GoldenQuintarJump3:
+        description: Can golden quintars jump 3 blocks?
+        type: boolean
+  TeleportPoints:
+    description: |
+      The game's teleport points.
+      More information about these regions can be found in the world data.
+    type: array
+    items:
+      oneOf:
+        - type: "null"
+        - description: A teleport point.
+          type: object
+          additionalProperties: false
+          required: [Name, Coord]
+          properties:
+            Name:
+              description: The name of the point. Not shown to players.
+              type: string
+            Coord:
+              description: The location of the teleport point.
+              type: object
+              additionalProperties: false
+              required: ["X", "Y", "Z"]
+              properties:
+                "X":
+                  description: The X coordinate.
+                  type: integer
+                "Y":
+                  description: The Y coordinate.
+                  type: integer
+                "Z":
+                  description: The Z coordinate.
+                  type: integer
+  MainNpcs:
+    description: Reusable NPC definitions.
+    type: array
+    items:
+      description: A reusable NPC definition.
+      type: object
+      additionalProperties: false
+      required: [Key, Name, TextureKey]
+      properties:
+        Key:
+          description: The unique handle for this NPC.
+          type: string
+        Name:
+          description: The name of this NPC. Localizable.
+          type: string
+        TextureKey:
+          description: |
+            The texture of this NPC.
+            First the pack name, then a slash, then the texture name.
+          type: string
+  NarrationItems:
+    description: The cutscene dialogue.
+    type: array
+    items:
+      title: Narration
+      description: A piece of narration.
+      type: object
+      additionalProperties: false
+      required: [ID, Contents, MusicCue]
+      properties:
+        ID:
+          description: The unique ID of this narration.
+          type: integer
+          minimum: 0
+          maximum: 255
+        Contents:
+          description: The text of this narration. Localizable.
+          type: string
+        MusicCue:
+          description: The ID of a music track ti play during this cutscene.
+          type: integer
+          minimum: 1
+  BulletinItems:
+    description: The Castle Seqouia bulletin dialogue.
+    type: array
+    items:
+      title: Bulletin
+      description: A piece of Castle Seqouia bulletin dialogue.
+      type: object
+      additionalProperties: false
+      required:
+        - ID
+        - Header
+        - Contents
+        - VariableKey
+        - IsNumberGreaterEqual
+        - RHS
+      properties:
+        ID:
+          description: The unique ID of this bulletin.
+          type: integer
+          minimum: 0
+          maximum: 255
+        Header:
+          description: The title of this bulletin. Localizable.
+          type: string
+        Contents:
+          description: The message of this bulletin. Localizable.
+          type: string
+        VariableKey:
+          description: The variable to test to see if we should display this bulletin.
+          type: string
+        IsNumberGreaterEqual:
+          description: If `true`, `VariableKey` is a numeric variable. Otherwise, it's a flag.
+          type: boolean
+        RHS:
+          description: If `IsNumberGreaterEqual` is `true`, how high does the variable need to be for this bulletin to appear?
+          type: integer
+  Achievements:
+    description: The achievments for this game.
+    type: array
+    items:
+      description: An achievement.
+      type: object
+      additionalProperties: false
+      required: [Name, Description, IsHidden]
+      properties:
+        Name:
+          description: The name of the achievement. Localizable.
+          type: string
+        Description:
+          description: The description of the achievement. Localizable.
+          type: string
+        IsHidden:
+          description: Is this achievment initially hidden from the list, until you unlock it?
+          type: boolean
+  Randomizer:
+    description: Randomizer information.
+    type: object
+    additionalProperties: false
+    required:
+      - ExcludeAbilityIDs
+      - ExcludeEquipmentIDs
+      - ExcludeItemIDs
+      - ExcludeJobIDs
+      - ExcludePassiveIDs
+      - ExcludeTroopIDs
+      - ProgressionTroopIDs
+      - ItemPrerequisiteTree
+      - ConsumableItemIDs
+      - ProgressionItemIDs
+      - QuestItemIDs
+      - RecoveryItemIDs
+      - ProgressionGateItemIDs
+      - ItemCounts
+      - EquipmentPrerequisiteTree
+      - ValidTeleportPoints
+      - CommonTeleportPoints
+      - RestrictedTeleportPoints
+      - ProgressionGateTeleportPoints
+    properties:
+      ExcludeAbilityIDs:
+        description: The ability IDs to exclude from randomization.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ExcludeEquipmentIDs:
+        description: The eqipment IDs to exclude from randomization.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ExcludeItemIDs:
+        description: The item IDs to exclude from randomization.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ExcludeJobIDs:
+        description: The job IDs to exclude from randomization.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ExcludePassiveIDs:
+        description: The passive IDs to exclude from randomization.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ExcludeTroopIDs:
+        description: The troop IDs to exclude from randomization.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ProgressionTroopIDs:
+        description: The troop IDs that must be beaten to obtain progression items.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ItemPrerequisiteTree:
+        description: What item IDs, in the vanilla game, are gated behind other items?
+        type: array
+        items:
+          $ref: "#/$defs/RandomizerTree"
+      ConsumableItemIDs:
+        description: Item IDs to be treated as consumables.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ProgressionItemIDs:
+        description: Item IDs that are necesary for progression.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      QuestItemIDs:
+        description: Item IDs that are necesary for quests.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      RecoveryItemIDs:
+        description: Item IDs that are necesary for classes to use in-battle.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ProgressionGateItemIDs:
+        description: Item IDs that are needed in some amount to get progression items.
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      ItemCounts:
+        description: How much of certain item IDs needs to generate.
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [ID, Min, Tot]
+          properties:
+            ID:
+              description: The ID of the item.
+              type: integer
+              minimum: 0
+              maximum: 4294967295
+            Min:
+              description: The minimum amount of the item that must be obtainable.
+              type: integer
+              minimum: 0
+            Tot:
+              description: The total amount of the item that is in the vanilla game.
+              type: integer
+              minimum: 0
+      EquipmentPrerequisiteTree:
+        description: What equipment IDs, in the vanilla game, are gated behind other items?
+        type: array
+        items:
+          $ref: "#/$defs/RandomizerTree"
+      ValidTeleportPoints:
+        description: What teleport point IDs should be randomized?
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 255
+      CommonTeleportPoints:
+        description: What teleport point IDs are early-game?
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 255
+      RestrictedTeleportPoints:
+        description: What teleport point IDs are late-game?
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 255
+      ProgressionGateTeleportPoints:
+        description: What teleport point IDs represent the end of the game?
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 255
+  Vocab:
+    description: Reusable, localizable strings.
+    type: object
+    additionalProperties: false
+    required:
+      - General
+      - AbilityModText
+      - StatModText
+      - EquipmentSlotNames
+      - EquipmentNames
+      - ElementNames
+      - InputCharField
+      - NewLineStartRangeList
+      - NewLineEndList
+      - AllowNewLineAtAnyChar
+      - RandNamesM
+      - RandNamesF
+      - TextReplacements
+    properties:
+      General:
+        description: The localization key-value pairs.
+        type: object
+        patternProperties:
+          "":
+            type: string
+      AbilityModText:
+        description: Descriptions for each ability modifier.
+        type: array
+        items:
+          type: string
+      StatModText:
+        description: Descriptions for each stat modifier.
+        type: array
+        items:
+          type: string
+      EquipmentSlotNames:
+        description: Descriptions for each equipment slot.
+        type: array
+        items:
+          type: string
+      EquipmentNames:
+        description: Descriptions for each equipment category.
+        type: array
+        items:
+          type: string
+      ElementNames:
+        description: Descriptions for each element.
+        type: array
+        items:
+          type: string
+      InputCharField:
+        description: The name input grid.
+        type: string
+      NewLineStartRangeList:
+        description: Unknown.
+        type: "null"
+      NewLineEndList:
+        description: Unknown.
+        type: "null"
+      AllowNewLineAtAnyChar:
+        description: Allow automatic newlines anywhere, not just at word boundaries?
+        type: boolean
+      RandNamesM:
+        description: Random masculine names. For the random name button in new games.
+        type: array
+        items:
+          type: string
+      RandNamesF:
+        description: Random feminine names. For the random name button in new games.
+        type: array
+        items:
+          type: string
+      TextReplacements:
+        description: Unknown.
+        type: "null"
+  Credits:
+    description: The game's credits. Localizable.
+    type: string
+  Comments:
+    description: Any comments the developer has left for us. Not seen in-game.
+    type: string
+$defs:
+  LootType:
+    title: Loot Type
+    description: A category of thing that can be found in a chest or used in a recipe.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Nothing
+      - const: 1
+        title: Item
+      - const: 2
+        title: Equipment
+      - const: 3
+        title: Currency
+  RandomizerTree:
+    title: Randomizer Tree
+    description: A prerequisite tree for the randomizer.
+    type: object
+    additionalProperties: false
+    required: [ID, Children]
+    properties:
+      ID:
+        description: The ID of the item/equipment.
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      Children:
+        description: The items that this item unlocks.
+        type: array
+        items:
+          $ref: "#/$defs/RandomizerTree"

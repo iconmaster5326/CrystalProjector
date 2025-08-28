@@ -18,6 +18,7 @@ from gen.passive import Passive
 from gen.recipe import Recipe
 from gen.spark import Spark
 from gen.status import Status
+from gen.system import System
 from gen.troop import Troop
 from gen.voxel import Voxel
 
@@ -114,6 +115,10 @@ def load_statuses(infile: typing.BinaryIO) -> typing.Dict[int, Status]:
     return {json["ID"]: Status.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_system(infile: typing.BinaryIO) -> System:
+    return System.from_dict(Database.load(infile).database)
+
+
 def load_troops(infile: typing.BinaryIO) -> typing.Dict[int, Troop]:
     return {json["ID"]: Troop.from_dict(json) for json in Database.load(infile).database if json}
 
@@ -139,10 +144,16 @@ if __name__ == "__main__":
         validator = jsonschema.Draft202012Validator(schema)
         dbfile = open(f"{root}/{filename}.dat", "rb")
         raw_json = Database.load(dbfile).database
-        for thing in raw_json:
-            if thing:
-                print(f"\tValidating {thing['ID']} ({thing['Name']})...")
-                validator.validate(thing, schema)
+        
+        if type(raw_json) is list:
+            for thing in raw_json:
+                if thing:
+                    print(f"\tValidating {thing['ID']} ({thing['Name']})...")
+                    validator.validate(thing, schema)
+        else:
+            print(f"\tValidating...")
+            validator.validate(raw_json, schema)
+            
         print("\tTesting deserialization...")
         dbfile.seek(0)
         load_fn(dbfile)
@@ -176,6 +187,6 @@ if __name__ == "__main__":
     test_db("recipe", load_recipes)
     test_db("spark", load_sparks)
     test_db("status", load_statuses)
-    # copy_over_db("system")
+    test_db("system", load_system)
     test_db("troop", load_troops)
     test_db("voxel", load_voxels)
