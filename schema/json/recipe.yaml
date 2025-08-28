@@ -1,0 +1,112 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: recipe
+title: recipe
+description: |
+  A Crystal Project recipe definition.
+  Recipes represent crafting entries done at shops.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - IconPath
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - LootType
+  - LootID
+  - Cost
+  - Ingredients
+properties:
+  ID:
+    description: The unique ID of this recipe.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The name of this recipe. Not displayed to users.
+    type: string
+  IconPath:
+    description: Unused.
+    type: "null"
+  Comments:
+    description: Any comments for developers. Does not appear in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Unused.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Unused.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: Likely unused.
+    type: integer
+  LootType:
+    $ref: "#/$defs/LootType"
+    description: The category of item this produces.
+  LootID:
+    description: |
+      The result of the craft. Depends on `LootType`:
+
+      - `Nothing`: Invalid.
+      - `Item`: The ID of the item.
+      - `Equipment`: The ID of the equipment.
+      - `Currency`: Invalid.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Cost:
+    description: The cost of the recipe to make, in copper.
+    type: integer
+    minimum: 0
+  Ingredients:
+    description: The input ingredients to consume.
+    type: array
+    items:
+      description: An ingredient that is consumed.
+      type: object
+      additionalProperties: false
+      required:
+        - LootType
+        - LootID
+        - LootQuantity
+      properties:
+        LootType:
+          $ref: "#/$defs/LootType"
+          description: The type of item that this recipe uses.
+        LootID:
+          description: |
+            The input to the craft. Depends on `LootType`:
+
+            - `Nothing`: Invalid.
+            - `Item`: The ID of the item.
+            - `Equipment`: The ID of the equipment.
+            - `Currency`: Always 0.
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        LootQuantity:
+          description: The amount of this item/currency to consume.
+          type: integer
+          minimum: 1
+$defs:
+  LootType:
+    title: Loot Type
+    description: A category of thing that can be found in a chest or used in a recipe.
+    type: integer
+    oneOf:
+      - const: 0
+        title: Nothing
+      - const: 1
+        title: Item
+      - const: 2
+        title: Equipment
+      - const: 3
+        title: Currency
