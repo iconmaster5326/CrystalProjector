@@ -1,0 +1,279 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: status
+title: status
+description: |
+  A Crystal Project status effect definition.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Comments
+  - Flavor
+  - Description
+  - SortOrder
+  - TexturePath
+  - TextureIndex
+  - HideDurationFromDescription
+  - HideStatModsFromDescription
+  - AnimationID
+  - HasBattlerColor
+  - HasOutlineColor
+  - BattlerColor
+  - BattlerColorOpacity
+  - OutlineColor
+  - OutlineColorOpacity
+  - ForceMotion
+  - VisualPriority
+  - Category
+  - DecrementOnFixedInterval
+  - DecrementOnEachUserTurn
+  - DecrementOnDmgTaken
+  - DecrementOnPDmgTaken
+  - DecrementOnPDmgEvaded
+  - DecrementOnPDmgGiven
+  - DecrementOnMDmgTaken
+  - DecrementOnMDmgEvaded
+  - DecrementOnMDmgGiven
+  - DecrementOnHealTaken
+  - DecrementOnHealGiven
+  - DecrementOnCritGiven
+  - DecrementOnEffect
+  - RemoveOnDmgTaken
+  - ReApplyResistance
+  - PersistsThroughDeath
+  - PreventRemoval
+  - IsHidden
+  - StatMods
+properties:
+  ID:
+    description: The unique ID of this status effect.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The English name of this status effect. Localizable.
+    type: string
+  Comments:
+    description: A comment for game and mod developers. Not shown in game.
+    oneOf:
+      - type: "null"
+      - type: string
+  Flavor:
+    description: Any additional text shown to the player after its effects. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  Description:
+    description: Appears after the flavor in the item text. Localizable.
+    oneOf:
+      - type: "null"
+      - type: string
+  SortOrder:
+    description: The order to sort this in, in places like the records.
+    type: integer
+  TexturePath:
+    description: The icon. The texture pack, followed by a slash, followed by the texture name.
+    type: string
+  TextureIndex:
+    description: |
+      The index into the texture for the icon.
+      Item icons are 18x18 pixels,
+      and go from left to right and then top to bottom.
+    type: integer
+    minimum: 0
+  HideDurationFromDescription:
+    description: Do we hide how long this status effect lasts?
+    type: boolean
+  HideStatModsFromDescription:
+    description: Do we hide the exact mechanical effects from the players?
+    type: boolean
+  AnimationID:
+    description: The ID of the animation this effect uses when it activates.
+    oneOf:
+      - type: "null"
+      - type: integer
+        minimum: 0
+        maximum: 4294967295
+  HasBattlerColor:
+    description: Does this effect recolor the target it's applied to?
+    type: boolean
+  HasOutlineColor:
+    description: Does this effect give a colored outline to the target it's applied to?
+    type: boolean
+  BattlerColor:
+    $ref: "#/$defs/Color"
+    description: The color that the target is recolored to, should `HasBattlerColor` be `true`.
+  BattlerColorOpacity:
+    description: The intensity of the recoloring, should `HasBattlerColor` be `true`.
+    type: number
+    minimum: 0
+    maximum: 255
+  OutlineColor:
+    $ref: "#/$defs/Color"
+    description: The color that the target is outlined in, should `HasOutlineColor` be `true`.
+  OutlineColorOpacity:
+    description: The intensity of the outline, should `HasOutlineColor` be `true`.
+    type: number
+    minimum: 0
+    maximum: 255
+  ForceMotion:
+    description: Force the idle player sprite into a particular pose?
+    oneOf:
+      - type: "null"
+      - type: integer
+        oneOf:
+          - const: 0
+            title: Walk
+          - const: 1
+            title: Wait
+          - const: 2
+            title: Chant
+          - const: 3
+            title: Guard
+          - const: 4
+            title: Damage
+          - const: 5
+            title: Evade
+          - const: 6
+            title: Thrust
+          - const: 7
+            title: Swing
+          - const: 8
+            title: Missile
+          - const: 9
+            title: Skill
+          - const: 10
+            title: Spell
+          - const: 11
+            title: Item
+          - const: 12
+            title: Escape
+          - const: 13
+            title: Victory
+          - const: 14
+            title: Dying
+          - const: 15
+            title: Abnormal
+          - const: 16
+            title: Sleep
+          - const: 17
+            title: Dead
+          - const: 18
+            title: Jump
+  VisualPriority:
+    description: The priority this status effect should take when applying visual effects.
+    type: integer
+  Category:
+    description: The category of status effect is. Is it good, bad, etc?
+    type: integer
+    oneOf:
+      - const: 0
+        title: None
+      - const: 1
+        title: Buff
+      - const: 2
+        title: Debuff
+      - const: 3
+        title: Stance
+      - const: 4
+        title: Strict
+  DecrementOnFixedInterval:
+    description: Does this effect remove a stack on a time interval?
+    type: boolean
+  DecrementOnEachUserTurn:
+    description: Does this effect remove a stack at the beginning of each of the affected's turns?
+    type: boolean
+  DecrementOnDmgTaken:
+    description: Does this effect remove a stack when damage is taken?
+    type: boolean
+  DecrementOnPDmgTaken:
+    description: Does this effect remove a stack when physical damage is taken?
+    type: boolean
+  DecrementOnPDmgEvaded:
+    description: Does this effect remove a stack when physical damage is evaded?
+    type: boolean
+  DecrementOnPDmgGiven:
+    description: Does this effect remove a stack when physical damage is dealt?
+    type: boolean
+  DecrementOnMDmgTaken:
+    description: Does this effect remove a stack when magical damage is taken?
+    type: boolean
+  DecrementOnMDmgEvaded:
+    description: Does this effect remove a stack when magical damage is evaded?
+    type: boolean
+  DecrementOnMDmgGiven:
+    description: Does this effect remove a stack when magical damage is dealt?
+    type: boolean
+  DecrementOnHealTaken:
+    description: Does this effect remove a stack when you're healed?
+    type: boolean
+  DecrementOnHealGiven:
+    description: Does this effect remove a stack when you heal?
+    type: boolean
+  DecrementOnCritGiven:
+    description: Does this effect remove a stack when you crit?
+    type: boolean
+  DecrementOnEffect:
+    description: Does this effect remove a stack by some other method?
+    type: boolean
+  RemoveOnDmgTaken:
+    description: Do all stacks of this effect go away when damage is taken?
+    type: boolean
+  ReApplyResistance:
+    description: Does this effect change resistances?
+    type: boolean
+  PersistsThroughDeath:
+    description: Does this effect persist through death?
+    type: boolean
+  PreventRemoval:
+    description: Can this effect not be removed by any means?
+    type: boolean
+  IsHidden:
+    description: Is this effect hidden from the player?
+    type: boolean
+  StatMods:
+    description: The stat mods applied while this effect is active.
+    type: array
+    items:
+      description: A stat modifier.
+      type: object
+      additionalProperties: false
+      required: [Tag, Value1, Value2, Value3]
+      properties:
+        Tag:
+          description: The stat modifier type. TODO - this is an enum with a lot of values!
+          type: integer
+          minimum: 0
+        Value1:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value2:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+        Value3:
+          description: A value whose semantics are determined by the tag.
+          type: integer
+$defs:
+  Color:
+    title: Color
+    description: An RGB color.
+    type: object
+    additionalProperties: false
+    required: [R, G, B]
+    properties:
+      R:
+        description: The red channel.
+        type: number
+        minimum: 0
+        maximum: 1
+      G:
+        description: The green channel.
+        type: number
+        minimum: 0
+        maximum: 1
+      B:
+        description: The blue channel.
+        type: number
+        minimum: 0
+        maximum: 1
