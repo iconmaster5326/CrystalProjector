@@ -1,0 +1,63 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: troop
+title: troop
+description: |
+  A Crystal Project troop definition.
+  A troop is a set of enemies to battle.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - SortOrder
+  - ScaledOrder
+  - Members
+properties:
+  ID:
+    description: The unique ID of this troop.
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+  Name:
+    description: The name of this troop. Not seen in gameplay.
+    type: string
+  SortOrder:
+    description: The order to sort this in. Likely unused.
+    type: integer
+  ScaledOrder:
+    description: |
+      The order to sort this in, when the "Approx. Power" sorting option is selected.
+      Likely unused. Might be used in the randomizer?
+    type: integer
+  Members:
+    description: The monsters in this troop.
+    type: array
+    items:
+      title: Troop Member
+      description: A monster in this troop.
+      type: object
+      additionalProperties: false
+      required:
+        - MonsterID
+        - PosX
+        - PosY
+        - PosZ
+        - BeginBattleDead
+      properties:
+        MonsterID:
+          description: The ID of a monster.
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        PosX:
+          description: The X offset on the screen where this monster appears.
+          type: number
+        PosY:
+          description: The Y offset on the screen where this monster appears.
+          type: number
+        PosZ:
+          description: The Z offset on the screen where this monster appears.
+          type: number
+        BeginBattleDead:
+          description: Does this monster start the battle dead?
+          type: boolean
