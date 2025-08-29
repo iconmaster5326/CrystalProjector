@@ -386,9 +386,12 @@ types:
       - id: texture
         doc: The string name of the texture file, if we're rendering as a sprite.
         type: nullable_string
+      - id: name
+        doc: The name of this outfit.
+        type: nullable_string
       - id: magic2
         doc: Unknown.
-        size: 2
+        size: 1
       - id: facing
         doc: The direction this NPC initially faces.
         type: u1
@@ -661,6 +664,7 @@ types:
             action::message: action_data_message
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_set_flag
+            action::shop: action_data_shop
             action::stop_processing: action_data_stop_processing
             _: nothing # TODO
   action_data_add_inventory:
@@ -753,6 +757,38 @@ types:
       - id: magic2
         doc: Unknown.
         size: 11
+  action_data_shop:
+    doc: Data associated with `action::shop`.
+    seq:
+      - id: num_shop_items
+        doc: How many items are sold at this shop.
+        type: u4
+      - id: shop_items
+        doc: The items sold at this shop.
+        type: shop_item
+        repeat: expr
+        repeat-expr: num_shop_items
+  shop_item:
+    doc: A single shop item in the data for a `action::shop`.
+    seq:
+      - id: type
+        doc: The type of item sold here. Only `treasure_type::item` and `treasure_type::equipment` are valid here.
+        type: u1
+        enum: treasure_type
+        valid:
+          any-of: [treasure_type::item, treasure_type::equipment]
+      - id: item
+        doc: The ID of an item/equipment.
+        type: u4
+      - id: cost_percent
+        doc: A number indicating how much more or less this item should cost than the price listed in its database entry. Default is 100.
+        type: u4
+      - id: condition
+        doc: A condition under which the item is sold.
+        type: condition
+      - id: magic1
+        doc: Unknown.
+        size: 4
   action_data_stop_processing:
     doc: Data associated with `action::stop_processing`.
     seq:
