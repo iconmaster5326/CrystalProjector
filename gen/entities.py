@@ -388,6 +388,30 @@ class Entities(KaitaiStruct):
 
 
 
+    class ActionDataModifyVar(KaitaiStruct):
+        """Data associated with `action::set_flag` and `action::add_number`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
+            if not isinstance(self.scope, Entities.Scope):
+                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/action_data_modify_var/seq/0")
+            self.magic1 = self._io.read_bytes(1)
+            self.variable = Entities.NullableString(self._io, self, self._root)
+            self.setting_mode = KaitaiStream.resolve_enum(Entities.VariableSettingMode, self._io.read_u1())
+            if not isinstance(self.setting_mode, Entities.VariableSettingMode):
+                raise kaitaistruct.ValidationNotInEnumError(self.setting_mode, self._io, u"/types/action_data_modify_var/seq/3")
+            _on = self.setting_mode
+            if _on == Entities.VariableSettingMode.constant:
+                self.setting_data = Entities.ActionDataVarsetmodeConstant(self._io, self, self._root)
+            else:
+                self.setting_data = Entities.Nothing(self._io, self, self._root)
+
+
     class ActionDataMove(KaitaiStruct):
         """Data associated with `action::move`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -436,45 +460,6 @@ class Entities(KaitaiStruct):
             self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
             if not isinstance(self.facing, Entities.Facing):
                 raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_set_facing/seq/0")
-
-
-    class ActionDataSetFlag(KaitaiStruct):
-        """Data associated with `action::set_flag`."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
-            if not isinstance(self.scope, Entities.Scope):
-                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/action_data_set_flag/seq/0")
-            self.magic1 = self._io.read_bytes(1)
-            self.flag = Entities.NullableString(self._io, self, self._root)
-            self.setting_mode = KaitaiStream.resolve_enum(Entities.VariableSettingMode, self._io.read_u1())
-            if not isinstance(self.setting_mode, Entities.VariableSettingMode):
-                raise kaitaistruct.ValidationNotInEnumError(self.setting_mode, self._io, u"/types/action_data_set_flag/seq/3")
-            _on = self.setting_mode
-            if _on == Entities.VariableSettingMode.constant:
-                self.setting_data = Entities.ActionDataSetFlagVarsetmodeConstant(self._io, self, self._root)
-            else:
-                self.setting_data = Entities.Nothing(self._io, self, self._root)
-
-
-    class ActionDataSetFlagVarsetmodeConstant(KaitaiStruct):
-        """The data associated with `variable_setting_mode::constant`."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.value = self._io.read_u1()
-            if not  ((self.value == 0) or (self.value == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.value, self._io, u"/types/action_data_set_flag_varsetmode_constant/seq/0")
-            self.magic1 = self._io.read_bytes(11)
 
 
     class ActionDataShop(KaitaiStruct):
@@ -545,6 +530,37 @@ class Entities(KaitaiStruct):
             if not  ((self.global_try_despawn == 0) or (self.global_try_despawn == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.global_try_despawn, self._io, u"/types/action_data_stop_processing/seq/13")
             self.magic1 = self._io.read_bytes(1)
+
+
+    class ActionDataTriggerNpc(KaitaiStruct):
+        """Data associated with `action::trigger_npc`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.key = Entities.NullableString(self._io, self, self._root)
+            self.type = KaitaiStream.resolve_enum(Entities.Trigger, self._io.read_u1())
+            if not isinstance(self.type, Entities.Trigger):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/action_data_trigger_npc/seq/1")
+
+
+    class ActionDataVarsetmodeConstant(KaitaiStruct):
+        """The data associated with `variable_setting_mode::constant`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.bool_value = self._io.read_u1()
+            if not  ((self.bool_value == 0) or (self.bool_value == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.bool_value, self._io, u"/types/action_data_varsetmode_constant/seq/0")
+            self.int_value = self._io.read_u4le()
+            self.magic1 = self._io.read_bytes(7)
 
 
     class Condition(KaitaiStruct):
@@ -917,6 +933,8 @@ class Entities(KaitaiStruct):
             _on = self.type
             if _on == Entities.Action.add_inventory:
                 self.data = Entities.ActionDataAddInventory(self._io, self, self._root)
+            elif _on == Entities.Action.add_number:
+                self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
             elif _on == Entities.Action.condition:
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
             elif _on == Entities.Action.message:
@@ -928,11 +946,13 @@ class Entities(KaitaiStruct):
             elif _on == Entities.Action.set_facing:
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
-                self.data = Entities.ActionDataSetFlag(self._io, self, self._root)
+                self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
             elif _on == Entities.Action.shop:
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
                 self.data = Entities.ActionDataStopProcessing(self._io, self, self._root)
+            elif _on == Entities.Action.trigger_npc:
+                self.data = Entities.ActionDataTriggerNpc(self._io, self, self._root)
             else:
                 self.data = Entities.Nothing(self._io, self, self._root)
 

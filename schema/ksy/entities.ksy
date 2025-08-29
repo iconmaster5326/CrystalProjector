@@ -782,14 +782,16 @@ types:
           switch-on: type
           cases:
             action::add_inventory: action_data_add_inventory
+            action::add_number: action_data_modify_var
             action::condition: action_data_condition
             action::message_hint: action_data_message_hint
             action::message: action_data_message
             action::move: action_data_move
             action::set_facing: action_data_set_facing
-            action::set_flag: action_data_set_flag
+            action::set_flag: action_data_modify_var
             action::shop: action_data_shop
             action::stop_processing: action_data_stop_processing
+            action::trigger_npc: action_data_trigger_npc
             _: nothing # TODO
   action_data_add_inventory:
      doc: Data associated with `action::add_inventory`.
@@ -913,11 +915,11 @@ types:
         enum: facing
         valid:
           in-enum: true
-  action_data_set_flag:
-    doc: Data associated with `action::set_flag`.
+  action_data_modify_var:
+    doc: Data associated with `action::set_flag` and `action::add_number`.
     seq:
       - id: scope
-        doc: The variable scope of the flag.
+        doc: The variable's scope.
         type: u1
         enum: scope
         valid:
@@ -925,11 +927,11 @@ types:
       - id: magic1
         doc: Unknown.
         size: 1
-      - id: flag
-        doc: The flag to set.
+      - id: variable
+        doc: The variable to set.
         type: nullable_string
       - id: setting_mode
-        doc: Will you be setting this flag based on a constant, or the value of another variable, or so on?
+        doc: Will you be setting this variable based on a constant, or the value of another variable, or so on?
         type: u1
         enum: variable_setting_mode
         valid:
@@ -939,19 +941,22 @@ types:
         type:
           switch-on: setting_mode
           cases:
-            variable_setting_mode::constant: action_data_set_flag_varsetmode_constant
+            variable_setting_mode::constant: action_data_varsetmode_constant
             _: nothing # TODO
-  action_data_set_flag_varsetmode_constant:
+  action_data_varsetmode_constant:
     doc: The data associated with `variable_setting_mode::constant`.
     seq:
-      - id: value
-        doc: Whether or not to set or unset the flag.
+      - id: bool_value
+        doc: Whether or not to set or unset the flag, if we're setting a flag.
         type: u1
         valid:
           any-of: [0, 1]
+      - id: int_value
+        doc: The value to set/add/subtract/etc. the number to, if we're setting a number.
+        type: u4
       - id: magic1
         doc: Unknown.
-        size: 11
+        size: 7
   action_data_shop:
     doc: Data associated with `action::shop`.
     seq:
@@ -1043,6 +1048,18 @@ types:
       - id: magic1
         doc: Unknown.
         size: 1
+  action_data_trigger_npc:
+    doc: Data associated with `action::trigger_npc`.
+    seq:
+      - id: key
+        doc: The key of the NPC to trigger.
+        type: nullable_string
+      - id: type
+        doc: The trigger type to invoke.
+        type: u1
+        enum: trigger
+        valid:
+          in-enum: true
   data_sign:
     doc: Data for entities of type `sign`.
     seq:
