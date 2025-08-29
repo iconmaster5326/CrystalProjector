@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: actor
-title: actor
+$id: actor.yaml
+title: Actor
 description: |
   A Crystal Project actor definition. This is... Probably unused?
   This isn't about fake PCs you fight, because Dr. Cool Aids and friends aren't here.

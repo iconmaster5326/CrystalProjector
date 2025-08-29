@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: item
-title: item
+$id: item.yaml
+title: Item
 description: |
   A Crystal Project item definition.
   This does NOT cover equipment items, those are a separate category!

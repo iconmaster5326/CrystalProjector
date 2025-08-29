@@ -55,6 +55,113 @@ class Database(typing.NamedTuple):
         return Database(db.version, json.loads(str(result.getvalue(), encoding="UTF-8")))
 
 
+class Patch:
+    """A Crystal Project game mode definition.
+    This is for changing the databases for Vanilla and Chaos mode.
+    For Easy/Hard mode, see `difficulty.yaml`.
+
+    We have to create this Patch class manually,
+    as Quicktype does not support nested schemas well at all.
+    """
+
+    id: int
+    """The unique ID of this patch."""
+    name: str
+    """The name of this patch."""
+    abilities: typing.List[Ability]
+    """Any abilities changed by this patch."""
+    difficulties: typing.List[Difficulty]
+    """Any difficulties changed by this patch."""
+    equipment: typing.List[Equipment]
+    """Any equipment changed by this patch."""
+    genders: typing.List[Gender]
+    """Any genders changed by this patch."""
+    items: typing.List[Item]
+    """Any items changed by this patch."""
+    jobs: typing.List[Job]
+    """Any jobs changed by this patch."""
+    monsters: typing.List[Monster]
+    """Any monsters changed by this patch."""
+    passives: typing.List[Passive]
+    """Any passives changed by this patch."""
+    recipes: typing.List[Recipe]
+    """Any recipes changed by this patch."""
+    sparks: typing.List[Spark]
+    """Any sparks changed by this patch."""
+    statuses: typing.List[Status]
+    """Any statuses changed by this patch."""
+    troops: typing.List[Troop]
+    """Any troops changed by this patch."""
+
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        abilities: typing.List[Ability],
+        difficulties: typing.List[Difficulty],
+        equipment: typing.List[Equipment],
+        genders: typing.List[Gender],
+        items: typing.List[Item],
+        jobs: typing.List[Job],
+        monsters: typing.List[Monster],
+        passives: typing.List[Passive],
+        recipes: typing.List[Recipe],
+        sparks: typing.List[Spark],
+        statuses: typing.List[Status],
+        troops: typing.List[Troop],
+    ) -> None:
+        self.id = id
+        self.name = name
+        self.abilities = abilities
+        self.difficulties = difficulties
+        self.equipment = equipment
+        self.genders = genders
+        self.items = items
+        self.jobs = jobs
+        self.monsters = monsters
+        self.passives = passives
+        self.recipes = recipes
+        self.sparks = sparks
+        self.statuses = statuses
+        self.troops = troops
+
+    @classmethod
+    def from_dict(cls, json) -> "Patch":
+        return Patch(
+            id=json["ID"],
+            name=json["Name"],
+            abilities=[Ability.from_dict(x) for x in json["Abilities"]],
+            difficulties=[Difficulty.from_dict(x) for x in json["Difficulties"]],
+            equipment=[Equipment.from_dict(x) for x in json["Equipment"]],
+            genders=[Gender.from_dict(x) for x in json["Genders"]],
+            items=[Item.from_dict(x) for x in json["Items"]],
+            jobs=[Job.from_dict(x) for x in json["Jobs"]],
+            monsters=[Monster.from_dict(x) for x in json["Monsters"]],
+            passives=[Passive.from_dict(x) for x in json["Passives"]],
+            recipes=[Recipe.from_dict(x) for x in json["Recipes"]],
+            sparks=[Spark.from_dict(x) for x in json["Sparks"]],
+            statuses=[Status.from_dict(x) for x in json["Statuses"]],
+            troops=[Troop.from_dict(x) for x in json["Troops"]],
+        )
+    
+    def to_dict(self) -> JSONObject:
+        return {
+            "ID": self.id,
+            "Name": self.name,
+            "Abilities": [x.to_dict() for x in self.abilities],
+            "Difficulties": [x.to_dict() for x in self.difficulties],
+            "Equipment": [x.to_dict() for x in self.equipment],
+            "Genders": [x.to_dict() for x in self.genders],
+            "Items": [x.to_dict() for x in self.items],
+            "Jobs": [x.to_dict() for x in self.jobs],
+            "Monsters": [x.to_dict() for x in self.monsters],
+            "Passives": [x.to_dict() for x in self.passives],
+            "Recipes": [x.to_dict() for x in self.recipes],
+            "Sparks": [x.to_dict() for x in self.sparks],
+            "Statuses": [x.to_dict() for x in self.statuses],
+            "Troops": [x.to_dict() for x in self.troops],
+        }
+
 def load_abilities(infile: typing.BinaryIO) -> typing.Dict[int, Ability]:
     return {json["ID"]: Ability.from_dict(json) for json in Database.load(infile).database if json}
 
@@ -103,6 +210,10 @@ def load_passives(infile: typing.BinaryIO) -> typing.Dict[int, Passive]:
     return {json["ID"]: Passive.from_dict(json) for json in Database.load(infile).database if json}
 
 
+def load_patches(infile: typing.BinaryIO) -> typing.Dict[int, Patch]:
+    return {json["ID"]: Patch.from_dict(json) for json in Database.load(infile).database if json}
+
+
 def load_recipes(infile: typing.BinaryIO) -> typing.Dict[int, Recipe]:
     return {json["ID"]: Recipe.from_dict(json) for json in Database.load(infile).database if json}
 
@@ -134,14 +245,22 @@ def load_voxels(infile: typing.BinaryIO) -> typing.Dict[int, Voxel]:
 if __name__ == "__main__":
     import yaml
     import jsonschema
+    import referencing
+    import referencing.exceptions
+    import os
 
     root = "C:/Program Files (x86)/Steam/steamapps/common/Crystal Project/Content/Database"
+
+    def resolve_schema(uri: str) -> referencing.Resource[JSON]:
+        path = os.path.join(os.path.dirname(__file__), "schema", "json", uri)
+        contents = yaml.load(open(path, encoding="UTF-8"), yaml.FullLoader)
+        return referencing.Resource.from_contents(contents)
 
     def test_db(filename: str, load_fn: typing.Callable[[typing.BinaryIO], typing.Any]):
         print(f"=== {filename.upper()} ===")
         schema = yaml.load(open(f"schema/json/{filename}.yaml", encoding="UTF-8"), yaml.FullLoader)
         jsonschema.Draft202012Validator.check_schema(schema)
-        validator = jsonschema.Draft202012Validator(schema)
+        validator = jsonschema.Draft202012Validator(schema, registry=referencing.Registry(retrieve=resolve_schema))
         dbfile = open(f"{root}/{filename}.dat", "rb")
         raw_json = Database.load(dbfile).database
         
@@ -183,7 +302,7 @@ if __name__ == "__main__":
 
     test_db("monster", load_monsters)
     test_db("passive", load_passives)
-    # copy_over_db("patch")
+    test_db("patch", load_patches)
     test_db("recipe", load_recipes)
     test_db("spark", load_sparks)
     test_db("status", load_statuses)

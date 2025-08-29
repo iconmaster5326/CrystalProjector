@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: status
-title: status
+$id: status.yaml
+title: Status
 description: |
   A Crystal Project status effect definition.
 type: object

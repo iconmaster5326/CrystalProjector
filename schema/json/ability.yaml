@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: ability
-title: ability
+$id: ability.yaml
+title: Ability
 description: |
   A Crystal Project ability definition.
   Abilities are both attacks and skills in battle,

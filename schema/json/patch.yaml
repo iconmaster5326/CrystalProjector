@@ -1,0 +1,93 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: patch.yaml
+title: Patch
+description: |
+  A Crystal Project game mode definition.
+  This is for changing the databases for Vanilla and Chaos mode.
+  For Easy/Hard mode, see `difficulty.yaml`.
+type: object
+additionalProperties: false
+required:
+  - ID
+  - Name
+  - Abilities
+  - Difficulties
+  - Equipment
+  - Genders
+  - Items
+  - Jobs
+  - Monsters
+  - Passives
+  - Recipes
+  - Sparks
+  - Statuses
+  - Troops
+properties:
+  ID:
+    description: The ID of this game mode.
+    type: integer
+    minimum: 0
+    maximum: 255
+  Name:
+    description: The name of this game mode.
+    type: string
+  Abilities:
+    description: Any changed abilities.
+    type: array
+    items:
+      $ref: "ability.yaml"
+  Difficulties:
+    description: Any changed difficulties.
+    type: array
+    items:
+      $ref: "difficulty.yaml"
+  Equipment:
+    description: Any changed equipment.
+    type: array
+    items:
+      $ref: "equipment.yaml"
+  Genders:
+    description: Any changed genders.
+    type: array
+    items:
+      $ref: "gender.yaml"
+  Items:
+    description: Any changed items.
+    type: array
+    items:
+      $ref: "item.yaml"
+  Jobs:
+    description: Any changed jobs.
+    type: array
+    items:
+      $ref: "job.yaml"
+  Monsters:
+    description: Any changed monsters.
+    type: array
+    items:
+      $ref: "monster.yaml"
+  Passives:
+    description: Any changed passives.
+    type: array
+    items:
+      $ref: "passive.yaml"
+  Recipes:
+    description: Any changed recipes.
+    type: array
+    items:
+      $ref: "recipe.yaml"
+  Sparks:
+    description: Any changed sparks.
+    type: array
+    items:
+      $ref: "spark.yaml"
+  Statuses:
+    description: Any changed status effects.
+    type: array
+    items:
+      $ref: "status.yaml"
+  Troops:
+    description: Any changed troops.
+    type: array
+    items:
+      $ref: "troop.yaml"

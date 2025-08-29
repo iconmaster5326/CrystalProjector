@@ -1,7 +1,9 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: voxel
+$id: voxel.yaml
 title: Voxel
-description: A Crystal Project voxel type classification. Has rendering and physics information for each voxel type.
+description: |
+  A Crystal Project voxel type classification.
+  Has rendering and physics information for each voxel type.
 type: object
 additionalProperties: false
 required:

@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: recipe
-title: recipe
+$id: recipe.yaml
+title: Recipe
 description: |
   A Crystal Project recipe definition.
   Recipes represent crafting entries done at shops.

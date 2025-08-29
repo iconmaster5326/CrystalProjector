@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: animation
-title: animation
+$id: animation.yaml
+title: Animation
 description: |
   A Crystal Project animation definition.
   These play in combat when you execute actions.

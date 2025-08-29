@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: gender
-title: gender
+$id: gender.yaml
+title: Gender
 description: |
   A Crystal Project gender definition.
   Your gender affects some stat growths as you level.

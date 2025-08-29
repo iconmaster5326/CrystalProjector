@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: equipment
-title: equipment
+$id: equipment/equipment.yaml
+title: Equipment
 description: |
   A Crystal Project equipment definition.
 type: object

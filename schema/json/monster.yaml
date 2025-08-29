@@ -1,8 +1,8 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: job
-title: job
+$id: monster.yaml
+title: Monster
 description: |
-  A Crystal Project job definition.
+  A Crystal Project monster definition.
 type: object
 additionalProperties: false
 required:

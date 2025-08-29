@@ -1,5 +1,5 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: biome
+$id: biome.yaml
 title: Biome
 description: A Crystal Project biome, which is a region of the map.
 type: object

@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: difficulty
-title: difficulty
+$id: difficulty.yaml
+title: Difficulty
 description: |
   A Crystal Project difficulty mode definition.
   This affects enemy stats, mostly.

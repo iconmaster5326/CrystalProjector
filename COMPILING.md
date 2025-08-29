@@ -22,7 +22,7 @@ These need fixed manually for now.
 
 # Compiling JSON schemas
 
-For each schema:
+For each schema (OTHER THAN `patch.yaml`):
 
 ```bash
 quicktype --lang python --src-lang schema --out gen/X.py schema/json/X.yaml
