@@ -94,6 +94,13 @@ class Entities(KaitaiStruct):
         learn_passive = 77
         comment = 78
 
+    class CheckNumberEval(IntEnum):
+        less = 0
+        less_equal = 1
+        equal = 2
+        greater_equal = 3
+        greater = 4
+
     class Collision(IntEnum):
         none = 0
         one_way_to = 1
@@ -189,6 +196,13 @@ class Entities(KaitaiStruct):
         off_voxel_and_actor = 7
         full = 8
 
+    class MoveWaitMode(IntEnum):
+        none = 0
+        end = 1
+        exit = 2
+        collide = 3
+        exit_or_collide = 4
+
     class Physics(IntEnum):
         player_foot = 0
         quintar_default = 1
@@ -243,6 +257,12 @@ class Entities(KaitaiStruct):
         wooden = 0
         bulletin_left = 100
         bulletin_right = 101
+
+    class TouchType(IntEnum):
+        stand_on = 0
+        xz_touch = 1
+        head_bonk = 2
+        any_contact = 3
 
     class TreasureStyle(IntEnum):
         currency = 0
@@ -328,7 +348,6 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.condition = Entities.Condition(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(4)
             self.actions_true = Entities.NpcActionsList(self._io, self, self._root)
             self.actions_false = Entities.NpcActionsList(self._io, self, self._root)
 
@@ -343,7 +362,66 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.message = Entities.NullableString(self._io, self, self._root)
-            self.magic = self._io.read_bytes(8)
+            self.magic1 = self._io.read_bytes(8)
+
+
+    class ActionDataMessageHint(KaitaiStruct):
+        """Data associated with `action::message_hint`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.has_item = self._io.read_u1()
+            if not  ((self.has_item == 0) or (self.has_item == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_item, self._io, u"/types/action_data_message_hint/seq/0")
+            if self.has_item == 1:
+                self.item = self._io.read_u4le()
+
+            self.has_job = self._io.read_u1()
+            if not  ((self.has_job == 0) or (self.has_job == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_job, self._io, u"/types/action_data_message_hint/seq/2")
+            if self.has_job == 1:
+                self.job = self._io.read_u4le()
+
+
+
+    class ActionDataMove(KaitaiStruct):
+        """Data associated with `action::move`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.x = self._io.read_s4le()
+            self.y = self._io.read_s4le()
+            self.z = self._io.read_s4le()
+            self.has_facing = self._io.read_u1()
+            if not  ((self.has_facing == 0) or (self.has_facing == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_facing, self._io, u"/types/action_data_move/seq/3")
+            self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
+            if not isinstance(self.facing, Entities.Facing):
+                raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_move/seq/4")
+            self.relative = self._io.read_u1()
+            if not  ((self.relative == 0) or (self.relative == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.relative, self._io, u"/types/action_data_move/seq/5")
+            self.speed = self._io.read_f4le()
+            self.wait = KaitaiStream.resolve_enum(Entities.MoveWaitMode, self._io.read_u1())
+            if not isinstance(self.wait, Entities.MoveWaitMode):
+                raise kaitaistruct.ValidationNotInEnumError(self.wait, self._io, u"/types/action_data_move/seq/7")
+            self.no_collision = self._io.read_u1()
+            if not  ((self.no_collision == 0) or (self.no_collision == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.no_collision, self._io, u"/types/action_data_move/seq/8")
+            self.has_jump = self._io.read_u1()
+            if not  ((self.has_jump == 0) or (self.has_jump == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_jump, self._io, u"/types/action_data_move/seq/9")
+            self.jump = KaitaiStream.resolve_enum(Entities.Jump, self._io.read_u1())
+            if not isinstance(self.jump, Entities.Jump):
+                raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/action_data_move/seq/10")
 
 
     class ActionDataSetFacing(KaitaiStruct):
@@ -396,7 +474,7 @@ class Entities(KaitaiStruct):
             self.value = self._io.read_u1()
             if not  ((self.value == 0) or (self.value == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.value, self._io, u"/types/action_data_set_flag_varsetmode_constant/seq/0")
-            self.magic2 = self._io.read_bytes(11)
+            self.magic1 = self._io.read_bytes(11)
 
 
     class ActionDataShop(KaitaiStruct):
@@ -483,15 +561,19 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition/seq/0")
             _on = self.type
             if _on == Entities.ConditionType.check_flag:
-                self.data = Entities.ConditionDataCheckFlag(self._io, self, self._root)
+                self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
+            elif _on == Entities.ConditionType.check_number:
+                self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
             elif _on == Entities.ConditionType.operation:
                 self.data = Entities.ConditionDataOperation(self._io, self, self._root)
+            elif _on == Entities.ConditionType.randomizer:
+                self.data = Entities.ConditionDataRandomizer(self._io, self, self._root)
             else:
-                self.data = Entities.Nothing(self._io, self, self._root)
+                self.data = Entities.ConditionNone(self._io, self, self._root)
 
 
-    class ConditionDataCheckFlag(KaitaiStruct):
-        """Condition data for `condition_type::check_flag`."""
+    class ConditionDataCheckVar(KaitaiStruct):
+        """Condition data for `condition_type::check_flag` and `condition_type::check_number`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -502,13 +584,18 @@ class Entities(KaitaiStruct):
             self.magic1 = self._io.read_bytes(3)
             self.inverted = self._io.read_u1()
             if not  ((self.inverted == 0) or (self.inverted == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.inverted, self._io, u"/types/condition_data_check_flag/seq/1")
+                raise kaitaistruct.ValidationNotAnyOfError(self.inverted, self._io, u"/types/condition_data_check_var/seq/1")
             self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
             if not isinstance(self.scope, Entities.Scope):
-                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/condition_data_check_flag/seq/2")
+                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/condition_data_check_var/seq/2")
             self.magic2 = self._io.read_bytes(1)
-            self.flag = Entities.NullableString(self._io, self, self._root)
-            self.magic3 = self._io.read_bytes(10)
+            self.variable = Entities.NullableString(self._io, self, self._root)
+            self.eval = KaitaiStream.resolve_enum(Entities.CheckNumberEval, self._io.read_u1())
+            if not isinstance(self.eval, Entities.CheckNumberEval):
+                raise kaitaistruct.ValidationNotInEnumError(self.eval, self._io, u"/types/condition_data_check_var/seq/5")
+            self.magic3 = self._io.read_bytes(2)
+            self.value = self._io.read_s4le()
+            self.magic4 = self._io.read_bytes(7)
 
 
     class ConditionDataOperation(KaitaiStruct):
@@ -520,12 +607,61 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.operator = KaitaiStream.resolve_enum(Entities.ConditionOperator, self._io.read_u4le())
-            if not isinstance(self.operator, Entities.ConditionOperator):
-                raise kaitaistruct.ValidationNotInEnumError(self.operator, self._io, u"/types/condition_data_operation/seq/0")
+            self.magic1 = self._io.read_bytes(4)
             self.lhs = Entities.Condition(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(5)
+            self.magic2 = self._io.read_bytes(1)
             self.rhs = Entities.Condition(self._io, self, self._root)
+
+
+    class ConditionDataRandomizer(KaitaiStruct):
+        """Condition data for `condition_type::randomizer`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(4)
+            self.crystals = self._io.read_u1()
+            if not  ((self.crystals == 0) or (self.crystals == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.crystals, self._io, u"/types/condition_data_randomizer/seq/1")
+            self.monsters = self._io.read_u1()
+            if not  ((self.monsters == 0) or (self.monsters == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.monsters, self._io, u"/types/condition_data_randomizer/seq/2")
+            self.bosses = self._io.read_u1()
+            if not  ((self.bosses == 0) or (self.bosses == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.bosses, self._io, u"/types/condition_data_randomizer/seq/3")
+            self.items = self._io.read_u1()
+            if not  ((self.items == 0) or (self.items == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.items, self._io, u"/types/condition_data_randomizer/seq/4")
+            self.recovery = self._io.read_u1()
+            if not  ((self.recovery == 0) or (self.recovery == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.recovery, self._io, u"/types/condition_data_randomizer/seq/5")
+            self.progression = self._io.read_u1()
+            if not  ((self.progression == 0) or (self.progression == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.progression, self._io, u"/types/condition_data_randomizer/seq/6")
+            self.gated = self._io.read_u1()
+            if not  ((self.gated == 0) or (self.gated == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.gated, self._io, u"/types/condition_data_randomizer/seq/7")
+            self.has_invalid_item = self._io.read_u1()
+            if not  ((self.has_invalid_item == 0) or (self.has_invalid_item == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_invalid_item, self._io, u"/types/condition_data_randomizer/seq/8")
+            if self.has_invalid_item == 1:
+                self.invalid_item = self._io.read_u4le()
+
+
+
+    class ConditionNone(KaitaiStruct):
+        """Null condition data."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(4)
 
 
     class DataCrystal(KaitaiStruct):
@@ -537,9 +673,9 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic = self._io.read_u1()
-            if not self.magic == 1:
-                raise kaitaistruct.ValidationNotEqualError(1, self.magic, self._io, u"/types/data_crystal/seq/0")
+            self.magic1 = self._io.read_u1()
+            if not self.magic1 == 1:
+                raise kaitaistruct.ValidationNotEqualError(1, self.magic1, self._io, u"/types/data_crystal/seq/0")
             self.job = self._io.read_u4le()
             self.r = self._io.read_u1()
             self.g = self._io.read_u1()
@@ -630,6 +766,9 @@ class Entities(KaitaiStruct):
             self.pages = []
             for i in range(self.num_pages):
                 self.pages.append(Entities.NpcPage(self._io, self, self._root))
+
+            if  ((self.num_pages == 0) and ((not (self._io.is_eof())))) :
+                self.blank_page = self._io.read_bytes(37)
 
 
 
@@ -782,6 +921,10 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
+            elif _on == Entities.Action.message_hint:
+                self.data = Entities.ActionDataMessageHint(self._io, self, self._root)
+            elif _on == Entities.Action.move:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.set_facing:
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
@@ -820,33 +963,51 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.condition = Entities.Condition(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(4)
             self.texture = Entities.NullableString(self._io, self, self._root)
             self.name = Entities.NullableString(self._io, self, self._root)
-            self.magic2 = self._io.read_bytes(1)
+            self.pc = self._io.read_u1()
+            if not  ((self.pc == 0) or (self.pc == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.pc, self._io, u"/types/npc_outfit/seq/3")
+            if self.pc == 1:
+                self.pc_level = self._io.read_u1()
+
+            if self.pc == 1:
+                self.pc_magic1 = self._io.read_bytes(3)
+
             self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
             if not isinstance(self.facing, Entities.Facing):
-                raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/npc_outfit/seq/5")
+                raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/npc_outfit/seq/6")
             self.shadow = KaitaiStream.resolve_enum(Entities.Shadow, self._io.read_u1())
             if not isinstance(self.shadow, Entities.Shadow):
-                raise kaitaistruct.ValidationNotInEnumError(self.shadow, self._io, u"/types/npc_outfit/seq/6")
+                raise kaitaistruct.ValidationNotInEnumError(self.shadow, self._io, u"/types/npc_outfit/seq/7")
             self.auto_step = self._io.read_u1()
             if not  ((self.auto_step == 0) or (self.auto_step == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.auto_step, self._io, u"/types/npc_outfit/seq/7")
+                raise kaitaistruct.ValidationNotAnyOfError(self.auto_step, self._io, u"/types/npc_outfit/seq/8")
             self.has_voxel = self._io.read_u1()
             if not  ((self.has_voxel == 0) or (self.has_voxel == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.has_voxel, self._io, u"/types/npc_outfit/seq/8")
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_voxel, self._io, u"/types/npc_outfit/seq/9")
             if self.has_voxel == 1:
                 self.voxel = self._io.read_u1()
 
-            self.magic4 = self._io.read_bytes(3)
+            self.magic4 = self._io.read_bytes(1)
+            self.player_collision = KaitaiStream.resolve_enum(Entities.Collision, self._io.read_u1())
+            if not isinstance(self.player_collision, Entities.Collision):
+                raise kaitaistruct.ValidationNotInEnumError(self.player_collision, self._io, u"/types/npc_outfit/seq/12")
+            self.npc_collision = KaitaiStream.resolve_enum(Entities.Collision, self._io.read_u1())
+            if not isinstance(self.npc_collision, Entities.Collision):
+                raise kaitaistruct.ValidationNotInEnumError(self.npc_collision, self._io, u"/types/npc_outfit/seq/13")
             self.physics = KaitaiStream.resolve_enum(Entities.Physics, self._io.read_u1())
             if not isinstance(self.physics, Entities.Physics):
-                raise kaitaistruct.ValidationNotInEnumError(self.physics, self._io, u"/types/npc_outfit/seq/11")
-            self.magic5 = self._io.read_bytes(2)
+                raise kaitaistruct.ValidationNotInEnumError(self.physics, self._io, u"/types/npc_outfit/seq/14")
+            self.jump = KaitaiStream.resolve_enum(Entities.Jump, self._io.read_u1())
+            if not isinstance(self.jump, Entities.Jump):
+                raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/npc_outfit/seq/15")
+            self.keep_spawned = self._io.read_u1()
+            if not  ((self.keep_spawned == 0) or (self.keep_spawned == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.keep_spawned, self._io, u"/types/npc_outfit/seq/16")
             self.wander = KaitaiStream.resolve_enum(Entities.Wander, self._io.read_u1())
             if not isinstance(self.wander, Entities.Wander):
-                raise kaitaistruct.ValidationNotInEnumError(self.wander, self._io, u"/types/npc_outfit/seq/13")
+                raise kaitaistruct.ValidationNotInEnumError(self.wander, self._io, u"/types/npc_outfit/seq/17")
             _on = self.wander
             if _on == Entities.Wander.none:
                 self.wander_data = Entities.WanderNone(self._io, self, self._root)
@@ -866,19 +1027,20 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.condition = Entities.Condition(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(4)
             self.trigger = KaitaiStream.resolve_enum(Entities.Trigger, self._io.read_u1())
             if not isinstance(self.trigger, Entities.Trigger):
-                raise kaitaistruct.ValidationNotInEnumError(self.trigger, self._io, u"/types/npc_page/seq/2")
+                raise kaitaistruct.ValidationNotInEnumError(self.trigger, self._io, u"/types/npc_page/seq/1")
             _on = self.trigger
             if _on == Entities.Trigger.player_proximity:
                 self.trigger_data = Entities.TriggerDataPlayerProximity(self._io, self, self._root)
+            elif _on == Entities.Trigger.player_touch:
+                self.trigger_data = Entities.TriggerDataPlayerTouch(self._io, self, self._root)
             else:
                 self.trigger_data = Entities.TriggerDataNone(self._io, self, self._root)
             self.actions = Entities.NpcActionsList(self._io, self, self._root)
             self.context = KaitaiStream.resolve_enum(Entities.TriggerContext, self._io.read_u1())
             if not isinstance(self.context, Entities.TriggerContext):
-                raise kaitaistruct.ValidationNotInEnumError(self.context, self._io, u"/types/npc_page/seq/5")
+                raise kaitaistruct.ValidationNotInEnumError(self.context, self._io, u"/types/npc_page/seq/4")
 
 
     class NullableString(KaitaiStruct):
@@ -909,7 +1071,7 @@ class Entities(KaitaiStruct):
         def _read(self):
             self.id = self._io.read_u4le()
             self.weight = self._io.read_u4le()
-            self.magic = self._io.read_bytes(2)
+            self.magic1 = self._io.read_bytes(2)
 
 
     class ShopItem(KaitaiStruct):
@@ -927,7 +1089,6 @@ class Entities(KaitaiStruct):
             self.item = self._io.read_u4le()
             self.cost_percent = self._io.read_u4le()
             self.condition = Entities.Condition(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(4)
 
 
     class String(KaitaiStruct):
@@ -952,7 +1113,7 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic = self._io.read_bytes(30)
+            self.magic1 = self._io.read_bytes(30)
 
 
     class TriggerDataPlayerProximity(KaitaiStruct):
@@ -974,6 +1135,21 @@ class Entities(KaitaiStruct):
             self.magic2 = self._io.read_bytes(2)
 
 
+    class TriggerDataPlayerTouch(KaitaiStruct):
+        """The data for a NPC page with a trigger of `trigger::player_touch`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(29)
+            self.type = KaitaiStream.resolve_enum(Entities.TouchType, self._io.read_u1())
+            if not isinstance(self.type, Entities.TouchType):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/trigger_data_player_touch/seq/1")
+
+
     class WanderData(KaitaiStruct):
         """Wandering information for NPCs with circle, square, or line wander types."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -986,7 +1162,13 @@ class Entities(KaitaiStruct):
             self.speed = self._io.read_f4le()
             self.frequency = self._io.read_u4le()
             self.radius = self._io.read_f4le()
-            self.magic = self._io.read_bytes(2)
+            self.has_magic1 = self._io.read_u1()
+            if not  ((self.has_magic1 == 0) or (self.has_magic1 == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_magic1, self._io, u"/types/wander_data/seq/3")
+            if self.has_magic1 == 1:
+                self.magic1 = self._io.read_bytes(4)
+
+            self.magic2 = self._io.read_bytes(1)
 
 
     class WanderNone(KaitaiStruct):
@@ -1010,7 +1192,10 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(13)
+            self.magic1 = self._io.read_bytes(12)
+            self.is_route = self._io.read_u1()
+            if not self.is_route == 1:
+                raise kaitaistruct.ValidationNotEqualError(1, self.is_route, self._io, u"/types/wander_route/seq/1")
             self.num_points = self._io.read_u4le()
             self.points = []
             for i in range(self.num_points):

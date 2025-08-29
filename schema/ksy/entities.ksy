@@ -178,6 +178,11 @@ enums:
     2: auto
     3: player_touch
     4: trigger_npc
+  touch_type:
+    0: stand_on
+    1: xz_touch
+    2: head_bonk
+    3: any_contact
   trigger_context:
     0: sync
     1: async
@@ -273,6 +278,18 @@ enums:
     2: xor
     3: equiv
     4: impl
+  move_wait_mode:
+    0: none
+    1: end
+    2: exit
+    3: collide
+    4: exit_or_collide
+  check_number_eval:
+    0: less
+    1: less_equal
+    2: equal
+    3: greater_equal
+    4: greater
 types:
   string:
     doc: A string.
@@ -374,24 +391,35 @@ types:
         type: npc_page
         repeat: expr
         repeat-expr: num_pages
+      - id: blank_page
+        doc: If there's 0 pages, there's some zero bytes here.
+        size: 37
+        if: num_pages == 0 and not _io.eof
   npc_outfit:
     doc: The appearance, physics, and movement of an NPC.
     seq:
       - id: condition
         doc: The condition data for this outfit.
         type: condition
-      - id: magic1
-        doc: Unknown.
-        size: 4
       - id: texture
         doc: The string name of the texture file, if we're rendering as a sprite.
         type: nullable_string
       - id: name
         doc: The name of this outfit.
         type: nullable_string
-      - id: magic2
+      - id: pc
+        doc: Are we a "fake PC"?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: pc_level
+        doc: The level of the "fake PC".
+        type: u1
+        if: pc == 1
+      - id: pc_magic1
         doc: Unknown.
-        size: 1
+        size: 3
+        if: pc == 1
       - id: facing
         doc: The direction this NPC initially faces.
         type: u1
@@ -420,16 +448,36 @@ types:
         if: has_voxel == 1
       - id: magic4
         doc: Unknown.
-        size: 3
+        size: 1
+      - id: player_collision
+        doc: How this NPC collides with the player.
+        type: u1
+        enum: collision
+        valid:
+          in-enum: true
+      - id: npc_collision
+        doc: How this NPC collides with other NPCS.
+        type: u1
+        enum: collision
+        valid:
+          in-enum: true
       - id: physics
         doc: The physics this NPC uses to move.
         type: u1
         enum: physics
         valid:
           in-enum: true
-      - id: magic5
-        doc: Unknown.
-        size: 2
+      - id: jump
+        doc: How this NPC jumps.
+        type: u1
+        enum: jump
+        valid:
+          in-enum: true
+      - id: keep_spawned
+        doc: Keep this NPC spawned even when out of its spawn range?
+        type: u1
+        valid:
+          any-of: [0, 1]
       - id: wander
         doc: How this NPC wanders around.
         type: u1
@@ -462,15 +510,28 @@ types:
       - id: radius
         doc: How large is the wandering area?
         type: f4
-      - id: magic
+      - id: has_magic1
+        doc: Do we have magic2?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: magic1
         doc: Unknown.
-        size: 2
+        size: 4
+        if: has_magic1 == 1
+      - id: magic2
+        doc: Unknown.
+        size: 1
   wander_route:
     doc: Wandering information for NPCs with the route wander type.
     seq:
     - id: magic1
       doc: Unknown.
-      size: 13
+      size: 12
+    - id: is_route
+      doc: Always a 1.
+      type: u1
+      valid: 1
     - id: num_points
       doc: The number of points in this route.
       type: u4
@@ -520,13 +581,21 @@ types:
         type:
           switch-on: type
           cases: # TODO
-            condition_type::check_flag: condition_data_check_flag
+            condition_type::check_flag: condition_data_check_var
+            condition_type::check_number: condition_data_check_var
             condition_type::operation: condition_data_operation
-            _: nothing
+            condition_type::randomizer: condition_data_randomizer
+            _: condition_none
   nothing:
     doc: No data.
-  condition_data_check_flag:
-    doc: Condition data for `condition_type::check_flag`.
+  condition_none:
+    doc: Null condition data.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 4
+  condition_data_check_var:
+    doc: Condition data for `condition_type::check_flag` and `condition_type::check_number`.
     seq:
       - id: magic1
         doc: Unknown.
@@ -545,39 +614,95 @@ types:
       - id: magic2
         doc: Unknown.
         size: 1
-      - id: flag
-        doc: The flag to test.
+      - id: variable
+        doc: The number/flag to test.
         type: nullable_string
+      - id: eval
+        doc: The comparion operator, for `check_number` conditions.
+        type: u1
+        enum: check_number_eval
+        valid:
+          in-enum: true
       - id: magic3
         doc: Unknown.
-        size: 10
+        size: 2
+      - id: value
+        doc: The number to test against, for `check_number` conditions.
+        type: s4
+      - id: magic4
+        doc: Unknown.
+        size: 7
   condition_data_operation:
     doc: Condition data for `condition_type::operation`.
     seq:
-      - id: operator
-        doc: The operator to operate the two sides on.
-        type: u4
-        enum: condition_operator
-        valid:
-          in-enum: true
+      - id: magic1
+        doc: Unknown.
+        size: 4
       - id: lhs
         doc: The left-hand condition.
         type: condition
-      - id: magic1
+      - id: magic2
         doc: Unkown.
-        size: 5
+        size: 1
       - id: rhs
         doc: The left-hand condition.
         type: condition
+  condition_data_randomizer:
+    doc: Condition data for `condition_type::randomizer`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 4
+      - id: crystals
+        doc: Is this condition true if we're randomizing crystals?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: monsters
+        doc: Is this condition true if we're randomizing monsters?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: bosses
+        doc: Is this condition true if we're randomizing bosses?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: items
+        doc: Is this condition true if we're randomizing items?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: recovery
+        doc: Is this condition true if we're randomizing recovery items?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: progression
+        doc: Is this condition true if we're randomizing progression items?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: gated
+        doc: Is this condition true if we're in gated progression mode?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: has_invalid_item
+        doc: Do we have an invalid item?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: invalid_item
+        doc: An item ID to be treated as invalid.
+        type: u4
+        if: has_invalid_item == 1
   npc_page:
     doc: The behavior code of an NPC.
     seq:
       - id: condition
         doc: The condition for this page to be active.
         type: condition
-      - id: magic1
-        doc: Unknown.
-        size: 4
       - id: trigger
         doc: The method of triggering this page's code.
         type: u1
@@ -590,6 +715,7 @@ types:
           switch-on: trigger
           cases:
             trigger::player_proximity: trigger_data_player_proximity
+            trigger::player_touch: trigger_data_player_touch
             _: trigger_data_none
       - id: actions
         doc: The actions executed.
@@ -627,10 +753,22 @@ types:
       - id: magic2
         doc: Unknown.
         size: 2
+  trigger_data_player_touch:
+    doc: The data for a NPC page with a trigger of `trigger::player_touch`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 29
+      - id: type
+        doc: The type of touch that triggers this page.
+        type: u1
+        enum: touch_type
+        valid:
+          in-enum: true
   trigger_data_none:
     doc: The data for a trigger with no data. Just empty bytes.
     seq:
-      - id: magic
+      - id: magic1
         doc: Unknown.
         size: 30
   npc_actions_list:
@@ -661,7 +799,9 @@ types:
           cases:
             action::add_inventory: action_data_add_inventory
             action::condition: action_data_condition
+            action::message_hint: action_data_message_hint
             action::message: action_data_message
+            action::move: action_data_move
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_set_flag
             action::shop: action_data_shop
@@ -691,24 +831,95 @@ types:
       - id: condition
         doc: The condition to branch based upon.
         type: condition
-      - id: magic1
-        doc: Unknown.
-        size: 4
       - id: actions_true
         doc: The actions executed if true.
         type: npc_actions_list
       - id: actions_false
         doc: The actions executed if false.
         type: npc_actions_list
+  action_data_message_hint:
+    doc: Data associated with `action::message_hint`.
+    seq:
+      - id: has_item
+        doc: Are we hinting at the locarion of an item?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: item
+        doc: The item to hint at.
+        type: u4
+        if: has_item == 1
+      - id: has_job
+        doc: Are we hinting at the locarion of a job?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: job
+        doc: The job to hint at.
+        type: u4
+        if: has_job == 1
   action_data_message:
     doc: Data associated with `action::message`.
     seq:
       - id: message
         doc: The message to display.
         type: nullable_string
-      - id: magic
+      - id: magic1
         doc: Unknown.
         size: 8
+  action_data_move:
+    doc: Data associated with `action::move`.
+    seq:
+      - id: "x"
+        doc: The X offset to move.
+        type: s4
+      - id: "y"
+        doc: The Y offset to move.
+        type: s4
+      - id: "z"
+        doc: The Z offset to move.
+        type: s4
+      - id: has_facing
+        doc: Do we change our facing when moving?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: facing
+        doc: The facing we change to while moving.
+        type: u1
+        enum: facing
+        valid:
+          in-enum: true
+      - id: relative
+        doc: Is this movement relative?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: speed
+        doc: How fast we move.
+        type: f4
+      - id: wait
+        doc: Our waiting mode.
+        type: u1
+        enum: move_wait_mode
+        valid:
+          in-enum: true
+      - id: no_collision
+        doc: Do we not collide with anything?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: has_jump
+        doc: Do we override our jump type?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: jump
+        doc: The jump type we change to while moving.
+        type: u1
+        enum: jump
+        valid:
+          in-enum: true
   action_data_set_facing:
     doc: Data associated with `action::set_facing`.
     seq:
@@ -754,7 +965,7 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
-      - id: magic2
+      - id: magic1
         doc: Unknown.
         size: 11
   action_data_shop:
@@ -786,9 +997,6 @@ types:
       - id: condition
         doc: A condition under which the item is sold.
         type: condition
-      - id: magic1
-        doc: Unknown.
-        size: 4
   action_data_stop_processing:
     doc: Data associated with `action::stop_processing`.
     seq:
@@ -926,7 +1134,7 @@ types:
       - id: weight
         doc: The chance of this troop being selected for battle. Determines RNG weights.
         type: u4
-      - id: magic
+      - id: magic1
         doc: Unknown. Probably encodes "Not", "Min Diff", and "Has Condition".
         size: 2
   data_door:
@@ -999,7 +1207,7 @@ types:
   data_crystal:
     doc: Data for entities of type `crystal`.
     seq:
-      - id: magic
+      - id: magic1
         doc: Unknown. Seemingly always a 1.
         type: u1
         valid: 1
