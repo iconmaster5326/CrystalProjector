@@ -18,7 +18,11 @@ Then KSC has some issues:
 * It imports sub-KSY file dependencies incorrectly; `import X` should be `from . import X`.
 * It does not stop keywords from being used as names.
 
-These need fixed manually for now.
+These need fixed manually for now. You can run the fixes with:
+
+```bash
+python3 ./fix_ksy_py.py gen/*.py
+```
 
 # Compiling JSON schemas
 

@@ -14,12 +14,85 @@ class Entities(KaitaiStruct):
     """A file of the form `yXe.dat`, that lists all entities in a 16x16x16 cube chunk, for the chunk at y level X."""
 
     class Action(IntEnum):
+        face_player = 0
         message = 1
+        revert_facing = 2
         condition = 3
+        wait = 4
+        shop = 5
         set_flag = 6
+        set_number = 7
         add_inventory = 8
+        remove_inventory = 9
         stop_processing = 10
+        set_npc_property = 11
+        move = 12
+        ability = 13
+        choice_message = 14
+        inn = 15
+        add_number = 16
+        multiply_number = 17
+        command_npc = 18
+        trigger_npc = 19
+        move_camera = 20
+        revert_camera = 21
+        context_switch = 22
+        do_narration = 23
+        set_facing = 24
+        set_player_facing = 25
+        set_mount = 26
+        battle = 27
+        shop_recipe = 28
+        shop_service = 29
+        refresh_lost_and_found = 30
+        move_player = 31
+        unlock_ability = 32
+        move_to = 33
+        move_player_to = 34
+        future_actions = 35
+        cancel_actions = 36
+        queue_future_actions = 37
+        play_music = 38
+        stop_music = 39
+        revert_music = 40
+        activity_countdown = 41
+        teleport_player_to = 42
+        refresh_npcs = 43
+        move_group = 44
+        move_away_from_player = 45
+        move_group_to = 46
+        set_last_safe_pos_to_marker = 47
+        refresh_specific_npcs = 48
         play_se_switch_pressed = 49
+        play_se_switch_unpressed = 50
+        teleport_player = 51
+        refresh_bulletin = 52
+        move_player_instant = 53
+        particle = 54
+        insert_future_actions = 55
+        set_player_facing_to_this = 56
+        credits = 57
+        add_to_lost_and_found = 58
+        play_se_mine_ore = 59
+        make_player_face_this = 60
+        message_anonymous = 61
+        face_away_from_player = 62
+        my_quintar = 63
+        subtract_number = 64
+        message_npc = 65
+        cancel_wander = 66
+        resume_wander = 67
+        choice_message_anonymous = 68
+        hazard_burn = 69
+        set_last_safe_pos_to = 70
+        garden = 71
+        new_game_plus = 72
+        message_hint = 73
+        unlock_job = 74
+        unlock_passive = 75
+        learn_ability = 76
+        learn_passive = 77
+        comment = 78
 
     class Collision(IntEnum):
         none = 0
@@ -271,6 +344,20 @@ class Entities(KaitaiStruct):
         def _read(self):
             self.message = Entities.NullableString(self._io, self, self._root)
             self.magic = self._io.read_bytes(8)
+
+
+    class ActionDataSetFacing(KaitaiStruct):
+        """Data associated with `action::set_facing`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
+            if not isinstance(self.facing, Entities.Facing):
+                raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_set_facing/seq/0")
 
 
     class ActionDataSetFlag(KaitaiStruct):
@@ -679,6 +766,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
+            elif _on == Entities.Action.set_facing:
+                self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
                 self.data = Entities.ActionDataSetFlag(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
@@ -910,6 +999,3 @@ class Entities(KaitaiStruct):
             self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
             if not isinstance(self.facing, Entities.Facing):
                 raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/wander_route_point/seq/5")
-
-
-

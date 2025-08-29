@@ -2,7 +2,9 @@ import typing
 import io
 import zipfile
 import re
+import traceback
 
+import kaitaistruct
 import PIL.Image
 import PIL.ImageDraw
 
@@ -125,10 +127,17 @@ class World(typing.NamedTuple):
                                             chunk = layer.chunks[y]
 
                                             if match.group(2):
+                                                # we are in an entities file
                                                 if process_entities:
                                                     with layer_archive.open(file) as chunk_stream:
-                                                        chunk.entities = Entities.from_io(chunk_stream)
+                                                        try:
+                                                            chunk.entities = Entities.from_io(chunk_stream)
+                                                        except kaitaistruct.ValidationFailedError as e:
+                                                            print(f"warning: got exception parsing entities file at {raw_layer.x:>3}, {y:>3}, {raw_layer.z:>3}: {type(e).__name__:>32}: {e.src_path or '':>32}: 0x{e.io.pos() or 0:04x}: {e.args[0].split(': ')[-1]}", flush=True)
+                                                        except kaitaistruct.KaitaiStructError as e:
+                                                            print(f"warning: got exception parsing entities file at {raw_layer.x:>3}, {y:>3}, {raw_layer.z:>3}:  {type(e).__name__:>32}: {e.src_path or '':>32}:         {e.args[0].split(': ')[-1]}", flush=True)
                                             else:
+                                                # we are in a voxels file
                                                 if process_voxels:
                                                     with layer_archive.open(file) as chunk_stream:
                                                         chunk.voxels = Voxels.from_io(chunk_stream)
@@ -306,5 +315,10 @@ def visualize_world_map(content_path: str, world_name: str) -> PIL.Image.Image:
 
 
 if __name__ == "__main__":
-    image = visualize_world_map("C:/Program Files (x86)/Steam/steamapps/common/Crystal Project/Content", "field")
-    image.save("map.png")
+    content_path = "C:/Program Files (x86)/Steam/steamapps/common/Crystal Project/Content"
+
+    # image = visualize_world_map(content_path, "field")
+    # image.save("map.png")
+
+    with open(f"{content_path}/Worlds/field.dat", "rb") as world_file:
+        world = World.load(world_file, process_voxels=False, process_entities=True)

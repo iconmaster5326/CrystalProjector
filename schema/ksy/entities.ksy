@@ -183,13 +183,85 @@ enums:
     1: async
     2: cinematic
   action:
+    13: ability
+    41: activity_countdown
     8: add_inventory
+    16: add_number
+    58: add_to_lost_and_found
+    27: battle
+    36: cancel_actions
+    66: cancel_wander
+    14: choice_message
+    68: choice_message_anonymous
+    18: command_npc
+    78: comment
     3: condition
+    22: context_switch
+    57: credits
+    23: do_narration
+    62: face_away_from_player
+    0: face_player
+    35: future_actions
+    71: garden
+    69: hazard_burn
+    15: inn
+    55: insert_future_actions
+    76: learn_ability
+    77: learn_passive
+    60: make_player_face_this
     1: message
+    61: message_anonymous
+    73: message_hint
+    65: message_npc
+    12: move
+    45: move_away_from_player
+    20: move_camera
+    44: move_group
+    46: move_group_to
+    31: move_player
+    53: move_player_instant
+    34: move_player_to
+    33: move_to
+    17: multiply_number
+    63: my_quintar
+    72: new_game_plus
+    54: particle
+    38: play_music
+    59: play_se_mine_ore
     49: play_se_switch_pressed
+    50: play_se_switch_unpressed
+    37: queue_future_actions
+    52: refresh_bulletin
+    30: refresh_lost_and_found
+    43: refresh_npcs
+    48: refresh_specific_npcs
+    9: remove_inventory
+    67: resume_wander
+    21: revert_camera
+    2: revert_facing
+    40: revert_music
+    24: set_facing
     6: set_flag
+    70: set_last_safe_pos_to
+    47: set_last_safe_pos_to_marker
+    26: set_mount
+    11: set_npc_property
+    7: set_number
+    25: set_player_facing
+    56: set_player_facing_to_this
+    5: shop
+    28: shop_recipe
+    29: shop_service
+    39: stop_music
     10: stop_processing
-    # TODO
+    64: subtract_number
+    51: teleport_player
+    42: teleport_player_to
+    19: trigger_npc
+    32: unlock_ability
+    74: unlock_job
+    75: unlock_passive
+    4: wait
   variable_setting_mode:
     0: constant
     1: variable
@@ -587,6 +659,7 @@ types:
             action::add_inventory: action_data_add_inventory
             action::condition: action_data_condition
             action::message: action_data_message
+            action::set_facing: action_data_set_facing
             action::set_flag: action_data_set_flag
             action::stop_processing: action_data_stop_processing
             _: nothing # TODO
@@ -623,7 +696,6 @@ types:
       - id: actions_false
         doc: The actions executed if false.
         type: npc_actions_list
-    # TODO
   action_data_message:
     doc: Data associated with `action::message`.
     seq:
@@ -633,6 +705,15 @@ types:
       - id: magic
         doc: Unknown.
         size: 8
+  action_data_set_facing:
+    doc: Data associated with `action::set_facing`.
+    seq:
+      - id: facing
+        doc: The facing to set.
+        type: u1
+        enum: facing
+        valid:
+          in-enum: true
   action_data_set_flag:
     doc: Data associated with `action::set_flag`.
     seq:

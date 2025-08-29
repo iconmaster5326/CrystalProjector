@@ -9,7 +9,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class MapRegion(KaitaiStruct):
-    """Metadata for a particular map. This file is at `maps/MAPNAME/region_X_Z.dat`, where `MAPNAME` is either `biomeX` or `world`, in the world ZIP. `X` and `Z` start from 0."""
+    """Metadata for a particular map. This file is at `maps/map_MAPNAME/region_X_Z.dat`, where `MAPNAME` is either `biomeX` or `world`, in the world ZIP. `X` and `Z` start from 0."""
     def __init__(self, _io, _parent=None, _root=None):
         self._io = _io
         self._parent = _parent
