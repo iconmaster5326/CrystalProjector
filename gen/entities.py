@@ -321,8 +321,8 @@ class Entities(KaitaiStruct):
             self.entities.append(Entities.Entity(self._io, self, self._root))
 
 
-    class ActionDataAddInventory(KaitaiStruct):
-        """Data associated with `action::add_inventory`."""
+    class ActionDataChoiceMessage(KaitaiStruct):
+        """Data associated with `action::choice_message`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -330,12 +330,15 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.type = KaitaiStream.resolve_enum(Entities.TreasureType, self._io.read_u1())
-            if not isinstance(self.type, Entities.TreasureType):
-                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/action_data_add_inventory/seq/0")
-            self.item = self._io.read_u4le()
-            self.count = self._io.read_u4le()
-            self.magic1 = self._io.read_bytes(1)
+            self.message = Entities.NullableString(self._io, self, self._root)
+            self.magic1 = self._io.read_bytes(2)
+            self.num_choices = self._io.read_u4le()
+            self.choices = []
+            for i in range(self.num_choices):
+                self.choices.append(Entities.ChoiceMessageChoice(self._io, self, self._root))
+
+            self.answer_var = Entities.NullableString(self._io, self, self._root)
+            self.magic2 = self._io.read_bytes(1)
 
 
     class ActionDataCondition(KaitaiStruct):
@@ -350,6 +353,25 @@ class Entities(KaitaiStruct):
             self.condition = Entities.Condition(self._io, self, self._root)
             self.actions_true = Entities.NpcActionsList(self._io, self, self._root)
             self.actions_false = Entities.NpcActionsList(self._io, self, self._root)
+
+
+    class ActionDataInventory(KaitaiStruct):
+        """Data associated with `action::add_inventory` and `action::remove_inventory`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.type = KaitaiStream.resolve_enum(Entities.TreasureType, self._io.read_u1())
+            if not isinstance(self.type, Entities.TreasureType):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/action_data_inventory/seq/0")
+            self.item = self._io.read_u4le()
+            self.count = self._io.read_u4le()
+            self.randomized = self._io.read_u1()
+            if not  ((self.randomized == 0) or (self.randomized == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.randomized, self._io, u"/types/action_data_inventory/seq/3")
 
 
     class ActionDataMessage(KaitaiStruct):
@@ -389,7 +411,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataModifyVar(KaitaiStruct):
-        """Data associated with `action::set_flag` and `action::add_number`."""
+        """Data associated with `action::set_flag`, `action::set_number`, and `action::add_number`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -413,7 +435,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataMove(KaitaiStruct):
-        """Data associated with `action::move`."""
+        """Data associated with `action::move` and `action::move_player`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -427,12 +449,12 @@ class Entities(KaitaiStruct):
             self.has_facing = self._io.read_u1()
             if not  ((self.has_facing == 0) or (self.has_facing == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.has_facing, self._io, u"/types/action_data_move/seq/3")
-            self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
-            if not isinstance(self.facing, Entities.Facing):
-                raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_move/seq/4")
-            self.relative = self._io.read_u1()
-            if not  ((self.relative == 0) or (self.relative == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.relative, self._io, u"/types/action_data_move/seq/5")
+            if self.has_facing == 1:
+                self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
+                if not isinstance(self.facing, Entities.Facing):
+                    raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_move/seq/4")
+
+            self.magic1 = self._io.read_bytes(2)
             self.speed = self._io.read_f4le()
             self.wait = KaitaiStream.resolve_enum(Entities.MoveWaitMode, self._io.read_u1())
             if not isinstance(self.wait, Entities.MoveWaitMode):
@@ -440,12 +462,7 @@ class Entities(KaitaiStruct):
             self.no_collision = self._io.read_u1()
             if not  ((self.no_collision == 0) or (self.no_collision == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.no_collision, self._io, u"/types/action_data_move/seq/8")
-            self.has_jump = self._io.read_u1()
-            if not  ((self.has_jump == 0) or (self.has_jump == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.has_jump, self._io, u"/types/action_data_move/seq/9")
-            self.jump = KaitaiStream.resolve_enum(Entities.Jump, self._io.read_u1())
-            if not isinstance(self.jump, Entities.Jump):
-                raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/action_data_move/seq/10")
+            self.magic2 = self._io.read_bytes(2)
 
 
     class ActionDataSetFacing(KaitaiStruct):
@@ -463,7 +480,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataShop(KaitaiStruct):
-        """Data associated with `action::shop`."""
+        """Data associated with `action::shop` and `action::shop_recipe`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -563,6 +580,29 @@ class Entities(KaitaiStruct):
             self.magic1 = self._io.read_bytes(7)
 
 
+    class ChoiceMessageChoice(KaitaiStruct):
+        """A dialogue choice in a `action::choice_message`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.text = Entities.NullableString(self._io, self, self._root)
+            self.magic1 = self._io.read_bytes(4)
+            self.item_cost = self._io.read_u1()
+            if not  ((self.item_cost == 0) or (self.item_cost == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.item_cost, self._io, u"/types/choice_message_choice/seq/2")
+            self.default = self._io.read_u1()
+            if not  ((self.default == 0) or (self.default == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.default, self._io, u"/types/choice_message_choice/seq/3")
+            self.cancel = self._io.read_u1()
+            if not  ((self.cancel == 0) or (self.cancel == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.cancel, self._io, u"/types/choice_message_choice/seq/4")
+            self.magic2 = self._io.read_bytes(5)
+
+
     class Condition(KaitaiStruct):
         """A condition."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -576,8 +616,12 @@ class Entities(KaitaiStruct):
             if not isinstance(self.type, Entities.ConditionType):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition/seq/0")
             _on = self.type
-            if _on == Entities.ConditionType.check_flag:
+            if _on == Entities.ConditionType.check_crystal_count:
+                self.data = Entities.ConditionDataCheckCrystalCount(self._io, self, self._root)
+            elif _on == Entities.ConditionType.check_flag:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
+            elif _on == Entities.ConditionType.check_inventory:
+                self.data = Entities.ConditionDataCheckInventory(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_number:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
             elif _on == Entities.ConditionType.operation:
@@ -586,6 +630,40 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ConditionDataRandomizer(self._io, self, self._root)
             else:
                 self.data = Entities.ConditionNone(self._io, self, self._root)
+
+
+    class ConditionDataCheckCrystalCount(KaitaiStruct):
+        """Data associated with `condition::check_crystal_count`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(9)
+            self.count = self._io.read_u4le()
+            self.magic2 = self._io.read_bytes(1)
+
+
+    class ConditionDataCheckInventory(KaitaiStruct):
+        """Data associated with `condition::check_inventory`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(4)
+            self.type = KaitaiStream.resolve_enum(Entities.TreasureType, self._io.read_u1())
+            if not isinstance(self.type, Entities.TreasureType):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition_data_check_inventory/seq/1")
+            self.item = self._io.read_u4le()
+            self.count = self._io.read_u4le()
+            self.randomized = self._io.read_u1()
+            if not  ((self.randomized == 0) or (self.randomized == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.randomized, self._io, u"/types/condition_data_check_inventory/seq/4")
 
 
     class ConditionDataCheckVar(KaitaiStruct):
@@ -932,9 +1010,11 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/npc_action/seq/0")
             _on = self.type
             if _on == Entities.Action.add_inventory:
-                self.data = Entities.ActionDataAddInventory(self._io, self, self._root)
+                self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.add_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.choice_message:
+                self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
             elif _on == Entities.Action.condition:
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
             elif _on == Entities.Action.message:
@@ -943,11 +1023,19 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataMessageHint(self._io, self, self._root)
             elif _on == Entities.Action.move:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.move_player:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.remove_inventory:
+                self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.set_facing:
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.set_number:
+                self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
             elif _on == Entities.Action.shop:
+                self.data = Entities.ActionDataShop(self._io, self, self._root)
+            elif _on == Entities.Action.shop_recipe:
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
                 self.data = Entities.ActionDataStopProcessing(self._io, self, self._root)
@@ -1101,7 +1189,7 @@ class Entities(KaitaiStruct):
 
 
     class ShopItem(KaitaiStruct):
-        """A single shop item in the data for a `action::shop`."""
+        """A single shop item in the data for a `action::shop` or `action::shop_recipe`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent

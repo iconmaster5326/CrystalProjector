@@ -565,7 +565,9 @@ types:
         type:
           switch-on: type
           cases: # TODO
+            condition_type::check_crystal_count: condition_data_check_crystal_count
             condition_type::check_flag: condition_data_check_var
+            condition_type::check_inventory: condition_data_check_inventory
             condition_type::check_number: condition_data_check_var
             condition_type::operation: condition_data_operation
             condition_type::randomizer: condition_data_randomizer
@@ -578,6 +580,41 @@ types:
       - id: magic1
         doc: Unknown.
         size: 4
+  condition_data_check_crystal_count:
+    doc: Data associated with `condition::check_crystal_count`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 9
+      - id: count
+        doc: The number of crystals you need to pass the condition.
+        type: u4
+      - id: magic2
+        doc: Unknown.
+        size: 1
+  condition_data_check_inventory:
+     doc: Data associated with `condition::check_inventory`.
+     seq:
+      - id: magic1
+        doc: Unknown.
+        size: 4
+      - id: type
+        doc: The item type to give.
+        type: u1
+        enum: treasure_type
+        valid:
+          in-enum: true
+      - id: item
+        doc: The item/equipment ID to give. (TODO - what if currency?)
+        type: u4
+      - id: count
+        doc: The amount of the item to give. (TODO - what if currency?)
+        type: u4
+      - id: randomized
+        doc: Randomize this item?
+        type: u1
+        valid:
+          any-of: [0, 1]
   condition_data_check_var:
     doc: Condition data for `condition_type::check_flag` and `condition_type::check_number`.
     seq:
@@ -781,20 +818,25 @@ types:
         type:
           switch-on: type
           cases:
-            action::add_inventory: action_data_add_inventory
+            action::add_inventory: action_data_inventory
+            action::choice_message: action_data_choice_message
             action::add_number: action_data_modify_var
             action::condition: action_data_condition
             action::message_hint: action_data_message_hint
             action::message: action_data_message
             action::move: action_data_move
+            action::move_player: action_data_move
+            action::remove_inventory: action_data_inventory
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
+            action::set_number: action_data_modify_var
             action::shop: action_data_shop
+            action::shop_recipe: action_data_shop
             action::stop_processing: action_data_stop_processing
             action::trigger_npc: action_data_trigger_npc
             _: nothing # TODO
-  action_data_add_inventory:
-     doc: Data associated with `action::add_inventory`.
+  action_data_inventory:
+     doc: Data associated with `action::add_inventory` and `action::remove_inventory`.
      seq:
       - id: type
         doc: The item type to give.
@@ -808,9 +850,61 @@ types:
       - id: count
         doc: The amount of the item to give. (TODO - what if currency?)
         type: u4
+      - id: randomized
+        doc: Randomize this item?
+        type: u1
+        valid:
+          any-of: [0, 1]
+  action_data_choice_message:
+    doc: Data associated with `action::choice_message`.
+    seq:
+      - id: message
+        doc: The message to display.
+        type: nullable_string
       - id: magic1
         doc: Unknown.
+        size: 2
+      - id: num_choices
+        doc: The number of choices the player can select from.
+        type: u4
+      - id: choices
+        doc: The choices the player can select from.
+        type: choice_message_choice
+        repeat: expr
+        repeat-expr: num_choices
+      - id: answer_var
+        doc: The variable to place the choice in.
+        type: nullable_string
+      - id: magic2
+        doc: Unknown.
         size: 1
+  choice_message_choice:
+    doc: A dialogue choice in a `action::choice_message`.
+    seq:
+      - id: text
+        doc: The text displayed to the user.
+        type: nullable_string
+      - id: magic1
+        doc: Unknown.
+        size: 4
+      - id: item_cost
+        doc: Does this cost an item to select?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: default
+        doc: Is this the default option?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: cancel
+        doc: Does this option back out of the dialogue?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: magic2
+        doc: Unknown.
+        size: 5
   action_data_condition:
     doc: Data associated with `action::condition`.
     seq:
@@ -854,7 +948,7 @@ types:
         doc: Unknown.
         size: 8
   action_data_move:
-    doc: Data associated with `action::move`.
+    doc: Data associated with `action::move` and `action::move_player`.
     seq:
       - id: "x"
         doc: The X offset to move.
@@ -876,11 +970,10 @@ types:
         enum: facing
         valid:
           in-enum: true
-      - id: relative
-        doc: Is this movement relative?
-        type: u1
-        valid:
-          any-of: [0, 1]
+        if: has_facing == 1
+      - id: magic1
+        doc: Unknown.
+        size: 2
       - id: speed
         doc: How fast we move.
         type: f4
@@ -895,17 +988,9 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
-      - id: has_jump
-        doc: Do we override our jump type?
-        type: u1
-        valid:
-          any-of: [0, 1]
-      - id: jump
-        doc: The jump type we change to while moving.
-        type: u1
-        enum: jump
-        valid:
-          in-enum: true
+      - id: magic2
+        doc: Unknown.
+        size: 2
   action_data_set_facing:
     doc: Data associated with `action::set_facing`.
     seq:
@@ -916,7 +1001,7 @@ types:
         valid:
           in-enum: true
   action_data_modify_var:
-    doc: Data associated with `action::set_flag` and `action::add_number`.
+    doc: Data associated with `action::set_flag`, `action::set_number`, and `action::add_number`.
     seq:
       - id: scope
         doc: The variable's scope.
@@ -958,7 +1043,7 @@ types:
         doc: Unknown.
         size: 7
   action_data_shop:
-    doc: Data associated with `action::shop`.
+    doc: Data associated with `action::shop` and `action::shop_recipe`.
     seq:
       - id: num_shop_items
         doc: How many items are sold at this shop.
@@ -969,16 +1054,19 @@ types:
         repeat: expr
         repeat-expr: num_shop_items
   shop_item:
-    doc: A single shop item in the data for a `action::shop`.
+    doc: A single shop item in the data for a `action::shop` or `action::shop_recipe`.
     seq:
       - id: type
-        doc: The type of item sold here. Only `treasure_type::item` and `treasure_type::equipment` are valid here.
+        doc: |
+          The type of item sold here.
+          Only `treasure_type::item` and `treasure_type::equipment` are valid here.
+          In `action::shop_recipe`, refers to the type of output, and it's always a recipe ID.
         type: u1
         enum: treasure_type
         valid:
           any-of: [treasure_type::item, treasure_type::equipment]
       - id: item
-        doc: The ID of an item/equipment.
+        doc: The ID of an item/equipment/recipe.
         type: u4
       - id: cost_percent
         doc: A number indicating how much more or less this item should cost than the price listed in its database entry. Default is 100.
