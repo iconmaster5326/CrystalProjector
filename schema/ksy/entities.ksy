@@ -490,7 +490,6 @@ types:
           switch-on: wander
           cases:
             wander::none: wander_none
-            wander::route: wander_route
             _: wander_data
   wander_none:
     doc: A region of blank bits, because the wander type does not need the data.
@@ -499,7 +498,7 @@ types:
         doc: All zeroes.
         size: 18
   wander_data:
-    doc: Wandering information for NPCs with circle, square, or line wander types.
+    doc: Wandering information for NPCs.
     seq:
       - id: speed
         doc: How fast does this NPC move?
@@ -510,39 +509,24 @@ types:
       - id: radius
         doc: How large is the wandering area?
         type: f4
-      - id: has_magic1
-        doc: Do we have magic2?
+      - id: is_route
+        doc: Is this a route?
         type: u1
         valid:
           any-of: [0, 1]
-      - id: magic1
-        doc: Unknown.
-        size: 4
-        if: has_magic1 == 1
-      - id: magic2
-        doc: Unknown.
+      - id: num_points
+        doc: The number of points in this route.
+        type: u4
+        if: is_route == 1
+      - id: points
+        doc: The route this NPC takes.
+        type: wander_route_point
+        repeat: expr
+        repeat-expr: num_points
+        if: is_route == 1
+      - id: is_line
+        doc: Is this route a straight line?
         size: 1
-  wander_route:
-    doc: Wandering information for NPCs with the route wander type.
-    seq:
-    - id: magic1
-      doc: Unknown.
-      size: 12
-    - id: is_route
-      doc: Always a 1.
-      type: u1
-      valid: 1
-    - id: num_points
-      doc: The number of points in this route.
-      type: u4
-    - id: points
-      doc: The route this NPC takes.
-      type: wander_route_point
-      repeat: expr
-      repeat-expr: num_points
-    - id: magic2
-      doc: Unknown.
-      size: 1
   wander_route_point:
     doc: A point along a wander route.
     seq:

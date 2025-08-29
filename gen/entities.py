@@ -1011,8 +1011,6 @@ class Entities(KaitaiStruct):
             _on = self.wander
             if _on == Entities.Wander.none:
                 self.wander_data = Entities.WanderNone(self._io, self, self._root)
-            elif _on == Entities.Wander.route:
-                self.wander_data = Entities.WanderRoute(self._io, self, self._root)
             else:
                 self.wander_data = Entities.WanderData(self._io, self, self._root)
 
@@ -1151,7 +1149,7 @@ class Entities(KaitaiStruct):
 
 
     class WanderData(KaitaiStruct):
-        """Wandering information for NPCs with circle, square, or line wander types."""
+        """Wandering information for NPCs."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -1162,13 +1160,19 @@ class Entities(KaitaiStruct):
             self.speed = self._io.read_f4le()
             self.frequency = self._io.read_u4le()
             self.radius = self._io.read_f4le()
-            self.has_magic1 = self._io.read_u1()
-            if not  ((self.has_magic1 == 0) or (self.has_magic1 == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.has_magic1, self._io, u"/types/wander_data/seq/3")
-            if self.has_magic1 == 1:
-                self.magic1 = self._io.read_bytes(4)
+            self.is_route = self._io.read_u1()
+            if not  ((self.is_route == 0) or (self.is_route == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.is_route, self._io, u"/types/wander_data/seq/3")
+            if self.is_route == 1:
+                self.num_points = self._io.read_u4le()
 
-            self.magic2 = self._io.read_bytes(1)
+            if self.is_route == 1:
+                self.points = []
+                for i in range(self.num_points):
+                    self.points.append(Entities.WanderRoutePoint(self._io, self, self._root))
+
+
+            self.is_line = self._io.read_bytes(1)
 
 
     class WanderNone(KaitaiStruct):
@@ -1181,27 +1185,6 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.nothing = self._io.read_bytes(18)
-
-
-    class WanderRoute(KaitaiStruct):
-        """Wandering information for NPCs with the route wander type."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.magic1 = self._io.read_bytes(12)
-            self.is_route = self._io.read_u1()
-            if not self.is_route == 1:
-                raise kaitaistruct.ValidationNotEqualError(1, self.is_route, self._io, u"/types/wander_route/seq/1")
-            self.num_points = self._io.read_u4le()
-            self.points = []
-            for i in range(self.num_points):
-                self.points.append(Entities.WanderRoutePoint(self._io, self, self._root))
-
-            self.magic2 = self._io.read_bytes(1)
 
 
     class WanderRoutePoint(KaitaiStruct):
