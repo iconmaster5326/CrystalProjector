@@ -28,6 +28,11 @@ For each schema (OTHER THAN `patch.yaml`):
 quicktype --lang python --src-lang schema --out gen/X.py schema/json/X.yaml
 ```
 
+Quicktype *also* has issues:
+
+* No support for integer enums; if you omit `type: integer` from such enums, Quicktype crashes.
+* Does not support multi-file `$ref`s in a smart manner.
+
 # Python dependencies
 
 * `kaitai-struct`: USE THE DEVEL VERSION, see above.
