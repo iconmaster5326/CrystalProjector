@@ -38,7 +38,7 @@ properties:
     description: The ID of this difficulty.
     type: integer
     minimum: 0
-    maximum: 255
+    maximum: 4294967295
   Name:
     description: The English name of this difficulty. Localizable.
     type: string

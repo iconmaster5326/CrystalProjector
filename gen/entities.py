@@ -1089,7 +1089,15 @@ class Entities(KaitaiStruct):
         def _read(self):
             self.id = self._io.read_u4le()
             self.weight = self._io.read_u4le()
-            self.magic1 = self._io.read_bytes(2)
+            self.invert = self._io.read_u1()
+            if not  ((self.invert == 0) or (self.invert == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.invert, self._io, u"/types/possible_troop/seq/2")
+            self.has_min_diff = self._io.read_u1()
+            if not  ((self.has_min_diff == 0) or (self.has_min_diff == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_min_diff, self._io, u"/types/possible_troop/seq/3")
+            if self.has_min_diff == 1:
+                self.min_diff = self._io.read_u4le()
+
 
 
     class ShopItem(KaitaiStruct):

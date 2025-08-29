@@ -1135,9 +1135,20 @@ types:
       - id: weight
         doc: The chance of this troop being selected for battle. Determines RNG weights.
         type: u4
-      - id: magic1
-        doc: Unknown. Probably encodes "Not", "Min Diff", and "Has Condition".
-        size: 2
+      - id: invert
+        doc: Invert the conditions?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: has_min_diff
+        doc: Does this troop only spawn under a certain difficulty?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: min_diff
+        doc: The ID of a difficulty that this troop only spawns in.
+        type: u4
+        if: has_min_diff == 1
   data_door:
     doc: Data for entities of type `door`.
     seq:
