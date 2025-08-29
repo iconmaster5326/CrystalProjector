@@ -1059,12 +1059,12 @@ types:
       - id: type
         doc: |
           The type of item sold here.
-          Only `treasure_type::item` and `treasure_type::equipment` are valid here.
-          In `action::shop_recipe`, refers to the type of output, and it's always a recipe ID.
+          In `action::shop`, only `treasure_type::item` and `treasure_type::equipment` are valid here.
+          In `action::shop_recipe`s, anything goes.
         type: u1
         enum: treasure_type
         valid:
-          any-of: [treasure_type::item, treasure_type::equipment]
+          in-enum: true
       - id: item
         doc: The ID of an item/equipment/recipe.
         type: u4

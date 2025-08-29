@@ -1198,8 +1198,8 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.type = KaitaiStream.resolve_enum(Entities.TreasureType, self._io.read_u1())
-            if not  ((self.type == Entities.TreasureType.item) or (self.type == Entities.TreasureType.equipment)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.type, self._io, u"/types/shop_item/seq/0")
+            if not isinstance(self.type, Entities.TreasureType):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/shop_item/seq/0")
             self.item = self._io.read_u4le()
             self.cost_percent = self._io.read_u4le()
             self.condition = Entities.Condition(self._io, self, self._root)
