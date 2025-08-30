@@ -821,12 +821,16 @@ types:
             action::add_inventory: action_data_inventory
             action::choice_message: action_data_choice_message
             action::add_number: action_data_modify_var
+            action::command_npc: action_data_command_npc
             action::condition: action_data_condition
             action::message_hint: action_data_message_hint
+            action::message_npc: action_data_message_npc
             action::message: action_data_message
             action::move: action_data_move
+            action::move_camera: action_data_move_camera
             action::move_player: action_data_move
             action::remove_inventory: action_data_inventory
+            action::revert_camera: action_data_move_camera
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
             action::set_number: action_data_modify_var
@@ -834,6 +838,7 @@ types:
             action::shop_recipe: action_data_shop
             action::stop_processing: action_data_stop_processing
             action::trigger_npc: action_data_trigger_npc
+            action::wait: action_data_wait
             _: nothing # TODO
   action_data_inventory:
      doc: Data associated with `action::add_inventory` and `action::remove_inventory`.
@@ -855,6 +860,20 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
+  action_data_command_npc:
+    doc: Data associated with `action::command_npc`.
+    seq:
+      - id: key
+        doc: The NPC key to command.
+        type: nullable_string
+      - id: num_commands
+        doc: The number of commands to have the keyed NPC execute.
+        type: u4
+      - id: commands
+        doc: The commands to have the keyed NPC execute.
+        type: npc_action
+        repeat: expr
+        repeat-expr: num_commands
   action_data_choice_message:
     doc: Data associated with `action::choice_message`.
     seq:
@@ -938,6 +957,18 @@ types:
         doc: The job to hint at.
         type: u4
         if: has_job == 1
+  action_data_message_npc:
+    doc: Data associated with `action::message_npc`.
+    seq:
+      - id: message
+        doc: The message to display.
+        type: nullable_string
+      - id: key
+        doc: The key of the NPC to have display this message.
+        type: nullable_string
+      - id: magic1
+        doc: Unknown.
+        size: 7
   action_data_message:
     doc: Data associated with `action::message`.
     seq:
@@ -988,9 +1019,42 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
+      - id: has_jump
+        doc: Do we change our jump type when moving?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: jump
+        doc: The jump type we change to while moving.
+        type: u1
+        enum: jump
+        valid:
+          in-enum: true
+        if: has_jump == 1
       - id: magic2
         doc: Unknown.
+        size: 1
+  action_data_move_camera:
+    doc: Data associated with `action::move_camera` and `action::revert_camera`.
+    seq:
+      - id: "x"
+        doc: The X offset to move. Unused in `action::revert_camera`.
+        type: s4
+      - id: "y"
+        doc: The Y offset to move. Unused in `action::revert_camera`.
+        type: s4
+      - id: "z"
+        doc: The Z offset to move. Unused in `action::revert_camera`.
+        type: s4
+      - id: magic1
+        doc: Unknown.
         size: 2
+      - id: frames
+        doc: How many frames this movement should occur over.
+        type: f4
+      - id: magic2
+        doc: Unknown.
+        size: 1
   action_data_set_facing:
     doc: Data associated with `action::set_facing`.
     seq:
@@ -1148,6 +1212,12 @@ types:
         enum: trigger
         valid:
           in-enum: true
+  action_data_wait:
+    doc: Data associated with `action::wait`.
+    seq:
+      - id: frames
+        doc: The number of frames to wait.
+        type: u4
   data_sign:
     doc: Data for entities of type `sign`.
     seq:

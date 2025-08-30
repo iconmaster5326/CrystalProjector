@@ -341,6 +341,23 @@ class Entities(KaitaiStruct):
             self.magic2 = self._io.read_bytes(1)
 
 
+    class ActionDataCommandNpc(KaitaiStruct):
+        """Data associated with `action::command_npc`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.key = Entities.NullableString(self._io, self, self._root)
+            self.num_commands = self._io.read_u4le()
+            self.commands = []
+            for i in range(self.num_commands):
+                self.commands.append(Entities.NpcAction(self._io, self, self._root))
+
+
+
     class ActionDataCondition(KaitaiStruct):
         """Data associated with `action::condition`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -410,6 +427,20 @@ class Entities(KaitaiStruct):
 
 
 
+    class ActionDataMessageNpc(KaitaiStruct):
+        """Data associated with `action::message_npc`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.message = Entities.NullableString(self._io, self, self._root)
+            self.key = Entities.NullableString(self._io, self, self._root)
+            self.magic1 = self._io.read_bytes(7)
+
+
     class ActionDataModifyVar(KaitaiStruct):
         """Data associated with `action::set_flag`, `action::set_number`, and `action::add_number`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -462,7 +493,32 @@ class Entities(KaitaiStruct):
             self.no_collision = self._io.read_u1()
             if not  ((self.no_collision == 0) or (self.no_collision == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.no_collision, self._io, u"/types/action_data_move/seq/8")
-            self.magic2 = self._io.read_bytes(2)
+            self.has_jump = self._io.read_u1()
+            if not  ((self.has_jump == 0) or (self.has_jump == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_jump, self._io, u"/types/action_data_move/seq/9")
+            if self.has_jump == 1:
+                self.jump = KaitaiStream.resolve_enum(Entities.Jump, self._io.read_u1())
+                if not isinstance(self.jump, Entities.Jump):
+                    raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/action_data_move/seq/10")
+
+            self.magic2 = self._io.read_bytes(1)
+
+
+    class ActionDataMoveCamera(KaitaiStruct):
+        """Data associated with `action::move_camera` and `action::revert_camera`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.x = self._io.read_s4le()
+            self.y = self._io.read_s4le()
+            self.z = self._io.read_s4le()
+            self.magic1 = self._io.read_bytes(2)
+            self.frames = self._io.read_f4le()
+            self.magic2 = self._io.read_bytes(1)
 
 
     class ActionDataSetFacing(KaitaiStruct):
@@ -578,6 +634,18 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotAnyOfError(self.bool_value, self._io, u"/types/action_data_varsetmode_constant/seq/0")
             self.int_value = self._io.read_u4le()
             self.magic1 = self._io.read_bytes(7)
+
+
+    class ActionDataWait(KaitaiStruct):
+        """Data associated with `action::wait`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.frames = self._io.read_u4le()
 
 
     class ChoiceMessageChoice(KaitaiStruct):
@@ -1015,18 +1083,26 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
             elif _on == Entities.Action.choice_message:
                 self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
+            elif _on == Entities.Action.command_npc:
+                self.data = Entities.ActionDataCommandNpc(self._io, self, self._root)
             elif _on == Entities.Action.condition:
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message_hint:
                 self.data = Entities.ActionDataMessageHint(self._io, self, self._root)
+            elif _on == Entities.Action.message_npc:
+                self.data = Entities.ActionDataMessageNpc(self._io, self, self._root)
             elif _on == Entities.Action.move:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.move_camera:
+                self.data = Entities.ActionDataMoveCamera(self._io, self, self._root)
             elif _on == Entities.Action.move_player:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.remove_inventory:
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
+            elif _on == Entities.Action.revert_camera:
+                self.data = Entities.ActionDataMoveCamera(self._io, self, self._root)
             elif _on == Entities.Action.set_facing:
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
@@ -1041,6 +1117,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataStopProcessing(self._io, self, self._root)
             elif _on == Entities.Action.trigger_npc:
                 self.data = Entities.ActionDataTriggerNpc(self._io, self, self._root)
+            elif _on == Entities.Action.wait:
+                self.data = Entities.ActionDataWait(self._io, self, self._root)
             else:
                 self.data = Entities.Nothing(self._io, self, self._root)
 
