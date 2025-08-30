@@ -898,6 +898,7 @@ types:
             action::do_narration: action_data_do_narration
             action::future_actions: action_data_future_actions
             action::inn: action_data_message
+            action::insert_future_actions: action_data_modify_action_queue
             action::message_hint: action_data_message_hint
             action::message_npc: action_data_message_npc
             action::message: action_data_message

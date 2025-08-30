@@ -1436,6 +1436,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataFutureActions(self._io, self, self._root)
             elif _on == Entities.Action.inn:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
+            elif _on == Entities.Action.insert_future_actions:
+                self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message_anonymous:
