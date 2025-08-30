@@ -884,6 +884,7 @@ types:
             action::my_quintar: action_data_my_quintar
             action::play_music: action_data_play_music
             action::queue_future_actions: action_data_modify_action_queue
+            action::refresh_specific_npcs: action_data_refresh
             action::remove_inventory: action_data_inventory
             action::revert_camera: action_data_move_camera
             action::revert_music: action_data_play_music
@@ -896,7 +897,7 @@ types:
             action::set_player_facing: action_data_set_facing
             action::shop: action_data_shop
             action::shop_recipe: action_data_shop
-            action::stop_processing: action_data_stop_processing
+            action::stop_processing: action_data_refresh
             action::stop_music: action_data_play_music
             action::teleport_player: action_data_move
             action::teleport_player_to: action_data_move
@@ -1438,68 +1439,82 @@ types:
       - id: condition
         doc: A condition under which the item is sold.
         type: condition
-  action_data_stop_processing:
-    doc: Data associated with `action::stop_processing`.
+  action_data_refresh:
+    doc: Data associated with `action::stop_processing` and `action::refresh_specific_npcs`.
     seq:
       - id: refresh_outfit
+        doc: Do we refresh the outfit?
         type: u1
         valid:
           any-of: [0, 1]
       - id: refresh_page
         type: u1
+        doc: Do we refresh the page?
         valid:
           any-of: [0, 1]
       - id: refresh_position
+        doc: Do we refresh the position?
         type: u1
         valid:
           any-of: [0, 1]
       - id: cancel_all_actions
+        doc: Do we cancel ongoing actions?
         type: u1
         valid:
           any-of: [0, 1]
       - id: trigger_player_action
+        doc: Do we trigger `trigger_type::player_action` pages?
         type: u1
         valid:
           any-of: [0, 1]
       - id: trigger_player_proximity
+        doc: Do we trigger `trigger_type::player_proximity` pages?
         type: u1
         valid:
           any-of: [0, 1]
       - id: trigger_auto
+        doc: Do we trigger `trigger_type::auto` pages?
         type: u1
         valid:
           any-of: [0, 1]
       - id: trigger_player_touch
+        doc: Do we trigger `trigger_type::player_touch` pages?
         type: u1
         valid:
           any-of: [0, 1]
       - id: trigger_trigger_npc
+        doc: Do we trigger `trigger_type::trigger_npc` pages?
         type: u1
         valid:
           any-of: [0, 1]
       - id: global_refresh_outfits
+        doc: Do we refresh all NPC outfits? Unused in `action::refresh_specific_npcs`.
         type: u1
         valid:
           any-of: [0, 1]
       - id: global_refresh_pages
+        doc: Do we refresh all NPC pages? Unused in `action::refresh_specific_npcs`.
         type: u1
         valid:
           any-of: [0, 1]
       - id: global_refresh_positions
+        doc: Do we refresh all NPC positions? Unused in `action::refresh_specific_npcs`.
         type: u1
         valid:
           any-of: [0, 1]
       - id: global_try_spawn
+        doc: Do we refresh all NPC spawning? Unused in `action::refresh_specific_npcs`.
         type: u1
         valid:
           any-of: [0, 1]
       - id: global_try_despawn
+        doc: Do we refresh all NPC despawning? Unused in `action::refresh_specific_npcs`.
         type: u1
         valid:
           any-of: [0, 1]
-      - id: magic1
-        doc: Unknown.
-        size: 1
+      - id: key
+        doc: The NPC key to refresh. Unused in `action::stop_processing`.
+        type: nullable_string
   action_data_trigger_npc:
     doc: Data associated with `action::trigger_npc`.
     seq:

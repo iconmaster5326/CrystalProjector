@@ -696,6 +696,60 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotAnyOfError(self.except_victory, self._io, u"/types/action_data_play_music/seq/4")
 
 
+    class ActionDataRefresh(KaitaiStruct):
+        """Data associated with `action::stop_processing` and `action::refresh_specific_npcs`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.refresh_outfit = self._io.read_u1()
+            if not  ((self.refresh_outfit == 0) or (self.refresh_outfit == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.refresh_outfit, self._io, u"/types/action_data_refresh/seq/0")
+            self.refresh_page = self._io.read_u1()
+            if not  ((self.refresh_page == 0) or (self.refresh_page == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.refresh_page, self._io, u"/types/action_data_refresh/seq/1")
+            self.refresh_position = self._io.read_u1()
+            if not  ((self.refresh_position == 0) or (self.refresh_position == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.refresh_position, self._io, u"/types/action_data_refresh/seq/2")
+            self.cancel_all_actions = self._io.read_u1()
+            if not  ((self.cancel_all_actions == 0) or (self.cancel_all_actions == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.cancel_all_actions, self._io, u"/types/action_data_refresh/seq/3")
+            self.trigger_player_action = self._io.read_u1()
+            if not  ((self.trigger_player_action == 0) or (self.trigger_player_action == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_player_action, self._io, u"/types/action_data_refresh/seq/4")
+            self.trigger_player_proximity = self._io.read_u1()
+            if not  ((self.trigger_player_proximity == 0) or (self.trigger_player_proximity == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_player_proximity, self._io, u"/types/action_data_refresh/seq/5")
+            self.trigger_auto = self._io.read_u1()
+            if not  ((self.trigger_auto == 0) or (self.trigger_auto == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_auto, self._io, u"/types/action_data_refresh/seq/6")
+            self.trigger_player_touch = self._io.read_u1()
+            if not  ((self.trigger_player_touch == 0) or (self.trigger_player_touch == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_player_touch, self._io, u"/types/action_data_refresh/seq/7")
+            self.trigger_trigger_npc = self._io.read_u1()
+            if not  ((self.trigger_trigger_npc == 0) or (self.trigger_trigger_npc == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_trigger_npc, self._io, u"/types/action_data_refresh/seq/8")
+            self.global_refresh_outfits = self._io.read_u1()
+            if not  ((self.global_refresh_outfits == 0) or (self.global_refresh_outfits == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.global_refresh_outfits, self._io, u"/types/action_data_refresh/seq/9")
+            self.global_refresh_pages = self._io.read_u1()
+            if not  ((self.global_refresh_pages == 0) or (self.global_refresh_pages == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.global_refresh_pages, self._io, u"/types/action_data_refresh/seq/10")
+            self.global_refresh_positions = self._io.read_u1()
+            if not  ((self.global_refresh_positions == 0) or (self.global_refresh_positions == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.global_refresh_positions, self._io, u"/types/action_data_refresh/seq/11")
+            self.global_try_spawn = self._io.read_u1()
+            if not  ((self.global_try_spawn == 0) or (self.global_try_spawn == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.global_try_spawn, self._io, u"/types/action_data_refresh/seq/12")
+            self.global_try_despawn = self._io.read_u1()
+            if not  ((self.global_try_despawn == 0) or (self.global_try_despawn == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.global_try_despawn, self._io, u"/types/action_data_refresh/seq/13")
+            self.key = Entities.NullableString(self._io, self, self._root)
+
+
     class ActionDataSetFacing(KaitaiStruct):
         """Data associated with `action::set_facing`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -811,60 +865,6 @@ class Entities(KaitaiStruct):
             for i in range(self.num_shop_items):
                 self.shop_items.append(Entities.ShopItem(self._io, self, self._root))
 
-
-
-    class ActionDataStopProcessing(KaitaiStruct):
-        """Data associated with `action::stop_processing`."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.refresh_outfit = self._io.read_u1()
-            if not  ((self.refresh_outfit == 0) or (self.refresh_outfit == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.refresh_outfit, self._io, u"/types/action_data_stop_processing/seq/0")
-            self.refresh_page = self._io.read_u1()
-            if not  ((self.refresh_page == 0) or (self.refresh_page == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.refresh_page, self._io, u"/types/action_data_stop_processing/seq/1")
-            self.refresh_position = self._io.read_u1()
-            if not  ((self.refresh_position == 0) or (self.refresh_position == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.refresh_position, self._io, u"/types/action_data_stop_processing/seq/2")
-            self.cancel_all_actions = self._io.read_u1()
-            if not  ((self.cancel_all_actions == 0) or (self.cancel_all_actions == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.cancel_all_actions, self._io, u"/types/action_data_stop_processing/seq/3")
-            self.trigger_player_action = self._io.read_u1()
-            if not  ((self.trigger_player_action == 0) or (self.trigger_player_action == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_player_action, self._io, u"/types/action_data_stop_processing/seq/4")
-            self.trigger_player_proximity = self._io.read_u1()
-            if not  ((self.trigger_player_proximity == 0) or (self.trigger_player_proximity == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_player_proximity, self._io, u"/types/action_data_stop_processing/seq/5")
-            self.trigger_auto = self._io.read_u1()
-            if not  ((self.trigger_auto == 0) or (self.trigger_auto == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_auto, self._io, u"/types/action_data_stop_processing/seq/6")
-            self.trigger_player_touch = self._io.read_u1()
-            if not  ((self.trigger_player_touch == 0) or (self.trigger_player_touch == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_player_touch, self._io, u"/types/action_data_stop_processing/seq/7")
-            self.trigger_trigger_npc = self._io.read_u1()
-            if not  ((self.trigger_trigger_npc == 0) or (self.trigger_trigger_npc == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.trigger_trigger_npc, self._io, u"/types/action_data_stop_processing/seq/8")
-            self.global_refresh_outfits = self._io.read_u1()
-            if not  ((self.global_refresh_outfits == 0) or (self.global_refresh_outfits == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.global_refresh_outfits, self._io, u"/types/action_data_stop_processing/seq/9")
-            self.global_refresh_pages = self._io.read_u1()
-            if not  ((self.global_refresh_pages == 0) or (self.global_refresh_pages == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.global_refresh_pages, self._io, u"/types/action_data_stop_processing/seq/10")
-            self.global_refresh_positions = self._io.read_u1()
-            if not  ((self.global_refresh_positions == 0) or (self.global_refresh_positions == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.global_refresh_positions, self._io, u"/types/action_data_stop_processing/seq/11")
-            self.global_try_spawn = self._io.read_u1()
-            if not  ((self.global_try_spawn == 0) or (self.global_try_spawn == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.global_try_spawn, self._io, u"/types/action_data_stop_processing/seq/12")
-            self.global_try_despawn = self._io.read_u1()
-            if not  ((self.global_try_despawn == 0) or (self.global_try_despawn == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.global_try_despawn, self._io, u"/types/action_data_stop_processing/seq/13")
-            self.magic1 = self._io.read_bytes(1)
 
 
     class ActionDataTriggerNpc(KaitaiStruct):
@@ -1423,6 +1423,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.queue_future_actions:
                 self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
+            elif _on == Entities.Action.refresh_specific_npcs:
+                self.data = Entities.ActionDataRefresh(self._io, self, self._root)
             elif _on == Entities.Action.remove_inventory:
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.revert_camera:
@@ -1450,7 +1452,7 @@ class Entities(KaitaiStruct):
             elif _on == Entities.Action.stop_music:
                 self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
-                self.data = Entities.ActionDataStopProcessing(self._io, self, self._root)
+                self.data = Entities.ActionDataRefresh(self._io, self, self._root)
             elif _on == Entities.Action.teleport_player:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.teleport_player_to:
