@@ -329,6 +329,13 @@ enums:
     2: expert
     3: race_4
     4: race_5
+  shop_service_type:
+    0: gender_change
+    1: atlas_registrar
+    2: growth_reallocation
+    3: lost_and_found
+    4: sadist
+    5: rename
 types:
   string:
     doc: A string.
@@ -921,6 +928,7 @@ types:
             action::set_player_facing: action_data_set_facing
             action::shop: action_data_shop
             action::shop_recipe: action_data_shop
+            action::shop_service: action_data_shop_service
             action::stop_processing: action_data_refresh
             action::stop_music: action_data_play_music
             action::teleport_player: action_data_move
@@ -1493,6 +1501,18 @@ types:
       - id: condition
         doc: A condition under which the item is sold.
         type: condition
+  action_data_shop_service:
+    doc: Data associated with `action::shop_service`.
+    seq:
+      - id: service
+        doc: The service this shop provides.
+        type: u1
+        enum: shop_service_type
+        valid:
+          in-enum: true
+      - id: magic1
+        doc: Unknown.
+        size: 4
   action_data_refresh:
     doc: Data associated with `action::stop_processing` and `action::refresh_specific_npcs`.
     seq:

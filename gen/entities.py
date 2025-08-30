@@ -298,6 +298,14 @@ class Entities(KaitaiStruct):
         crystal = 4
         large = 5
 
+    class ShopServiceType(IntEnum):
+        gender_change = 0
+        atlas_registrar = 1
+        growth_reallocation = 2
+        lost_and_found = 3
+        sadist = 4
+        rename = 5
+
     class SignStyle(IntEnum):
         wooden = 0
         bulletin_left = 100
@@ -877,6 +885,21 @@ class Entities(KaitaiStruct):
             for i in range(self.num_shop_items):
                 self.shop_items.append(Entities.ShopItem(self._io, self, self._root))
 
+
+
+    class ActionDataShopService(KaitaiStruct):
+        """Data associated with `action::shop_service`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.service = KaitaiStream.resolve_enum(Entities.ShopServiceType, self._io.read_u1())
+            if not isinstance(self.service, Entities.ShopServiceType):
+                raise kaitaistruct.ValidationNotInEnumError(self.service, self._io, u"/types/action_data_shop_service/seq/0")
+            self.magic1 = self._io.read_bytes(4)
 
 
     class ActionDataTriggerNpc(KaitaiStruct):
@@ -1473,6 +1496,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
             elif _on == Entities.Action.shop_recipe:
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
+            elif _on == Entities.Action.shop_service:
+                self.data = Entities.ActionDataShopService(self._io, self, self._root)
             elif _on == Entities.Action.stop_music:
                 self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
