@@ -929,9 +929,6 @@ class Entities(KaitaiStruct):
             for i in range(self.num_pages):
                 self.pages.append(Entities.NpcPage(self._io, self, self._root))
 
-            if  ((self.num_pages == 0) and ((not (self._io.is_eof())))) :
-                self.blank_page = self._io.read_bytes(37)
-
 
 
     class DataSign(KaitaiStruct):
@@ -1194,11 +1191,24 @@ class Entities(KaitaiStruct):
             self.wander = KaitaiStream.resolve_enum(Entities.Wander, self._io.read_u1())
             if not isinstance(self.wander, Entities.Wander):
                 raise kaitaistruct.ValidationNotInEnumError(self.wander, self._io, u"/types/npc_outfit/seq/17")
-            _on = self.wander
-            if _on == Entities.Wander.none:
-                self.wander_data = Entities.WanderNone(self._io, self, self._root)
-            else:
-                self.wander_data = Entities.WanderData(self._io, self, self._root)
+            self.wander_speed = self._io.read_f4le()
+            self.wander_frequency = self._io.read_u4le()
+            self.wander_radius = self._io.read_f4le()
+            self.wander_is_route = self._io.read_u1()
+            if not  ((self.wander_is_route == 0) or (self.wander_is_route == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.wander_is_route, self._io, u"/types/npc_outfit/seq/21")
+            if self.wander_is_route == 1:
+                self.num_wander_points = self._io.read_u4le()
+
+            if self.wander_is_route == 1:
+                self.wander_points = []
+                for i in range(self.num_wander_points):
+                    self.wander_points.append(Entities.WanderRoutePoint(self._io, self, self._root))
+
+
+            self.wander_is_line = self._io.read_u1()
+            if not  ((self.wander_is_line == 0) or (self.wander_is_line == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.wander_is_line, self._io, u"/types/npc_outfit/seq/24")
 
 
     class NpcPage(KaitaiStruct):
@@ -1340,45 +1350,6 @@ class Entities(KaitaiStruct):
             self.type = KaitaiStream.resolve_enum(Entities.TouchType, self._io.read_u1())
             if not isinstance(self.type, Entities.TouchType):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/trigger_data_player_touch/seq/1")
-
-
-    class WanderData(KaitaiStruct):
-        """Wandering information for NPCs."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.speed = self._io.read_f4le()
-            self.frequency = self._io.read_u4le()
-            self.radius = self._io.read_f4le()
-            self.is_route = self._io.read_u1()
-            if not  ((self.is_route == 0) or (self.is_route == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.is_route, self._io, u"/types/wander_data/seq/3")
-            if self.is_route == 1:
-                self.num_points = self._io.read_u4le()
-
-            if self.is_route == 1:
-                self.points = []
-                for i in range(self.num_points):
-                    self.points.append(Entities.WanderRoutePoint(self._io, self, self._root))
-
-
-            self.is_line = self._io.read_bytes(1)
-
-
-    class WanderNone(KaitaiStruct):
-        """A region of blank bits, because the wander type does not need the data."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.nothing = self._io.read_bytes(18)
 
 
     class WanderRoutePoint(KaitaiStruct):

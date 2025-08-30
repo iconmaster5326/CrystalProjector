@@ -391,10 +391,6 @@ types:
         type: npc_page
         repeat: expr
         repeat-expr: num_pages
-      - id: blank_page
-        doc: If there's 0 pages, there's some zero bytes here.
-        size: 37
-        if: num_pages == 0 and not _io.eof
   npc_outfit:
     doc: The appearance, physics, and movement of an NPC.
     seq:
@@ -484,49 +480,35 @@ types:
         enum: wander
         valid:
           in-enum: true
-      - id: wander_data
-        doc: Data for the wandering behaviour.
-        type:
-          switch-on: wander
-          cases:
-            wander::none: wander_none
-            _: wander_data
-  wander_none:
-    doc: A region of blank bits, because the wander type does not need the data.
-    seq:
-      - id: nothing
-        doc: All zeroes.
-        size: 18
-  wander_data:
-    doc: Wandering information for NPCs.
-    seq:
-      - id: speed
+      - id: wander_speed
         doc: How fast does this NPC move?
         type: f4
-      - id: frequency
+      - id: wander_frequency
         doc: How long does this NPC wait between points?
         type: u4
-      - id: radius
+      - id: wander_radius
         doc: How large is the wandering area?
         type: f4
-      - id: is_route
+      - id: wander_is_route
         doc: Is this a route?
         type: u1
         valid:
           any-of: [0, 1]
-      - id: num_points
-        doc: The number of points in this route.
+      - id: num_wander_points
+        doc: The number of points in this wander route.
         type: u4
-        if: is_route == 1
-      - id: points
-        doc: The route this NPC takes.
+        if: wander_is_route == 1
+      - id: wander_points
+        doc: The route this NPC wanders in.
         type: wander_route_point
         repeat: expr
-        repeat-expr: num_points
-        if: is_route == 1
-      - id: is_line
-        doc: Is this route a straight line?
-        size: 1
+        repeat-expr: num_wander_points
+        if: wander_is_route == 1
+      - id: wander_is_line
+        doc: Is this wander route a straight line?
+        type: u1
+        valid:
+          any-of: [0, 1]
   wander_route_point:
     doc: A point along a wander route.
     seq:
