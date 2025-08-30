@@ -535,6 +535,30 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_set_facing/seq/0")
 
 
+    class ActionDataSetMount(KaitaiStruct):
+        """Data associated with `action::set_mount`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(1)
+            self.mount = KaitaiStream.resolve_enum(Entities.Physics, self._io.read_u1())
+            if not isinstance(self.mount, Entities.Physics):
+                raise kaitaistruct.ValidationNotInEnumError(self.mount, self._io, u"/types/action_data_set_mount/seq/1")
+            self.disable_set_home_point = self._io.read_u1()
+            if not  ((self.disable_set_home_point == 0) or (self.disable_set_home_point == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.disable_set_home_point, self._io, u"/types/action_data_set_mount/seq/2")
+            self.disable_set_safe_coord = self._io.read_u1()
+            if not  ((self.disable_set_safe_coord == 0) or (self.disable_set_safe_coord == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.disable_set_safe_coord, self._io, u"/types/action_data_set_mount/seq/3")
+            self.plays_sounds = self._io.read_u1()
+            if not  ((self.plays_sounds == 0) or (self.plays_sounds == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.plays_sounds, self._io, u"/types/action_data_set_mount/seq/4")
+
+
     class ActionDataShop(KaitaiStruct):
         """Data associated with `action::shop` and `action::shop_recipe`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -1104,6 +1128,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.set_mount:
+                self.data = Entities.ActionDataSetMount(self._io, self, self._root)
             elif _on == Entities.Action.set_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
             elif _on == Entities.Action.shop:

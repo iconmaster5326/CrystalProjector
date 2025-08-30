@@ -816,6 +816,7 @@ types:
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
             action::set_number: action_data_modify_var
+            action::set_mount: action_data_set_mount
             action::shop: action_data_shop
             action::shop_recipe: action_data_shop
             action::stop_processing: action_data_stop_processing
@@ -1088,6 +1089,33 @@ types:
       - id: magic1
         doc: Unknown.
         size: 7
+  action_data_set_mount:
+    doc: Data associated with `action::set_mount`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 1
+      - id: mount
+        doc: The mount type, which is keyed by its physics type.
+        type: u1
+        enum: physics
+        valid:
+          in-enum: true
+      - id: disable_set_home_point
+        doc: Whether or not this mount disables setting of home points.
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: disable_set_safe_coord
+        doc: Whether or not this mount disables setting of safe points.
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: plays_sounds
+        doc: Whether or not this mount plays sounds
+        type: u1
+        valid:
+          any-of: [0, 1]
   action_data_shop:
     doc: Data associated with `action::shop` and `action::shop_recipe`.
     seq:
