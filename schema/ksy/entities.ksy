@@ -851,9 +851,11 @@ types:
             action::move_player: action_data_move
             action::move_player_to: action_data_move
             action::move_to: action_data_move
+            action::play_music: action_data_play_music
             action::queue_future_actions: action_data_modify_action_queue
             action::remove_inventory: action_data_inventory
             action::revert_camera: action_data_move_camera
+            action::revert_music: action_data_play_music
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
             action::set_last_safe_pos_to_marker: action_data_set_last_safe_pos_to_marker
@@ -1165,6 +1167,32 @@ types:
       - id: magic2
         doc: Unknown.
         size: 1
+  action_data_play_music:
+    doc: Data associated with `action::play_music` (and `action::revert_music`, where all fields are unused).
+    seq:
+      - id: track
+        doc: The music to play.
+        type: u1
+      - id: no_fade
+        doc: Cut to the music instead of fading it in?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: loop
+        doc: Loop this music?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: apply_to_battle
+        doc: Use this music in battle too?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: except_victory
+        doc: When `apply_to_battle` is 1, do we keep the normal victory music?
+        type: u1
+        valid:
+          any-of: [0, 1]
   action_data_set_facing:
     doc: Data associated with `action::set_facing`.
     seq:

@@ -604,6 +604,30 @@ class Entities(KaitaiStruct):
             self.magic2 = self._io.read_bytes(1)
 
 
+    class ActionDataPlayMusic(KaitaiStruct):
+        """Data associated with `action::play_music` (and `action::revert_music`, where all fields are unused)."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.track = self._io.read_u1()
+            self.no_fade = self._io.read_u1()
+            if not  ((self.no_fade == 0) or (self.no_fade == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.no_fade, self._io, u"/types/action_data_play_music/seq/1")
+            self.loop = self._io.read_u1()
+            if not  ((self.loop == 0) or (self.loop == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.loop, self._io, u"/types/action_data_play_music/seq/2")
+            self.apply_to_battle = self._io.read_u1()
+            if not  ((self.apply_to_battle == 0) or (self.apply_to_battle == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.apply_to_battle, self._io, u"/types/action_data_play_music/seq/3")
+            self.except_victory = self._io.read_u1()
+            if not  ((self.except_victory == 0) or (self.except_victory == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.except_victory, self._io, u"/types/action_data_play_music/seq/4")
+
+
     class ActionDataSetFacing(KaitaiStruct):
         """Data associated with `action::set_facing`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -1255,12 +1279,16 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.move_to:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.play_music:
+                self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.queue_future_actions:
                 self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
             elif _on == Entities.Action.remove_inventory:
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.revert_camera:
                 self.data = Entities.ActionDataMoveCamera(self._io, self, self._root)
+            elif _on == Entities.Action.revert_music:
+                self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.set_facing:
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
