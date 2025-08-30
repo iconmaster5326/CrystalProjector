@@ -399,26 +399,6 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotAnyOfError(self.no_loot, self._io, u"/types/action_data_battle/seq/7")
 
 
-    class ActionDataChoiceMessage(KaitaiStruct):
-        """Data associated with `action::choice_message`."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.message = Entities.NullableString(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(2)
-            self.num_choices = self._io.read_u4le()
-            self.choices = []
-            for i in range(self.num_choices):
-                self.choices.append(Entities.ChoiceMessageChoice(self._io, self, self._root))
-
-            self.answer_var = Entities.NullableString(self._io, self, self._root)
-            self.magic2 = self._io.read_bytes(1)
-
-
     class ActionDataCommandNpc(KaitaiStruct):
         """Data associated with `action::command_npc`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -526,7 +506,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataMessage(KaitaiStruct):
-        """Data associated with `action::message`."""
+        """Data associated with `action::message` and `action::choice_message`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -535,7 +515,21 @@ class Entities(KaitaiStruct):
 
         def _read(self):
             self.message = Entities.NullableString(self._io, self, self._root)
-            self.magic1 = self._io.read_bytes(8)
+            self.magic1 = self._io.read_bytes(1)
+            self.has_choices = self._io.read_u1()
+            if not  ((self.has_choices == 0) or (self.has_choices == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_choices, self._io, u"/types/action_data_message/seq/2")
+            if self.has_choices == 1:
+                self.num_choices = self._io.read_u4le()
+
+            if self.has_choices == 1:
+                self.choices = []
+                for i in range(self.num_choices):
+                    self.choices.append(Entities.ChoiceMessageChoice(self._io, self, self._root))
+
+
+            self.answer_var = Entities.NullableString(self._io, self, self._root)
+            self.magic2 = self._io.read_bytes(1)
 
 
     class ActionDataMessageHint(KaitaiStruct):
@@ -1385,9 +1379,9 @@ class Entities(KaitaiStruct):
             elif _on == Entities.Action.cancel_actions:
                 self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
             elif _on == Entities.Action.choice_message:
-                self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
+                self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.choice_message_anonymous:
-                self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
+                self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.command_npc:
                 self.data = Entities.ActionDataCommandNpc(self._io, self, self._root)
             elif _on == Entities.Action.condition:

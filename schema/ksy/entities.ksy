@@ -862,8 +862,8 @@ types:
           switch-on: type
           cases:
             action::add_inventory: action_data_inventory
-            action::choice_message: action_data_choice_message
-            action::choice_message_anonymous: action_data_choice_message
+            action::choice_message: action_data_message
+            action::choice_message_anonymous: action_data_message
             action::add_number: action_data_modify_var
             action::battle: action_data_battle
             action::cancel_actions: action_data_modify_action_queue
@@ -993,25 +993,32 @@ types:
         type: npc_action
         repeat: expr
         repeat-expr: num_commands
-  action_data_choice_message:
-    doc: Data associated with `action::choice_message`.
+  action_data_message:
+    doc: Data associated with `action::message` and `action::choice_message`.
     seq:
       - id: message
         doc: The message to display.
         type: nullable_string
       - id: magic1
         doc: Unknown.
-        size: 2
+        size: 1
+      - id: has_choices
+        doc: Do we have choices? Unused in `action::message`.
+        type: u1
+        valid:
+          any-of: [0, 1]
       - id: num_choices
-        doc: The number of choices the player can select from.
+        doc: The number of choices the player can select from. Unused in `action::message`.
         type: u4
+        if: has_choices == 1
       - id: choices
-        doc: The choices the player can select from.
+        doc: The choices the player can select from. Unused in `action::message`.
         type: choice_message_choice
         repeat: expr
         repeat-expr: num_choices
+        if: has_choices == 1
       - id: answer_var
-        doc: The variable to place the choice in.
+        doc: The variable to place the choice in. Unused in `action::message`.
         type: nullable_string
       - id: magic2
         doc: Unknown.
@@ -1140,15 +1147,6 @@ types:
       - id: magic1
         doc: Unknown.
         size: 7
-  action_data_message:
-    doc: Data associated with `action::message`.
-    seq:
-      - id: message
-        doc: The message to display.
-        type: nullable_string
-      - id: magic1
-        doc: Unknown.
-        size: 8
   action_data_move:
     doc: Data associated with `action::move`, `action::move_group`, `action::move_player`, `action::teleport_player`, and the `_to` forms of such.
     seq:
