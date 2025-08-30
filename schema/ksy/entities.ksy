@@ -153,9 +153,9 @@ enums:
     3: up_voxel_and_actor
     4: off_voxel
     5: up_voxel_off_voxel
-    6: off_actor
-    7: off_voxel_and_actor
-    8: full
+    8: off_actor
+    12: off_voxel_and_actor
+    15: full
   wander:
     0: none
     1: circle_area
@@ -859,6 +859,7 @@ types:
             action::set_last_safe_pos_to_marker: action_data_set_last_safe_pos_to_marker
             action::set_number: action_data_modify_var
             action::set_mount: action_data_set_mount
+            action::set_player_facing: action_data_set_facing
             action::shop: action_data_shop
             action::shop_recipe: action_data_shop
             action::stop_processing: action_data_stop_processing

@@ -205,9 +205,9 @@ class Entities(KaitaiStruct):
         up_voxel_and_actor = 3
         off_voxel = 4
         up_voxel_off_voxel = 5
-        off_actor = 6
-        off_voxel_and_actor = 7
-        full = 8
+        off_actor = 8
+        off_voxel_and_actor = 12
+        full = 15
 
     class MoveWaitMode(IntEnum):
         none = 0
@@ -1271,6 +1271,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataSetMount(self._io, self, self._root)
             elif _on == Entities.Action.set_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.set_player_facing:
+                self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.shop:
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
             elif _on == Entities.Action.shop_recipe:
