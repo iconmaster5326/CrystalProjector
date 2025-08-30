@@ -968,6 +968,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_inventory:
                 self.data = Entities.ConditionDataCheckInventory(self._io, self, self._root)
+            elif _on == Entities.ConditionType.check_npc_proximity:
+                self.data = Entities.ConditionDataCheckNpcProximity(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_number:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
             elif _on == Entities.ConditionType.is_job_mastered:
@@ -1035,6 +1037,22 @@ class Entities(KaitaiStruct):
             self.randomized = self._io.read_u1()
             if not  ((self.randomized == 0) or (self.randomized == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.randomized, self._io, u"/types/condition_data_check_inventory/seq/3")
+
+
+    class ConditionDataCheckNpcProximity(KaitaiStruct):
+        """Data associated with `condition::check_npc_proximity`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(1)
+            self.key = Entities.NullableString(self._io, self, self._root)
+            self.magic2 = self._io.read_bytes(4)
+            self.distance = self._io.read_u4le()
+            self.magic3 = self._io.read_bytes(7)
 
 
     class ConditionDataCheckVar(KaitaiStruct):

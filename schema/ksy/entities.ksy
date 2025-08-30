@@ -595,6 +595,7 @@ types:
             condition_type::check_crystal_count: condition_data_check_crystal_count
             condition_type::check_flag: condition_data_check_var
             condition_type::check_inventory: condition_data_check_inventory
+            condition_type::check_npc_proximity: condition_data_check_npc_proximity
             condition_type::check_number: condition_data_check_var
             condition_type::is_player_gender: condition_data_id
             condition_type::is_job_mastered: condition_data_id
@@ -660,6 +661,24 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
+  condition_data_check_npc_proximity:
+    doc: Data associated with `condition::check_npc_proximity`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 1
+      - id: key
+        doc: The NPC key to check.
+        type: nullable_string
+      - id: magic2
+        doc: Unknown.
+        size: 4
+      - id: distance
+        doc: The distance to check.
+        type: u4
+      - id: magic3
+        doc: Unknown.
+        size: 7
   condition_data_check_var:
     doc: Condition data for `condition_type::check_flag` and `condition_type::check_number`.
     seq:
