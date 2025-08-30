@@ -901,6 +901,7 @@ types:
           switch-on: type
           cases:
             action::add_inventory: action_data_inventory
+            action::add_to_lost_and_found: action_data_inventory
             action::choice_message: action_data_message
             action::choice_message_anonymous: action_data_message
             action::add_number: action_data_modify_var

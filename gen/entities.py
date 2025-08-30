@@ -1434,6 +1434,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.add_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.add_to_lost_and_found:
+                self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.battle:
                 self.data = Entities.ActionDataBattle(self._io, self, self._root)
             elif _on == Entities.Action.cancel_actions:
