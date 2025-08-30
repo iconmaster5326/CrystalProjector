@@ -601,6 +601,7 @@ types:
             condition_type::check_atlas: condition_data_check_atlas
             condition_type::check_crystal_count: condition_data_check_crystal_count
             condition_type::check_flag: condition_data_check_var
+            condition_type::check_highest_member_level: condition_data_check_highest_member_level
             condition_type::check_inventory: condition_data_check_inventory
             condition_type::check_npc_proximity: condition_data_check_npc_proximity
             condition_type::check_number: condition_data_check_var
@@ -644,6 +645,18 @@ types:
         size: 5
       - id: count
         doc: The number of crystals you need to pass the condition.
+        type: u4
+      - id: magic2
+        doc: Unknown.
+        size: 1
+  condition_data_check_highest_member_level:
+    doc: Data associated with `condition::check_highest_member_level`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 5
+      - id: level
+        doc: The level to check.
         type: u4
       - id: magic2
         doc: Unknown.

@@ -989,6 +989,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ConditionDataCheckCrystalCount(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_flag:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
+            elif _on == Entities.ConditionType.check_highest_member_level:
+                self.data = Entities.ConditionDataCheckHighestMemberLevel(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_inventory:
                 self.data = Entities.ConditionDataCheckInventory(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_npc_proximity:
@@ -1040,6 +1042,20 @@ class Entities(KaitaiStruct):
         def _read(self):
             self.magic1 = self._io.read_bytes(5)
             self.count = self._io.read_u4le()
+            self.magic2 = self._io.read_bytes(1)
+
+
+    class ConditionDataCheckHighestMemberLevel(KaitaiStruct):
+        """Data associated with `condition::check_highest_member_level`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(5)
+            self.level = self._io.read_u4le()
             self.magic2 = self._io.read_bytes(1)
 
 
