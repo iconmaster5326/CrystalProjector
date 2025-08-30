@@ -894,6 +894,7 @@ types:
             action::revert_music: action_data_play_music
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
+            action::set_last_safe_pos_to: action_data_move
             action::set_last_safe_pos_to_marker: action_data_set_last_safe_pos_to_marker
             action::set_npc_property: action_data_set_npc_property
             action::set_number: action_data_modify_var

@@ -1439,6 +1439,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.set_last_safe_pos_to:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.set_last_safe_pos_to_marker:
                 self.data = Entities.ActionDataSetLastSafePosToMarker(self._io, self, self._root)
             elif _on == Entities.Action.set_mount:
