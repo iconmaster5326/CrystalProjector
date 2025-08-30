@@ -596,8 +596,9 @@ types:
             condition_type::check_flag: condition_data_check_var
             condition_type::check_inventory: condition_data_check_inventory
             condition_type::check_number: condition_data_check_var
-            condition_type::is_job_mastered: condition_data_is_job
-            condition_type::is_job_present: condition_data_is_job
+            condition_type::is_player_gender: condition_data_id
+            condition_type::is_job_mastered: condition_data_id
+            condition_type::is_job_present: condition_data_id
             condition_type::operation: condition_data_operation
             condition_type::randomizer: condition_data_randomizer
             _: nothing
@@ -683,16 +684,22 @@ types:
       - id: value
         doc: The value to check the variable for.
         type: var_value
-  condition_data_is_job:
-    doc: Condition data for `condition_type::is_job_present` and `condition_type::is_job_mastered`.
+  condition_data_id:
+    doc: Condition data for any condition that tests a single ID.
     seq:
       - id: magic1
         doc: Unknown.
-        size: 6
+        size: 3
+      - id: gender
+        doc: The ID of the gender to test.
+        type: u1
+      - id: magic2
+        doc: Unknown.
+        size: 2
       - id: job
         doc: The ID of the job to test.
         type: u4
-      - id: magic2
+      - id: magic3
         doc: Unknown.
         size: 7
   condition_data_operation:
@@ -874,6 +881,7 @@ types:
             action::move_group: action_data_move
             action::move_group_to: action_data_move
             action::move_player: action_data_move
+            action::move_player_instant: action_data_move
             action::move_player_to: action_data_move
             action::move_to: action_data_move
             action::my_quintar: action_data_my_quintar

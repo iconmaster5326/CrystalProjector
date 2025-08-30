@@ -974,9 +974,11 @@ class Entities(KaitaiStruct):
             elif _on == Entities.ConditionType.check_number:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
             elif _on == Entities.ConditionType.is_job_mastered:
-                self.data = Entities.ConditionDataIsJob(self._io, self, self._root)
+                self.data = Entities.ConditionDataId(self._io, self, self._root)
             elif _on == Entities.ConditionType.is_job_present:
-                self.data = Entities.ConditionDataIsJob(self._io, self, self._root)
+                self.data = Entities.ConditionDataId(self._io, self, self._root)
+            elif _on == Entities.ConditionType.is_player_gender:
+                self.data = Entities.ConditionDataId(self._io, self, self._root)
             elif _on == Entities.ConditionType.operation:
                 self.data = Entities.ConditionDataOperation(self._io, self, self._root)
             elif _on == Entities.ConditionType.randomizer:
@@ -1058,8 +1060,8 @@ class Entities(KaitaiStruct):
             self.value = Entities.VarValue(self._io, self, self._root)
 
 
-    class ConditionDataIsJob(KaitaiStruct):
-        """Condition data for `condition_type::is_job_present` and `condition_type::is_job_mastered`."""
+    class ConditionDataId(KaitaiStruct):
+        """Condition data for any condition that tests a single ID."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -1067,9 +1069,11 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(6)
+            self.magic1 = self._io.read_bytes(3)
+            self.gender = self._io.read_u1()
+            self.magic2 = self._io.read_bytes(2)
             self.job = self._io.read_u4le()
-            self.magic2 = self._io.read_bytes(7)
+            self.magic3 = self._io.read_bytes(7)
 
 
     class ConditionDataOperation(KaitaiStruct):
@@ -1411,6 +1415,8 @@ class Entities(KaitaiStruct):
             elif _on == Entities.Action.move_group_to:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.move_player:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.move_player_instant:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.move_player_to:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
