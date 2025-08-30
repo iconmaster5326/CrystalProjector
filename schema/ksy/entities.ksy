@@ -267,7 +267,7 @@ enums:
     74: unlock_job
     75: unlock_passive
     4: wait
-  variable_setting_mode:
+  var_value_type:
     0: constant
     1: variable
     2: inventory
@@ -680,15 +680,9 @@ types:
         enum: check_number_eval
         valid:
           in-enum: true
-      - id: magic3
-        doc: Unknown.
-        size: 2
       - id: value
-        doc: The number to test against, for `check_number` conditions.
-        type: s4
-      - id: magic4
-        doc: Unknown.
-        size: 7
+        doc: The value to check the variable for.
+        type: var_value
   condition_data_is_job:
     doc: Condition data for `condition_type::is_job_present` and `condition_type::is_job_mastered`.
     seq:
@@ -870,6 +864,7 @@ types:
             action::condition: action_data_condition
             action::do_narration: action_data_do_narration
             action::future_actions: action_data_future_actions
+            action::inn: action_data_inn
             action::message_hint: action_data_message_hint
             action::message_npc: action_data_message_npc
             action::message: action_data_message
@@ -951,14 +946,26 @@ types:
       - id: var
         doc: The variable to set based on member count.
         type: nullable_string
-      - id: biome
-        doc: The biome ID to override the arena. 0 if no override.
-        type: u1
-      - id: force_indoor
-        doc: Is this fight always inside?
+      - id: override_biome
+        doc: Do we override what arena the fight takes place in?
         type: u1
         valid:
           any-of: [0, 1]
+      - id: biome
+        doc: The biome ID to override the arena.
+        type: u4
+        if: override_biome == 1
+      - id: override_indoors
+        doc: Do we override if this fight is indoors or not?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: indoors
+        doc: Is this fight indoors or not?
+        type: u1
+        valid:
+          any-of: [0, 1]
+        if: override_indoors == 1
       - id: no_loot
         doc: Can you not loot/steal from this fight?
         type: u1
@@ -1025,9 +1032,9 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
-      - id: magic2
-        doc: Unknown.
-        size: 5
+      - id: condition
+        doc: The condition under which you may select the choice.
+        type: condition
   action_data_condition:
     doc: Data associated with `action::condition`.
     seq:
@@ -1086,6 +1093,12 @@ types:
         type: npc_action
         repeat: expr
         repeat-expr: num_actions
+  action_data_inn:
+    doc: Data associated with `action::inn`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 9
   action_data_message_hint:
     doc: Data associated with `action::message_hint`.
     seq:
@@ -1353,33 +1366,38 @@ types:
       - id: variable
         doc: The variable to set.
         type: nullable_string
+      - id: value
+        doc: The value to set/add/etc. the variable with.
+        type: var_value
+  var_value:
+    doc: A variable value, to add or test with.
+    seq:
       - id: setting_mode
-        doc: Will you be setting this variable based on a constant, or the value of another variable, or so on?
+        doc: Is this a constant, another variable, or so on?
         type: u1
-        enum: variable_setting_mode
+        enum: var_value_type
         valid:
           in-enum: true
-      - id: setting_data
-        doc: The data associated with the setting mode.
-        type:
-          switch-on: setting_mode
-          cases:
-            variable_setting_mode::constant: action_data_varsetmode_constant
-            _: nothing # TODO
-  action_data_varsetmode_constant:
-    doc: The data associated with `variable_setting_mode::constant`.
-    seq:
       - id: bool_value
-        doc: Whether or not to set or unset the flag, if we're setting a flag.
+        doc: The value to set/test/etc. a flag to, if we're setting a flag via `var_value_type::constant`.
         type: u1
         valid:
           any-of: [0, 1]
       - id: int_value
-        doc: The value to set/add/subtract/etc. the number to, if we're setting a number.
+        doc: The value to set/add/test/etc. a number to, if we're setting a number via `var_value_type::constant`.
         type: u4
+      - id: scope
+        doc: The scope of the variable, if we're `var_value_type::variable`.
+        type: u1
+        enum: scope
+        valid:
+          in-enum: true
+      - id: variable
+        doc: The variable, if we're `var_value_type::variable`.
+        type: nullable_string
       - id: magic1
         doc: Unknown.
-        size: 7
+        size: 5
   action_data_set_mount:
     doc: Data associated with `action::set_mount`.
     seq:

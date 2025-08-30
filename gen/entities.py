@@ -335,7 +335,7 @@ class Entities(KaitaiStruct):
         async_ = 1
         cinematic = 2
 
-    class VariableSettingMode(IntEnum):
+    class VarValueType(IntEnum):
         constant = 0
         variable = 1
         inventory = 2
@@ -380,13 +380,23 @@ class Entities(KaitaiStruct):
             if not  ((self.training == 0) or (self.training == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.training, self._io, u"/types/action_data_battle/seq/1")
             self.var = Entities.NullableString(self._io, self, self._root)
-            self.biome = self._io.read_u1()
-            self.force_indoor = self._io.read_u1()
-            if not  ((self.force_indoor == 0) or (self.force_indoor == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.force_indoor, self._io, u"/types/action_data_battle/seq/4")
+            self.override_biome = self._io.read_u1()
+            if not  ((self.override_biome == 0) or (self.override_biome == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.override_biome, self._io, u"/types/action_data_battle/seq/3")
+            if self.override_biome == 1:
+                self.biome = self._io.read_u4le()
+
+            self.override_indoors = self._io.read_u1()
+            if not  ((self.override_indoors == 0) or (self.override_indoors == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.override_indoors, self._io, u"/types/action_data_battle/seq/5")
+            if self.override_indoors == 1:
+                self.indoors = self._io.read_u1()
+                if not  ((self.indoors == 0) or (self.indoors == 1)) :
+                    raise kaitaistruct.ValidationNotAnyOfError(self.indoors, self._io, u"/types/action_data_battle/seq/6")
+
             self.no_loot = self._io.read_u1()
             if not  ((self.no_loot == 0) or (self.no_loot == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.no_loot, self._io, u"/types/action_data_battle/seq/5")
+                raise kaitaistruct.ValidationNotAnyOfError(self.no_loot, self._io, u"/types/action_data_battle/seq/7")
 
 
     class ActionDataChoiceMessage(KaitaiStruct):
@@ -482,6 +492,18 @@ class Entities(KaitaiStruct):
             for i in range(self.num_actions):
                 self.actions.append(Entities.NpcAction(self._io, self, self._root))
 
+
+
+    class ActionDataInn(KaitaiStruct):
+        """Data associated with `action::inn`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(9)
 
 
     class ActionDataInventory(KaitaiStruct):
@@ -581,14 +603,7 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/action_data_modify_var/seq/0")
             self.friend_key = Entities.NullableString(self._io, self, self._root)
             self.variable = Entities.NullableString(self._io, self, self._root)
-            self.setting_mode = KaitaiStream.resolve_enum(Entities.VariableSettingMode, self._io.read_u1())
-            if not isinstance(self.setting_mode, Entities.VariableSettingMode):
-                raise kaitaistruct.ValidationNotInEnumError(self.setting_mode, self._io, u"/types/action_data_modify_var/seq/3")
-            _on = self.setting_mode
-            if _on == Entities.VariableSettingMode.constant:
-                self.setting_data = Entities.ActionDataVarsetmodeConstant(self._io, self, self._root)
-            else:
-                self.setting_data = Entities.Nothing(self._io, self, self._root)
+            self.value = Entities.VarValue(self._io, self, self._root)
 
 
     class ActionDataMove(KaitaiStruct):
@@ -897,22 +912,6 @@ class Entities(KaitaiStruct):
             self.ability = self._io.read_u4le()
 
 
-    class ActionDataVarsetmodeConstant(KaitaiStruct):
-        """The data associated with `variable_setting_mode::constant`."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.bool_value = self._io.read_u1()
-            if not  ((self.bool_value == 0) or (self.bool_value == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.bool_value, self._io, u"/types/action_data_varsetmode_constant/seq/0")
-            self.int_value = self._io.read_u4le()
-            self.magic1 = self._io.read_bytes(7)
-
-
     class ActionDataWait(KaitaiStruct):
         """Data associated with `action::wait`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -945,7 +944,7 @@ class Entities(KaitaiStruct):
             self.cancel = self._io.read_u1()
             if not  ((self.cancel == 0) or (self.cancel == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.cancel, self._io, u"/types/choice_message_choice/seq/4")
-            self.magic2 = self._io.read_bytes(5)
+            self.condition = Entities.Condition(self._io, self, self._root)
 
 
     class Condition(KaitaiStruct):
@@ -1056,9 +1055,7 @@ class Entities(KaitaiStruct):
             self.eval = KaitaiStream.resolve_enum(Entities.CheckNumberEval, self._io.read_u1())
             if not isinstance(self.eval, Entities.CheckNumberEval):
                 raise kaitaistruct.ValidationNotInEnumError(self.eval, self._io, u"/types/condition_data_check_var/seq/3")
-            self.magic3 = self._io.read_bytes(2)
-            self.value = self._io.read_s4le()
-            self.magic4 = self._io.read_bytes(7)
+            self.value = Entities.VarValue(self._io, self, self._root)
 
 
     class ConditionDataIsJob(KaitaiStruct):
@@ -1395,6 +1392,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataDoNarration(self._io, self, self._root)
             elif _on == Entities.Action.future_actions:
                 self.data = Entities.ActionDataFutureActions(self._io, self, self._root)
+            elif _on == Entities.Action.inn:
+                self.data = Entities.ActionDataInn(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message_anonymous:
@@ -1697,6 +1696,29 @@ class Entities(KaitaiStruct):
             self.type = KaitaiStream.resolve_enum(Entities.TouchType, self._io.read_u1())
             if not isinstance(self.type, Entities.TouchType):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/trigger_data_player_touch/seq/1")
+
+
+    class VarValue(KaitaiStruct):
+        """A variable value, to add or test with."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.setting_mode = KaitaiStream.resolve_enum(Entities.VarValueType, self._io.read_u1())
+            if not isinstance(self.setting_mode, Entities.VarValueType):
+                raise kaitaistruct.ValidationNotInEnumError(self.setting_mode, self._io, u"/types/var_value/seq/0")
+            self.bool_value = self._io.read_u1()
+            if not  ((self.bool_value == 0) or (self.bool_value == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.bool_value, self._io, u"/types/var_value/seq/1")
+            self.int_value = self._io.read_u4le()
+            self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
+            if not isinstance(self.scope, Entities.Scope):
+                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/var_value/seq/3")
+            self.variable = Entities.NullableString(self._io, self, self._root)
+            self.magic1 = self._io.read_bytes(5)
 
 
     class WanderRoutePoint(KaitaiStruct):
