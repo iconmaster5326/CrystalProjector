@@ -885,6 +885,7 @@ types:
             action::move_player_to: action_data_move
             action::move_to: action_data_move
             action::my_quintar: action_data_my_quintar
+            action::particle: action_data_particle
             action::play_music: action_data_play_music
             action::queue_future_actions: action_data_modify_action_queue
             action::refresh_specific_npcs: action_data_refresh
@@ -1251,6 +1252,21 @@ types:
         enum: quintar_track
         valid:
           in-enum: true
+  action_data_particle:
+    doc: Data associated with `action::particle`.
+    seq:
+      - id: id
+        doc: The ID of the particle effect to display.
+        type: u4
+      - id: "x"
+        doc: The X offset to display the effect.
+        type: s4
+      - id: "y"
+        doc: The Y offset to display the effect.
+        type: s4
+      - id: "z"
+        doc: The Z offset to display the effect.
+        type: s4
   action_data_play_music:
     doc: Data associated with `action::play_music` (and `action::revert_music`/`action::stop_music`, where all fields are unused).
     seq:

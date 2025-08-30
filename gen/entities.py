@@ -669,6 +669,21 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotInEnumError(self.track, self._io, u"/types/action_data_my_quintar/seq/4")
 
 
+    class ActionDataParticle(KaitaiStruct):
+        """Data associated with `action::particle`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.id = self._io.read_u4le()
+            self.x = self._io.read_s4le()
+            self.y = self._io.read_s4le()
+            self.z = self._io.read_s4le()
+
+
     class ActionDataPlayMusic(KaitaiStruct):
         """Data associated with `action::play_music` (and `action::revert_music`/`action::stop_music`, where all fields are unused)."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -1406,6 +1421,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.my_quintar:
                 self.data = Entities.ActionDataMyQuintar(self._io, self, self._root)
+            elif _on == Entities.Action.particle:
+                self.data = Entities.ActionDataParticle(self._io, self, self._root)
             elif _on == Entities.Action.play_music:
                 self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.queue_future_actions:
