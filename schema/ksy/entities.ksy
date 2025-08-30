@@ -1113,7 +1113,7 @@ types:
     seq:
       - id: magic1
         doc: Unknown.
-        size: 9
+        size: 5
   action_data_message_hint:
     doc: Data associated with `action::message_hint`.
     seq:

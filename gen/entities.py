@@ -483,7 +483,7 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(9)
+            self.magic1 = self._io.read_bytes(5)
 
 
     class ActionDataInventory(KaitaiStruct):
