@@ -301,6 +301,34 @@ enums:
     2: seen
     3: acquired
     4: purchased
+  quintar_action_type:
+    0: send_home_egg
+    1: manage_quintar
+    2: mount_my_quintar
+    3: unlock_race_track
+    4: view_race_records
+    5: record_race_result
+  quintar_type:
+    0: red
+    1: blue
+    2: yellow
+    3: teal
+    4: green
+    5: black
+    6: white
+    7: gold
+  quintar_nature:
+    0: fiendish
+    1: brutish
+    2: woke
+    3: fancy
+    4: trusty
+  quintar_track:
+    0: beginner
+    1: advanced
+    2: expert
+    3: race_4
+    4: race_5
 types:
   string:
     doc: A string.
@@ -852,6 +880,7 @@ types:
             action::move_player: action_data_move
             action::move_player_to: action_data_move
             action::move_to: action_data_move
+            action::my_quintar: action_data_my_quintar
             action::play_music: action_data_play_music
             action::queue_future_actions: action_data_modify_action_queue
             action::remove_inventory: action_data_inventory
@@ -1171,6 +1200,36 @@ types:
       - id: magic2
         doc: Unknown.
         size: 1
+  action_data_my_quintar:
+    doc: Data associated with `action::my_quintar`.
+    seq:
+      - id: action_type
+        doc: The type of quintar-related operation you're performing.
+        type: u1
+        enum: quintar_action_type
+        valid:
+          in-enum: true
+      - id: type
+        doc: The type of quintar to give, for `quintar_action_type::send_home_egg`.
+        type: u1
+        enum: quintar_type
+        valid:
+          in-enum: true
+      - id: nature
+        doc: The nature of quintar to give, for `quintar_action_type::send_home_egg`.
+        type: u1
+        enum: quintar_nature
+        valid:
+          in-enum: true
+      - id: slot
+        doc: The slot to put the egg in, for `quintar_action_type::send_home_egg`.
+        type: u4
+      - id: track
+        doc: The track to unlock, for the track-related actions.
+        type: u1
+        enum: quintar_track
+        valid:
+          in-enum: true
   action_data_play_music:
     doc: Data associated with `action::play_music` (and `action::revert_music`/`action::stop_music`, where all fields are unused).
     seq:

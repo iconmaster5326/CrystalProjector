@@ -250,6 +250,38 @@ class Entities(KaitaiStruct):
         cinematic_medium = 30
         cinematic_fast = 31
 
+    class QuintarActionType(IntEnum):
+        send_home_egg = 0
+        manage_quintar = 1
+        mount_my_quintar = 2
+        unlock_race_track = 3
+        view_race_records = 4
+        record_race_result = 5
+
+    class QuintarNature(IntEnum):
+        fiendish = 0
+        brutish = 1
+        woke = 2
+        fancy = 3
+        trusty = 4
+
+    class QuintarTrack(IntEnum):
+        beginner = 0
+        advanced = 1
+        expert = 2
+        race_4 = 3
+        race_5 = 4
+
+    class QuintarType(IntEnum):
+        red = 0
+        blue = 1
+        yellow = 2
+        teal = 3
+        green = 4
+        black = 5
+        white = 6
+        gold = 7
+
     class Scope(IntEnum):
         private = 0
         friend = 1
@@ -602,6 +634,30 @@ class Entities(KaitaiStruct):
             self.magic1 = self._io.read_bytes(2)
             self.frames = self._io.read_f4le()
             self.magic2 = self._io.read_bytes(1)
+
+
+    class ActionDataMyQuintar(KaitaiStruct):
+        """Data associated with `action::my_quintar`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.action_type = KaitaiStream.resolve_enum(Entities.QuintarActionType, self._io.read_u1())
+            if not isinstance(self.action_type, Entities.QuintarActionType):
+                raise kaitaistruct.ValidationNotInEnumError(self.action_type, self._io, u"/types/action_data_my_quintar/seq/0")
+            self.type = KaitaiStream.resolve_enum(Entities.QuintarType, self._io.read_u1())
+            if not isinstance(self.type, Entities.QuintarType):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/action_data_my_quintar/seq/1")
+            self.nature = KaitaiStream.resolve_enum(Entities.QuintarNature, self._io.read_u1())
+            if not isinstance(self.nature, Entities.QuintarNature):
+                raise kaitaistruct.ValidationNotInEnumError(self.nature, self._io, u"/types/action_data_my_quintar/seq/2")
+            self.slot = self._io.read_u4le()
+            self.track = KaitaiStream.resolve_enum(Entities.QuintarTrack, self._io.read_u1())
+            if not isinstance(self.track, Entities.QuintarTrack):
+                raise kaitaistruct.ValidationNotInEnumError(self.track, self._io, u"/types/action_data_my_quintar/seq/4")
 
 
     class ActionDataPlayMusic(KaitaiStruct):
@@ -1347,6 +1403,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.move_to:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.my_quintar:
+                self.data = Entities.ActionDataMyQuintar(self._io, self, self._root)
             elif _on == Entities.Action.play_music:
                 self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.queue_future_actions:
