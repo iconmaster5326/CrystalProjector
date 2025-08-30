@@ -474,18 +474,6 @@ class Entities(KaitaiStruct):
 
 
 
-    class ActionDataInn(KaitaiStruct):
-        """Data associated with `action::inn`."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.magic1 = self._io.read_bytes(5)
-
-
     class ActionDataInventory(KaitaiStruct):
         """Data associated with `action::add_inventory` and `action::remove_inventory`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -506,7 +494,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataMessage(KaitaiStruct):
-        """Data associated with `action::message` and `action::choice_message`."""
+        """Data associated with `action::message`, `action::choice_message`, and `action::inn`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -1391,7 +1379,7 @@ class Entities(KaitaiStruct):
             elif _on == Entities.Action.future_actions:
                 self.data = Entities.ActionDataFutureActions(self._io, self, self._root)
             elif _on == Entities.Action.inn:
-                self.data = Entities.ActionDataInn(self._io, self, self._root)
+                self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message_anonymous:

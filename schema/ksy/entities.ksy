@@ -871,7 +871,7 @@ types:
             action::condition: action_data_condition
             action::do_narration: action_data_do_narration
             action::future_actions: action_data_future_actions
-            action::inn: action_data_inn
+            action::inn: action_data_message
             action::message_hint: action_data_message_hint
             action::message_npc: action_data_message_npc
             action::message: action_data_message
@@ -994,7 +994,7 @@ types:
         repeat: expr
         repeat-expr: num_commands
   action_data_message:
-    doc: Data associated with `action::message` and `action::choice_message`.
+    doc: Data associated with `action::message`, `action::choice_message`, and `action::inn`.
     seq:
       - id: message
         doc: The message to display.
@@ -1003,22 +1003,22 @@ types:
         doc: Unknown.
         size: 1
       - id: has_choices
-        doc: Do we have choices? Unused in `action::message`.
+        doc: Do we have choices? Used only in `action::choice_message`.
         type: u1
         valid:
           any-of: [0, 1]
       - id: num_choices
-        doc: The number of choices the player can select from. Unused in `action::message`.
+        doc: The number of choices the player can select from. Used only in `action::choice_message`.
         type: u4
         if: has_choices == 1
       - id: choices
-        doc: The choices the player can select from. Unused in `action::message`.
+        doc: The choices the player can select from. Used only in `action::choice_message`.
         type: choice_message_choice
         repeat: expr
         repeat-expr: num_choices
         if: has_choices == 1
       - id: answer_var
-        doc: The variable to place the choice in. Unused in `action::message`.
+        doc: The variable to place the choice in. Used only in `action::choice_message`.
         type: nullable_string
       - id: magic2
         doc: Unknown.
@@ -1108,17 +1108,11 @@ types:
         type: npc_action
         repeat: expr
         repeat-expr: num_actions
-  action_data_inn:
-    doc: Data associated with `action::inn`.
-    seq:
-      - id: magic1
-        doc: Unknown.
-        size: 5
   action_data_message_hint:
     doc: Data associated with `action::message_hint`.
     seq:
       - id: has_item
-        doc: Are we hinting at the locarion of an item?
+        doc: Are we hinting at the location of an item?
         type: u1
         valid:
           any-of: [0, 1]
@@ -1127,7 +1121,7 @@ types:
         type: u4
         if: has_item == 1
       - id: has_job
-        doc: Are we hinting at the locarion of a job?
+        doc: Are we hinting at the location of a job?
         type: u1
         valid:
           any-of: [0, 1]
