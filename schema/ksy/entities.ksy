@@ -803,18 +803,26 @@ types:
             action::add_inventory: action_data_inventory
             action::choice_message: action_data_choice_message
             action::add_number: action_data_modify_var
+            action::cancel_actions: action_data_modify_action_queue
             action::command_npc: action_data_command_npc
             action::condition: action_data_condition
+            action::future_actions: action_data_future_actions
             action::message_hint: action_data_message_hint
             action::message_npc: action_data_message_npc
             action::message: action_data_message
             action::move: action_data_move
             action::move_camera: action_data_move_camera
+            action::move_group: action_data_move
+            action::move_group_to: action_data_move
             action::move_player: action_data_move
+            action::move_player_to: action_data_move
+            action::move_to: action_data_move
+            action::queue_future_actions: action_data_modify_action_queue
             action::remove_inventory: action_data_inventory
             action::revert_camera: action_data_move_camera
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
+            action::set_last_safe_pos_to_marker: action_data_set_last_safe_pos_to_marker
             action::set_number: action_data_modify_var
             action::set_mount: action_data_set_mount
             action::shop: action_data_shop
@@ -843,6 +851,18 @@ types:
         type: u1
         valid:
           any-of: [0, 1]
+  action_data_modify_action_queue:
+    doc: Data associated with `action::cancel_actions` and `action::queue_future_actions`.
+    seq:
+      - id: magic1
+        doc: Unknown.
+        size: 1
+      - id: key
+        doc: The NPC key to cancel the actions of.
+        type: nullable_string
+      - id: magic2
+        doc: Unknown.
+        size: 14
   action_data_command_npc:
     doc: Data associated with `action::command_npc`.
     seq:
@@ -919,6 +939,46 @@ types:
       - id: actions_false
         doc: The actions executed if false.
         type: npc_actions_list
+  action_data_future_actions:
+    doc: Data associated with `action::future_actions`.
+    seq:
+      - id: frames
+        doc: The number of frames to wait before executing `actions`.
+        type: u4
+      - id: show_timer
+        doc: Does this show a timer?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: dismount
+        doc: Does this force a dismount when the timer runs out?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: teleport
+        doc: Is this a teleport?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: hazard
+        doc: Is this a hazard?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: context
+        doc: The context to execute `actions` in.
+        type: u1
+        enum: trigger_context
+        valid:
+          in-enum: true
+      - id: num_actions
+        doc: The number of actions to execute.
+        type: u4
+      - id: actions
+        doc: The actions to execute.
+        type: npc_action
+        repeat: expr
+        repeat-expr: num_actions
   action_data_message_hint:
     doc: Data associated with `action::message_hint`.
     seq:
@@ -962,7 +1022,7 @@ types:
         doc: Unknown.
         size: 8
   action_data_move:
-    doc: Data associated with `action::move` and `action::move_player`.
+    doc: Data associated with `action::move`, `action::move_group`, `action::move_player` and the `move_to` forms of such.
     seq:
       - id: "x"
         doc: The X offset to move.
@@ -987,7 +1047,10 @@ types:
         if: has_facing == 1
       - id: magic1
         doc: Unknown.
-        size: 2
+        size: 1
+      - id: marker
+        doc: The key of a marker to move to, if using `action::move_to` and friends.
+        type: nullable_string
       - id: speed
         doc: How fast we move.
         type: f4
@@ -1047,6 +1110,12 @@ types:
         enum: facing
         valid:
           in-enum: true
+  action_data_set_last_safe_pos_to_marker:
+    doc: Data associated with `action::set_last_safe_pos_to_marker`.
+    seq:
+      - id: key
+        doc: The marker key to use.
+        type: nullable_string
   action_data_modify_var:
     doc: Data associated with `action::set_flag`, `action::set_number`, and `action::add_number`.
     seq:

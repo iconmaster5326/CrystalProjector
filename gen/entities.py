@@ -372,6 +372,38 @@ class Entities(KaitaiStruct):
             self.actions_false = Entities.NpcActionsList(self._io, self, self._root)
 
 
+    class ActionDataFutureActions(KaitaiStruct):
+        """Data associated with `action::future_actions`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.frames = self._io.read_u4le()
+            self.show_timer = self._io.read_u1()
+            if not  ((self.show_timer == 0) or (self.show_timer == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.show_timer, self._io, u"/types/action_data_future_actions/seq/1")
+            self.dismount = self._io.read_u1()
+            if not  ((self.dismount == 0) or (self.dismount == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.dismount, self._io, u"/types/action_data_future_actions/seq/2")
+            self.teleport = self._io.read_u1()
+            if not  ((self.teleport == 0) or (self.teleport == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.teleport, self._io, u"/types/action_data_future_actions/seq/3")
+            self.hazard = self._io.read_u1()
+            if not  ((self.hazard == 0) or (self.hazard == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.hazard, self._io, u"/types/action_data_future_actions/seq/4")
+            self.context = KaitaiStream.resolve_enum(Entities.TriggerContext, self._io.read_u1())
+            if not isinstance(self.context, Entities.TriggerContext):
+                raise kaitaistruct.ValidationNotInEnumError(self.context, self._io, u"/types/action_data_future_actions/seq/5")
+            self.num_actions = self._io.read_u4le()
+            self.actions = []
+            for i in range(self.num_actions):
+                self.actions.append(Entities.NpcAction(self._io, self, self._root))
+
+
+
     class ActionDataInventory(KaitaiStruct):
         """Data associated with `action::add_inventory` and `action::remove_inventory`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -441,6 +473,20 @@ class Entities(KaitaiStruct):
             self.magic1 = self._io.read_bytes(7)
 
 
+    class ActionDataModifyActionQueue(KaitaiStruct):
+        """Data associated with `action::cancel_actions` and `action::queue_future_actions`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(1)
+            self.key = Entities.NullableString(self._io, self, self._root)
+            self.magic2 = self._io.read_bytes(14)
+
+
     class ActionDataModifyVar(KaitaiStruct):
         """Data associated with `action::set_flag`, `action::set_number`, and `action::add_number`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -466,7 +512,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataMove(KaitaiStruct):
-        """Data associated with `action::move` and `action::move_player`."""
+        """Data associated with `action::move`, `action::move_group`, `action::move_player` and the `move_to` forms of such."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -485,21 +531,22 @@ class Entities(KaitaiStruct):
                 if not isinstance(self.facing, Entities.Facing):
                     raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_move/seq/4")
 
-            self.magic1 = self._io.read_bytes(2)
+            self.magic1 = self._io.read_bytes(1)
+            self.marker = Entities.NullableString(self._io, self, self._root)
             self.speed = self._io.read_f4le()
             self.wait = KaitaiStream.resolve_enum(Entities.MoveWaitMode, self._io.read_u1())
             if not isinstance(self.wait, Entities.MoveWaitMode):
-                raise kaitaistruct.ValidationNotInEnumError(self.wait, self._io, u"/types/action_data_move/seq/7")
+                raise kaitaistruct.ValidationNotInEnumError(self.wait, self._io, u"/types/action_data_move/seq/8")
             self.no_collision = self._io.read_u1()
             if not  ((self.no_collision == 0) or (self.no_collision == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.no_collision, self._io, u"/types/action_data_move/seq/8")
+                raise kaitaistruct.ValidationNotAnyOfError(self.no_collision, self._io, u"/types/action_data_move/seq/9")
             self.has_jump = self._io.read_u1()
             if not  ((self.has_jump == 0) or (self.has_jump == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.has_jump, self._io, u"/types/action_data_move/seq/9")
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_jump, self._io, u"/types/action_data_move/seq/10")
             if self.has_jump == 1:
                 self.jump = KaitaiStream.resolve_enum(Entities.Jump, self._io.read_u1())
                 if not isinstance(self.jump, Entities.Jump):
-                    raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/action_data_move/seq/10")
+                    raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/action_data_move/seq/11")
 
             self.magic2 = self._io.read_bytes(1)
 
@@ -533,6 +580,18 @@ class Entities(KaitaiStruct):
             self.facing = KaitaiStream.resolve_enum(Entities.Facing, self._io.read_u1())
             if not isinstance(self.facing, Entities.Facing):
                 raise kaitaistruct.ValidationNotInEnumError(self.facing, self._io, u"/types/action_data_set_facing/seq/0")
+
+
+    class ActionDataSetLastSafePosToMarker(KaitaiStruct):
+        """Data associated with `action::set_last_safe_pos_to_marker`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.key = Entities.NullableString(self._io, self, self._root)
 
 
     class ActionDataSetMount(KaitaiStruct):
@@ -1102,12 +1161,16 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.add_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.cancel_actions:
+                self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
             elif _on == Entities.Action.choice_message:
                 self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
             elif _on == Entities.Action.command_npc:
                 self.data = Entities.ActionDataCommandNpc(self._io, self, self._root)
             elif _on == Entities.Action.condition:
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
+            elif _on == Entities.Action.future_actions:
+                self.data = Entities.ActionDataFutureActions(self._io, self, self._root)
             elif _on == Entities.Action.message:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message_hint:
@@ -1118,8 +1181,18 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.move_camera:
                 self.data = Entities.ActionDataMoveCamera(self._io, self, self._root)
+            elif _on == Entities.Action.move_group:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.move_group_to:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.move_player:
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.move_player_to:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.move_to:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.queue_future_actions:
+                self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
             elif _on == Entities.Action.remove_inventory:
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.revert_camera:
@@ -1128,6 +1201,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataSetFacing(self._io, self, self._root)
             elif _on == Entities.Action.set_flag:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.set_last_safe_pos_to_marker:
+                self.data = Entities.ActionDataSetLastSafePosToMarker(self._io, self, self._root)
             elif _on == Entities.Action.set_mount:
                 self.data = Entities.ActionDataSetMount(self._io, self, self._root)
             elif _on == Entities.Action.set_number:
