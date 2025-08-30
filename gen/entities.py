@@ -440,6 +440,18 @@ class Entities(KaitaiStruct):
             self.actions_false = Entities.NpcActionsList(self._io, self, self._root)
 
 
+    class ActionDataDoNarration(KaitaiStruct):
+        """Data associated with `action::do_narration`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.id = self._io.read_u1()
+
+
     class ActionDataFutureActions(KaitaiStruct):
         """Data associated with `action::future_actions`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -1379,6 +1391,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataCommandNpc(self._io, self, self._root)
             elif _on == Entities.Action.condition:
                 self.data = Entities.ActionDataCondition(self._io, self, self._root)
+            elif _on == Entities.Action.do_narration:
+                self.data = Entities.ActionDataDoNarration(self._io, self, self._root)
             elif _on == Entities.Action.future_actions:
                 self.data = Entities.ActionDataFutureActions(self._io, self, self._root)
             elif _on == Entities.Action.message:

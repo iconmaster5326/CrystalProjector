@@ -868,6 +868,7 @@ types:
             action::cancel_actions: action_data_modify_action_queue
             action::command_npc: action_data_command_npc
             action::condition: action_data_condition
+            action::do_narration: action_data_do_narration
             action::future_actions: action_data_future_actions
             action::message_hint: action_data_message_hint
             action::message_npc: action_data_message_npc
@@ -1038,6 +1039,12 @@ types:
       - id: actions_false
         doc: The actions executed if false.
         type: npc_actions_list
+  action_data_do_narration:
+    doc: Data associated with `action::do_narration`.
+    seq:
+      - id: id
+        doc: The ID of the narration to play.
+        type: u1
   action_data_future_actions:
     doc: Data associated with `action::future_actions`.
     seq:
