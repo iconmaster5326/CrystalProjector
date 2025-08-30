@@ -828,6 +828,8 @@ types:
             action::shop: action_data_shop
             action::shop_recipe: action_data_shop
             action::stop_processing: action_data_stop_processing
+            action::teleport_player: action_data_move
+            action::teleport_player_to: action_data_move
             action::trigger_npc: action_data_trigger_npc
             action::wait: action_data_wait
             _: nothing # TODO
@@ -1022,7 +1024,7 @@ types:
         doc: Unknown.
         size: 8
   action_data_move:
-    doc: Data associated with `action::move`, `action::move_group`, `action::move_player` and the `move_to` forms of such.
+    doc: Data associated with `action::move`, `action::move_group`, `action::move_player`, `action::teleport_player`, and the `_to` forms of such.
     seq:
       - id: "x"
         doc: The X offset to move.

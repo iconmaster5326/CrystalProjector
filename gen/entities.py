@@ -512,7 +512,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataMove(KaitaiStruct):
-        """Data associated with `action::move`, `action::move_group`, `action::move_player` and the `move_to` forms of such."""
+        """Data associated with `action::move`, `action::move_group`, `action::move_player`, `action::teleport_player`, and the `_to` forms of such."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -1213,6 +1213,10 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
                 self.data = Entities.ActionDataStopProcessing(self._io, self, self._root)
+            elif _on == Entities.Action.teleport_player:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
+            elif _on == Entities.Action.teleport_player_to:
+                self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.trigger_npc:
                 self.data = Entities.ActionDataTriggerNpc(self._io, self, self._root)
             elif _on == Entities.Action.wait:
