@@ -94,6 +94,19 @@ class Entities(KaitaiStruct):
         learn_passive = 77
         comment = 78
 
+    class AtlasState(IntEnum):
+        hidden = 0
+        hinted = 1
+        seen = 2
+        acquired = 3
+        purchased = 4
+
+    class AtlasType(IntEnum):
+        inventory = 0
+        monster = 1
+        biome = 2
+        job = 3
+
     class CheckNumberEval(IntEnum):
         less = 0
         less_equal = 1
@@ -763,11 +776,16 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.type = KaitaiStream.resolve_enum(Entities.ConditionType, self._io.read_u1())
+            self.type = KaitaiStream.resolve_enum(Entities.ConditionType, self._io.read_u4le())
             if not isinstance(self.type, Entities.ConditionType):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition/seq/0")
+            self.inverted = self._io.read_u1()
+            if not  ((self.inverted == 0) or (self.inverted == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.inverted, self._io, u"/types/condition/seq/1")
             _on = self.type
-            if _on == Entities.ConditionType.check_crystal_count:
+            if _on == Entities.ConditionType.check_atlas:
+                self.data = Entities.ConditionDataCheckAtlas(self._io, self, self._root)
+            elif _on == Entities.ConditionType.check_crystal_count:
                 self.data = Entities.ConditionDataCheckCrystalCount(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_flag:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
@@ -775,12 +793,34 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ConditionDataCheckInventory(self._io, self, self._root)
             elif _on == Entities.ConditionType.check_number:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
+            elif _on == Entities.ConditionType.is_job_mastered:
+                self.data = Entities.ConditionDataIsJobMastered(self._io, self, self._root)
             elif _on == Entities.ConditionType.operation:
                 self.data = Entities.ConditionDataOperation(self._io, self, self._root)
             elif _on == Entities.ConditionType.randomizer:
                 self.data = Entities.ConditionDataRandomizer(self._io, self, self._root)
             else:
-                self.data = Entities.ConditionNone(self._io, self, self._root)
+                self.data = Entities.Nothing(self._io, self, self._root)
+
+
+    class ConditionDataCheckAtlas(KaitaiStruct):
+        """Data associated with `condition::check_atlas`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.type = KaitaiStream.resolve_enum(Entities.AtlasType, self._io.read_u1())
+            if not isinstance(self.type, Entities.AtlasType):
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition_data_check_atlas/seq/0")
+            self.state = KaitaiStream.resolve_enum(Entities.AtlasState, self._io.read_u1())
+            if not isinstance(self.state, Entities.AtlasState):
+                raise kaitaistruct.ValidationNotInEnumError(self.state, self._io, u"/types/condition_data_check_atlas/seq/1")
+            self.biome_id = self._io.read_u1()
+            self.other_id = self._io.read_u4le()
+            self.magic1 = self._io.read_bytes(8)
 
 
     class ConditionDataCheckCrystalCount(KaitaiStruct):
@@ -792,7 +832,7 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(9)
+            self.magic1 = self._io.read_bytes(5)
             self.count = self._io.read_u4le()
             self.magic2 = self._io.read_bytes(1)
 
@@ -806,15 +846,14 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(4)
             self.type = KaitaiStream.resolve_enum(Entities.TreasureType, self._io.read_u1())
             if not isinstance(self.type, Entities.TreasureType):
-                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition_data_check_inventory/seq/1")
+                raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/condition_data_check_inventory/seq/0")
             self.item = self._io.read_u4le()
             self.count = self._io.read_u4le()
             self.randomized = self._io.read_u1()
             if not  ((self.randomized == 0) or (self.randomized == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.randomized, self._io, u"/types/condition_data_check_inventory/seq/4")
+                raise kaitaistruct.ValidationNotAnyOfError(self.randomized, self._io, u"/types/condition_data_check_inventory/seq/3")
 
 
     class ConditionDataCheckVar(KaitaiStruct):
@@ -826,21 +865,31 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(3)
-            self.inverted = self._io.read_u1()
-            if not  ((self.inverted == 0) or (self.inverted == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.inverted, self._io, u"/types/condition_data_check_var/seq/1")
             self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
             if not isinstance(self.scope, Entities.Scope):
-                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/condition_data_check_var/seq/2")
+                raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/condition_data_check_var/seq/0")
             self.friend_key = Entities.NullableString(self._io, self, self._root)
             self.variable = Entities.NullableString(self._io, self, self._root)
             self.eval = KaitaiStream.resolve_enum(Entities.CheckNumberEval, self._io.read_u1())
             if not isinstance(self.eval, Entities.CheckNumberEval):
-                raise kaitaistruct.ValidationNotInEnumError(self.eval, self._io, u"/types/condition_data_check_var/seq/5")
+                raise kaitaistruct.ValidationNotInEnumError(self.eval, self._io, u"/types/condition_data_check_var/seq/3")
             self.magic3 = self._io.read_bytes(2)
             self.value = self._io.read_s4le()
             self.magic4 = self._io.read_bytes(7)
+
+
+    class ConditionDataIsJobMastered(KaitaiStruct):
+        """Condition data for `condition_type::is_job_mastered`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.magic1 = self._io.read_bytes(6)
+            self.job = self._io.read_u4le()
+            self.magic2 = self._io.read_bytes(7)
 
 
     class ConditionDataOperation(KaitaiStruct):
@@ -852,7 +901,6 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(4)
             self.lhs = Entities.Condition(self._io, self, self._root)
             self.magic2 = self._io.read_bytes(1)
             self.rhs = Entities.Condition(self._io, self, self._root)
@@ -867,46 +915,33 @@ class Entities(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.magic1 = self._io.read_bytes(4)
             self.crystals = self._io.read_u1()
             if not  ((self.crystals == 0) or (self.crystals == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.crystals, self._io, u"/types/condition_data_randomizer/seq/1")
+                raise kaitaistruct.ValidationNotAnyOfError(self.crystals, self._io, u"/types/condition_data_randomizer/seq/0")
             self.monsters = self._io.read_u1()
             if not  ((self.monsters == 0) or (self.monsters == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.monsters, self._io, u"/types/condition_data_randomizer/seq/2")
+                raise kaitaistruct.ValidationNotAnyOfError(self.monsters, self._io, u"/types/condition_data_randomizer/seq/1")
             self.bosses = self._io.read_u1()
             if not  ((self.bosses == 0) or (self.bosses == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.bosses, self._io, u"/types/condition_data_randomizer/seq/3")
+                raise kaitaistruct.ValidationNotAnyOfError(self.bosses, self._io, u"/types/condition_data_randomizer/seq/2")
             self.items = self._io.read_u1()
             if not  ((self.items == 0) or (self.items == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.items, self._io, u"/types/condition_data_randomizer/seq/4")
+                raise kaitaistruct.ValidationNotAnyOfError(self.items, self._io, u"/types/condition_data_randomizer/seq/3")
             self.recovery = self._io.read_u1()
             if not  ((self.recovery == 0) or (self.recovery == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.recovery, self._io, u"/types/condition_data_randomizer/seq/5")
+                raise kaitaistruct.ValidationNotAnyOfError(self.recovery, self._io, u"/types/condition_data_randomizer/seq/4")
             self.progression = self._io.read_u1()
             if not  ((self.progression == 0) or (self.progression == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.progression, self._io, u"/types/condition_data_randomizer/seq/6")
+                raise kaitaistruct.ValidationNotAnyOfError(self.progression, self._io, u"/types/condition_data_randomizer/seq/5")
             self.gated = self._io.read_u1()
             if not  ((self.gated == 0) or (self.gated == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.gated, self._io, u"/types/condition_data_randomizer/seq/7")
+                raise kaitaistruct.ValidationNotAnyOfError(self.gated, self._io, u"/types/condition_data_randomizer/seq/6")
             self.has_invalid_item = self._io.read_u1()
             if not  ((self.has_invalid_item == 0) or (self.has_invalid_item == 1)) :
-                raise kaitaistruct.ValidationNotAnyOfError(self.has_invalid_item, self._io, u"/types/condition_data_randomizer/seq/8")
+                raise kaitaistruct.ValidationNotAnyOfError(self.has_invalid_item, self._io, u"/types/condition_data_randomizer/seq/7")
             if self.has_invalid_item == 1:
                 self.invalid_item = self._io.read_u4le()
 
-
-
-    class ConditionNone(KaitaiStruct):
-        """Null condition data."""
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.magic1 = self._io.read_bytes(4)
 
 
     class DataCrystal(KaitaiStruct):

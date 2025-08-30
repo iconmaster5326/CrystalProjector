@@ -290,6 +290,17 @@ enums:
     2: equal
     3: greater_equal
     4: greater
+  atlas_type:
+    0: inventory
+    1: monster
+    2: biome
+    3: job
+  atlas_state:
+    0: hidden
+    1: hinted
+    2: seen
+    3: acquired
+    4: purchased
 types:
   string:
     doc: A string.
@@ -538,36 +549,61 @@ types:
     seq:
       - id: type
         doc: The condition type.
-        type: u1
+        type: u4
         enum: condition_type
         valid:
           in-enum: true
+      - id: inverted
+        doc: Is this condition inverted?
+        type: u1
+        valid:
+          any-of: [0, 1]
       - id: data
         doc: Condition data.
         type:
           switch-on: type
           cases: # TODO
+            condition_type::check_atlas: condition_data_check_atlas
             condition_type::check_crystal_count: condition_data_check_crystal_count
             condition_type::check_flag: condition_data_check_var
             condition_type::check_inventory: condition_data_check_inventory
             condition_type::check_number: condition_data_check_var
+            condition_type::is_job_mastered: condition_data_is_job_mastered
             condition_type::operation: condition_data_operation
             condition_type::randomizer: condition_data_randomizer
-            _: condition_none
+            _: nothing
   nothing:
     doc: No data.
-  condition_none:
-    doc: Null condition data.
+  condition_data_check_atlas:
+    doc: Data associated with `condition::check_atlas`.
     seq:
+      - id: type
+        doc: The type of records entry to check.
+        type: u1
+        enum: atlas_type
+        valid:
+          in-enum: true
+      - id: state
+        doc: The state of the records entry to check.
+        type: u1
+        enum: atlas_state
+        valid:
+          in-enum: true
+      - id: biome_id
+        doc: The ID of the biome to check.
+        type: u1
+      - id: other_id
+        doc: The ID of the item/monster/job to check.
+        type: u4
       - id: magic1
         doc: Unknown.
-        size: 4
+        size: 8
   condition_data_check_crystal_count:
     doc: Data associated with `condition::check_crystal_count`.
     seq:
       - id: magic1
         doc: Unknown.
-        size: 9
+        size: 5
       - id: count
         doc: The number of crystals you need to pass the condition.
         type: u4
@@ -577,9 +613,6 @@ types:
   condition_data_check_inventory:
      doc: Data associated with `condition::check_inventory`.
      seq:
-      - id: magic1
-        doc: Unknown.
-        size: 4
       - id: type
         doc: The item type to give.
         type: u1
@@ -600,14 +633,6 @@ types:
   condition_data_check_var:
     doc: Condition data for `condition_type::check_flag` and `condition_type::check_number`.
     seq:
-      - id: magic1
-        doc: Unknown.
-        size: 3
-      - id: inverted
-        doc: Is this condition inverted?
-        type: u1
-        valid:
-          any-of: [0, 1]
       - id: scope
         doc: The scope of the flag to check.
         type: u1
@@ -635,12 +660,21 @@ types:
       - id: magic4
         doc: Unknown.
         size: 7
-  condition_data_operation:
-    doc: Condition data for `condition_type::operation`.
+  condition_data_is_job_mastered:
+    doc: Condition data for `condition_type::is_job_mastered`.
     seq:
       - id: magic1
         doc: Unknown.
-        size: 4
+        size: 6
+      - id: job
+        doc: The ID of the job to test.
+        type: u4
+      - id: magic2
+        doc: Unknown.
+        size: 7
+  condition_data_operation:
+    doc: Condition data for `condition_type::operation`.
+    seq:
       - id: lhs
         doc: The left-hand condition.
         type: condition
@@ -653,9 +687,6 @@ types:
   condition_data_randomizer:
     doc: Condition data for `condition_type::randomizer`.
     seq:
-      - id: magic1
-        doc: Unknown.
-        size: 4
       - id: crystals
         doc: Is this condition true if we're randomizing crystals?
         type: u1
