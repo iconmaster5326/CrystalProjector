@@ -453,7 +453,7 @@ class Entities(KaitaiStruct):
             self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
             if not isinstance(self.scope, Entities.Scope):
                 raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/action_data_modify_var/seq/0")
-            self.magic1 = self._io.read_bytes(1)
+            self.friend_key = Entities.NullableString(self._io, self, self._root)
             self.variable = Entities.NullableString(self._io, self, self._root)
             self.setting_mode = KaitaiStream.resolve_enum(Entities.VariableSettingMode, self._io.read_u1())
             if not isinstance(self.setting_mode, Entities.VariableSettingMode):
@@ -750,7 +750,7 @@ class Entities(KaitaiStruct):
             self.scope = KaitaiStream.resolve_enum(Entities.Scope, self._io.read_u1())
             if not isinstance(self.scope, Entities.Scope):
                 raise kaitaistruct.ValidationNotInEnumError(self.scope, self._io, u"/types/condition_data_check_var/seq/2")
-            self.magic2 = self._io.read_bytes(1)
+            self.friend_key = Entities.NullableString(self._io, self, self._root)
             self.variable = Entities.NullableString(self._io, self, self._root)
             self.eval = KaitaiStream.resolve_enum(Entities.CheckNumberEval, self._io.read_u1())
             if not isinstance(self.eval, Entities.CheckNumberEval):

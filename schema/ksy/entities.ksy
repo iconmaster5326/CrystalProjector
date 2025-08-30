@@ -614,9 +614,9 @@ types:
         enum: scope
         valid:
           in-enum: true
-      - id: magic2
-        doc: Unknown.
-        size: 1
+      - id: friend_key
+        doc: for `scope::friend`/`scope::friend_temp`, the key of the NPC whose variable you are accessing.
+        type: nullable_string
       - id: variable
         doc: The number/flag to test.
         type: nullable_string
@@ -1055,9 +1055,9 @@ types:
         enum: scope
         valid:
           in-enum: true
-      - id: magic1
-        doc: Unknown.
-        size: 1
+      - id: friend_key
+        doc: for `scope::friend`/`scope::friend_temp`, the key of the NPC whose variable you are accessing.
+        type: nullable_string
       - id: variable
         doc: The variable to set.
         type: nullable_string
