@@ -833,7 +833,9 @@ types:
           cases:
             action::add_inventory: action_data_inventory
             action::choice_message: action_data_choice_message
+            action::choice_message_anonymous: action_data_choice_message
             action::add_number: action_data_modify_var
+            action::battle: action_data_battle
             action::cancel_actions: action_data_modify_action_queue
             action::command_npc: action_data_command_npc
             action::condition: action_data_condition
@@ -841,6 +843,7 @@ types:
             action::message_hint: action_data_message_hint
             action::message_npc: action_data_message_npc
             action::message: action_data_message
+            action::message_anonymous: action_data_message
             action::move: action_data_move
             action::move_camera: action_data_move_camera
             action::move_group: action_data_move
@@ -896,6 +899,33 @@ types:
       - id: magic2
         doc: Unknown.
         size: 14
+  action_data_battle:
+    doc: Data associated with `action::battle`.
+    seq:
+      - id: troop
+        doc: The ID of the troop to fight.
+        type: u4
+      - id: training
+        doc: Is this a training battle, where you can lose without consequence?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: var
+        doc: The variable to set based on member count.
+        type: nullable_string
+      - id: biome
+        doc: The biome ID to override the arena. 0 if no override.
+        type: u1
+      - id: force_indoor
+        doc: Is this fight always inside?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: no_loot
+        doc: Can you not loot/steal from this fight?
+        type: u1
+        valid:
+          any-of: [0, 1]
   action_data_command_npc:
     doc: Data associated with `action::command_npc`.
     seq:

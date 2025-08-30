@@ -334,6 +334,29 @@ class Entities(KaitaiStruct):
             self.entities.append(Entities.Entity(self._io, self, self._root))
 
 
+    class ActionDataBattle(KaitaiStruct):
+        """Data associated with `action::battle`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.troop = self._io.read_u4le()
+            self.training = self._io.read_u1()
+            if not  ((self.training == 0) or (self.training == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.training, self._io, u"/types/action_data_battle/seq/1")
+            self.var = Entities.NullableString(self._io, self, self._root)
+            self.biome = self._io.read_u1()
+            self.force_indoor = self._io.read_u1()
+            if not  ((self.force_indoor == 0) or (self.force_indoor == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.force_indoor, self._io, u"/types/action_data_battle/seq/4")
+            self.no_loot = self._io.read_u1()
+            if not  ((self.no_loot == 0) or (self.no_loot == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.no_loot, self._io, u"/types/action_data_battle/seq/5")
+
+
     class ActionDataChoiceMessage(KaitaiStruct):
         """Data associated with `action::choice_message`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -1196,9 +1219,13 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataInventory(self._io, self, self._root)
             elif _on == Entities.Action.add_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
+            elif _on == Entities.Action.battle:
+                self.data = Entities.ActionDataBattle(self._io, self, self._root)
             elif _on == Entities.Action.cancel_actions:
                 self.data = Entities.ActionDataModifyActionQueue(self._io, self, self._root)
             elif _on == Entities.Action.choice_message:
+                self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
+            elif _on == Entities.Action.choice_message_anonymous:
                 self.data = Entities.ActionDataChoiceMessage(self._io, self, self._root)
             elif _on == Entities.Action.command_npc:
                 self.data = Entities.ActionDataCommandNpc(self._io, self, self._root)
@@ -1207,6 +1234,8 @@ class Entities(KaitaiStruct):
             elif _on == Entities.Action.future_actions:
                 self.data = Entities.ActionDataFutureActions(self._io, self, self._root)
             elif _on == Entities.Action.message:
+                self.data = Entities.ActionDataMessage(self._io, self, self._root)
+            elif _on == Entities.Action.message_anonymous:
                 self.data = Entities.ActionDataMessage(self._io, self, self._root)
             elif _on == Entities.Action.message_hint:
                 self.data = Entities.ActionDataMessageHint(self._io, self, self._root)
