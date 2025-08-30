@@ -568,7 +568,8 @@ types:
             condition_type::check_flag: condition_data_check_var
             condition_type::check_inventory: condition_data_check_inventory
             condition_type::check_number: condition_data_check_var
-            condition_type::is_job_mastered: condition_data_is_job_mastered
+            condition_type::is_job_mastered: condition_data_is_job
+            condition_type::is_job_present: condition_data_is_job
             condition_type::operation: condition_data_operation
             condition_type::randomizer: condition_data_randomizer
             _: nothing
@@ -660,8 +661,8 @@ types:
       - id: magic4
         doc: Unknown.
         size: 7
-  condition_data_is_job_mastered:
-    doc: Condition data for `condition_type::is_job_mastered`.
+  condition_data_is_job:
+    doc: Condition data for `condition_type::is_job_present` and `condition_type::is_job_mastered`.
     seq:
       - id: magic1
         doc: Unknown.
@@ -859,15 +860,18 @@ types:
             action::set_facing: action_data_set_facing
             action::set_flag: action_data_modify_var
             action::set_last_safe_pos_to_marker: action_data_set_last_safe_pos_to_marker
+            action::set_npc_property: action_data_set_npc_property
             action::set_number: action_data_modify_var
             action::set_mount: action_data_set_mount
             action::set_player_facing: action_data_set_facing
             action::shop: action_data_shop
             action::shop_recipe: action_data_shop
             action::stop_processing: action_data_stop_processing
+            action::stop_music: action_data_play_music
             action::teleport_player: action_data_move
             action::teleport_player_to: action_data_move
             action::trigger_npc: action_data_trigger_npc
+            action::unlock_ability: action_data_unlock_ability
             action::wait: action_data_wait
             _: nothing # TODO
   action_data_inventory:
@@ -1168,7 +1172,7 @@ types:
         doc: Unknown.
         size: 1
   action_data_play_music:
-    doc: Data associated with `action::play_music` (and `action::revert_music`, where all fields are unused).
+    doc: Data associated with `action::play_music` (and `action::revert_music`/`action::stop_music`, where all fields are unused).
     seq:
       - id: track
         doc: The music to play.
@@ -1208,6 +1212,65 @@ types:
       - id: key
         doc: The marker key to use.
         type: nullable_string
+  action_data_set_npc_property:
+    doc: Data associated with `action::set_npc_property`.
+    seq:
+      - id: change_collides_player
+        doc: Change if we collide with the player or not?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: collides_player
+        doc: The collision with the player.
+        type: u1
+        valid:
+          any-of: [0, 1]
+        if: change_collides_player == 1
+      - id: change_collides_npcs
+        doc: Change if we collide with other NPCs or not?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: collides_npcs
+        doc: The collision with other NPCs.
+        type: u1
+        valid:
+          any-of: [0, 1]
+        if: change_collides_npcs == 1
+      - id: change_jump
+        doc: Do we change our jump type?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: jump
+        doc: The jump type we change to.
+        type: u1
+        enum: jump
+        valid:
+          in-enum: true
+        if: change_jump == 1
+      - id: change_keep_spawned
+        doc: Do we change `keep_spawned`?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: keep_spawned
+        doc: Change if we keep spawned or not.
+        type: u1
+        valid:
+          any-of: [0, 1]
+        if: change_keep_spawned == 1
+      - id: change_auto_step
+        doc: Do we change `auto_step`?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: auto_step
+        doc: Change if we auto-step or not.
+        type: u1
+        valid:
+          any-of: [0, 1]
+        if: change_auto_step == 1
   action_data_modify_var:
     doc: Data associated with `action::set_flag`, `action::set_number`, and `action::add_number`.
     seq:
@@ -1383,6 +1446,17 @@ types:
         enum: trigger
         valid:
           in-enum: true
+  action_data_unlock_ability:
+    doc: Data associated with `action::unlock_ability`.
+    seq:
+      - id: no_randomize
+        doc: Can the randomizer not shuffle this ability around?
+        type: u1
+        valid:
+          any-of: [0, 1]
+      - id: ability
+        doc: The ability ID to unlock.
+        type: u4
   action_data_wait:
     doc: Data associated with `action::wait`.
     seq:

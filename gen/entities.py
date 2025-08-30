@@ -605,7 +605,7 @@ class Entities(KaitaiStruct):
 
 
     class ActionDataPlayMusic(KaitaiStruct):
-        """Data associated with `action::play_music` (and `action::revert_music`, where all fields are unused)."""
+        """Data associated with `action::play_music` (and `action::revert_music`/`action::stop_music`, where all fields are unused)."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -676,6 +676,57 @@ class Entities(KaitaiStruct):
             self.plays_sounds = self._io.read_u1()
             if not  ((self.plays_sounds == 0) or (self.plays_sounds == 1)) :
                 raise kaitaistruct.ValidationNotAnyOfError(self.plays_sounds, self._io, u"/types/action_data_set_mount/seq/4")
+
+
+    class ActionDataSetNpcProperty(KaitaiStruct):
+        """Data associated with `action::set_npc_property`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.change_collides_player = self._io.read_u1()
+            if not  ((self.change_collides_player == 0) or (self.change_collides_player == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.change_collides_player, self._io, u"/types/action_data_set_npc_property/seq/0")
+            if self.change_collides_player == 1:
+                self.collides_player = self._io.read_u1()
+                if not  ((self.collides_player == 0) or (self.collides_player == 1)) :
+                    raise kaitaistruct.ValidationNotAnyOfError(self.collides_player, self._io, u"/types/action_data_set_npc_property/seq/1")
+
+            self.change_collides_npcs = self._io.read_u1()
+            if not  ((self.change_collides_npcs == 0) or (self.change_collides_npcs == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.change_collides_npcs, self._io, u"/types/action_data_set_npc_property/seq/2")
+            if self.change_collides_npcs == 1:
+                self.collides_npcs = self._io.read_u1()
+                if not  ((self.collides_npcs == 0) or (self.collides_npcs == 1)) :
+                    raise kaitaistruct.ValidationNotAnyOfError(self.collides_npcs, self._io, u"/types/action_data_set_npc_property/seq/3")
+
+            self.change_jump = self._io.read_u1()
+            if not  ((self.change_jump == 0) or (self.change_jump == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.change_jump, self._io, u"/types/action_data_set_npc_property/seq/4")
+            if self.change_jump == 1:
+                self.jump = KaitaiStream.resolve_enum(Entities.Jump, self._io.read_u1())
+                if not isinstance(self.jump, Entities.Jump):
+                    raise kaitaistruct.ValidationNotInEnumError(self.jump, self._io, u"/types/action_data_set_npc_property/seq/5")
+
+            self.change_keep_spawned = self._io.read_u1()
+            if not  ((self.change_keep_spawned == 0) or (self.change_keep_spawned == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.change_keep_spawned, self._io, u"/types/action_data_set_npc_property/seq/6")
+            if self.change_keep_spawned == 1:
+                self.keep_spawned = self._io.read_u1()
+                if not  ((self.keep_spawned == 0) or (self.keep_spawned == 1)) :
+                    raise kaitaistruct.ValidationNotAnyOfError(self.keep_spawned, self._io, u"/types/action_data_set_npc_property/seq/7")
+
+            self.change_auto_step = self._io.read_u1()
+            if not  ((self.change_auto_step == 0) or (self.change_auto_step == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.change_auto_step, self._io, u"/types/action_data_set_npc_property/seq/8")
+            if self.change_auto_step == 1:
+                self.auto_step = self._io.read_u1()
+                if not  ((self.auto_step == 0) or (self.auto_step == 1)) :
+                    raise kaitaistruct.ValidationNotAnyOfError(self.auto_step, self._io, u"/types/action_data_set_npc_property/seq/9")
+
 
 
     class ActionDataShop(KaitaiStruct):
@@ -763,6 +814,21 @@ class Entities(KaitaiStruct):
                 raise kaitaistruct.ValidationNotInEnumError(self.type, self._io, u"/types/action_data_trigger_npc/seq/1")
 
 
+    class ActionDataUnlockAbility(KaitaiStruct):
+        """Data associated with `action::unlock_ability`."""
+        def __init__(self, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.no_randomize = self._io.read_u1()
+            if not  ((self.no_randomize == 0) or (self.no_randomize == 1)) :
+                raise kaitaistruct.ValidationNotAnyOfError(self.no_randomize, self._io, u"/types/action_data_unlock_ability/seq/0")
+            self.ability = self._io.read_u4le()
+
+
     class ActionDataVarsetmodeConstant(KaitaiStruct):
         """The data associated with `variable_setting_mode::constant`."""
         def __init__(self, _io, _parent=None, _root=None):
@@ -841,7 +907,9 @@ class Entities(KaitaiStruct):
             elif _on == Entities.ConditionType.check_number:
                 self.data = Entities.ConditionDataCheckVar(self._io, self, self._root)
             elif _on == Entities.ConditionType.is_job_mastered:
-                self.data = Entities.ConditionDataIsJobMastered(self._io, self, self._root)
+                self.data = Entities.ConditionDataIsJob(self._io, self, self._root)
+            elif _on == Entities.ConditionType.is_job_present:
+                self.data = Entities.ConditionDataIsJob(self._io, self, self._root)
             elif _on == Entities.ConditionType.operation:
                 self.data = Entities.ConditionDataOperation(self._io, self, self._root)
             elif _on == Entities.ConditionType.randomizer:
@@ -925,8 +993,8 @@ class Entities(KaitaiStruct):
             self.magic4 = self._io.read_bytes(7)
 
 
-    class ConditionDataIsJobMastered(KaitaiStruct):
-        """Condition data for `condition_type::is_job_mastered`."""
+    class ConditionDataIsJob(KaitaiStruct):
+        """Condition data for `condition_type::is_job_present` and `condition_type::is_job_mastered`."""
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -1297,6 +1365,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataSetLastSafePosToMarker(self._io, self, self._root)
             elif _on == Entities.Action.set_mount:
                 self.data = Entities.ActionDataSetMount(self._io, self, self._root)
+            elif _on == Entities.Action.set_npc_property:
+                self.data = Entities.ActionDataSetNpcProperty(self._io, self, self._root)
             elif _on == Entities.Action.set_number:
                 self.data = Entities.ActionDataModifyVar(self._io, self, self._root)
             elif _on == Entities.Action.set_player_facing:
@@ -1305,6 +1375,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
             elif _on == Entities.Action.shop_recipe:
                 self.data = Entities.ActionDataShop(self._io, self, self._root)
+            elif _on == Entities.Action.stop_music:
+                self.data = Entities.ActionDataPlayMusic(self._io, self, self._root)
             elif _on == Entities.Action.stop_processing:
                 self.data = Entities.ActionDataStopProcessing(self._io, self, self._root)
             elif _on == Entities.Action.teleport_player:
@@ -1313,6 +1385,8 @@ class Entities(KaitaiStruct):
                 self.data = Entities.ActionDataMove(self._io, self, self._root)
             elif _on == Entities.Action.trigger_npc:
                 self.data = Entities.ActionDataTriggerNpc(self._io, self, self._root)
+            elif _on == Entities.Action.unlock_ability:
+                self.data = Entities.ActionDataUnlockAbility(self._io, self, self._root)
             elif _on == Entities.Action.wait:
                 self.data = Entities.ActionDataWait(self._io, self, self._root)
             else:
